@@ -1,0 +1,56 @@
+2026-02-12 10:45:50,496 - __main__ - ERROR - Fatal error: Client.__init__() got an unexpected keyword argument 'proxies'
+Traceback (most recent call last):
+  File "C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\main.py", line 249, in main
+    pipeline = QATestingPipeline()
+  File "C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\main.py", line 44, in __init__
+    self.orchestrator = QATestingOrchestrator()
+                        ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\orchestrator.py", line 20, in __init__
+    self.requirements_agent = RequirementsAnalysisAgent()
+                              ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\agents\requirements_agent.py", line 18, in __init__
+    self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
+                  ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\venv\Lib\site-packages\openai\_client.py", line 107, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        version=__version__,
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        _strict_response_validation=_strict_response_validation,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\venv\Lib\site-packages\openai\_base_client.py", line 738, in __init__
+    self._client = http_client or httpx.Client(
+                                  ~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        limits=limits,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+TypeError: Client.__init__() got an unexpected keyword argument 'proxies'
+2026-02-12 10:51:56,398 - __main__ - INFO - ======================================================================
+2026-02-12 10:51:56,399 - __main__ - INFO - QA TESTING AGENT - CSV STORIES INTEGRATION
+2026-02-12 10:51:56,399 - __main__ - INFO - ======================================================================
+2026-02-12 10:51:56,399 - __main__ - INFO - 
+[Phase 1] Reading stories from CSV files...
+2026-02-12 10:51:56,401 - connectors.csv_story_reader - INFO - 
+[CSV Story Reader] Scanning folder: 3
+2026-02-12 10:51:56,401 - connectors.csv_story_reader - WARNING - No CSV files found in 3
+2026-02-12 10:51:56,402 - __main__ - ERROR - No stories found in 3
+2026-02-12 10:51:56,402 - __main__ - INFO - Place CSV files in: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\3
+2026-02-12 10:56:35,342 - __main__ - INFO - ======================================================================
+2026-02-12 10:56:35,343 - __main__ - INFO - QA TESTING AGENT - CSV STORIES INTEGRATION
+2026-02-12 10:56:35,344 - __main__ - INFO - ======================================================================
+2026-02-12 10:56:35,344 - __main__ - INFO - 
+[Phase 1] Reading stories from CSV files...
+2026-02-12 10:56:35,346 - connectors.csv_story_reader - INFO - 
+[CSV Story Reader] Scanning folder: 3
+2026-02-12 10:56:35,347 - connectors.csv_story_reader - WARNING - No CSV files found in 3
+2026-02-12 10:56:35,347 - __main__ - ERROR - No stories found in 3
+2026-02-12 10:56:35,347 - __main__ - INFO - Place CSV files in: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\3
+2026-02-12 10:56:35,348 - __main__ - ERROR - 
+Pipeline failed
