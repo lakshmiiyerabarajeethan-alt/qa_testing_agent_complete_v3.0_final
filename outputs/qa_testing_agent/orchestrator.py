@@ -86,6 +86,9 @@ class QATestingOrchestrator:
                 
             elif review_result.rejection_reason == RejectionReason.UI_CHANGE:
                 # Stop execution - UI changed
+                if settings.EXECUTE_REJECTED_TESTS:
+                    logger.warning("UI change detected - continuing due to EXECUTE_REJECTED_TESTS")
+                    return generated_test, review_result, rejection_history
                 logger.error("UI change detected - stopping execution")
                 review_result.rejection_details = (
                     f"UI change detected: {review_result.rejection_details}. "

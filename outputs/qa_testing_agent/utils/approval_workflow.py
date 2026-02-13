@@ -23,11 +23,11 @@ class ApprovalWorkflow:
     Manages manual approval workflow for generated test cases
     
     Flow:
-    1. Generate test cases from stories → Excel
+    1. Generate test cases from stories -> Excel
     2. User reviews Excel file
     3. User approves, rejects, or requests revisions
-    4. If approved → continue with normal pipeline
-    5. If rejected/revisions → regenerate or manual fix
+    4. If approved -> continue with normal pipeline
+    5. If rejected/revisions -> regenerate or manual fix
     """
     
     def __init__(self, excel_path: str, output_folder: str = "./approval_logs"):
@@ -151,25 +151,25 @@ class ApprovalWorkflow:
         print("-"*70)
         
         for scenario, data in summary['scenarios'].items():
-            print(f"\n📋 {scenario}")
+            print(f"\n[Scenario] {scenario}")
             print(f"   Test Cases: {len(data['test_cases'])}")
             print(f"   Total Steps: {data['step_count']}")
             for test_case in data['test_cases']:
-                print(f"   ├─ {test_case['name']} ({test_case['steps']} steps)")
+                print(f"   - {test_case['name']} ({test_case['steps']} steps)")
         
         print("\n" + "="*70)
         print("EXCEL FILE LOCATION:")
         print(f"{summary['excel_path']}")
         print("="*70)
         
-        print("\n📝 PLEASE REVIEW THE EXCEL FILE FOR:")
-        print("   • All test scenarios from stories are covered")
-        print("   • All acceptance criteria are tested")
-        print("   • Test steps are clear and actionable")
-        print("   • Expected results are properly defined")
-        print("   • Test data is appropriate")
-        print("   • No duplicate test cases")
-        print("   • Edge cases and error scenarios included")
+        print("\nPLEASE REVIEW THE EXCEL FILE FOR:")
+        print("   - All test scenarios from stories are covered")
+        print("   - All acceptance criteria are tested")
+        print("   - Test steps are clear and actionable")
+        print("   - Expected results are properly defined")
+        print("   - Test data is appropriate")
+        print("   - No duplicate test cases")
+        print("   - Edge cases and error scenarios included")
         
     def _get_user_decision(self) -> str:
         """Get user approval decision"""
@@ -178,9 +178,9 @@ class ApprovalWorkflow:
         print("="*70)
         
         print("\n1. APPROVE - Test cases look good, continue with execution")
-        print("2. 🔍 REVIEW - I need to manually review/modify the Excel file")
+        print("2. REVIEW - I need to manually review/modify the Excel file")
         print("3. REJECT - Test cases need to be regenerated")
-        print("4. ⚠️  REVISIONS - Request specific revisions from AI")
+        print("4. REVISIONS - Request specific revisions from AI")
         
         while True:
             choice = input("\nSelect option (1-4): ").strip()
@@ -310,7 +310,7 @@ class ApprovalDecisionHandler:
             return True
         
         elif decision == "MANUAL_REVIEW_REQUESTED":
-            logger.info("⏸️  Manual review requested")
+            logger.info("Manual review requested")
             logger.info(f"Please review and modify: {excel_path}")
             logger.info("Run the system again when ready")
             return False
@@ -320,7 +320,7 @@ class ApprovalDecisionHandler:
             return False
         
         elif decision.startswith("REVISIONS_REQUESTED"):
-            logger.info(f"⚠️  Revisions requested - {decision}")
+            logger.info(f"Revisions requested - {decision}")
             logger.info("Test case generator will be invoked with feedback")
             return False
         

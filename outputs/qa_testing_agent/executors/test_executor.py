@@ -5,6 +5,7 @@ import logging
 import os
 import subprocess
 import tempfile
+import sys
 from typing import List, Dict, Any
 from datetime import datetime
 from pathlib import Path
@@ -52,14 +53,14 @@ class TestExecutor:
             )
             
             result = subprocess.run([
-                "python", "-m", "pytest", 
+                sys.executable, "-m", "pytest", 
                 test_file,
                 f"--html={html_report}",
                 "--self-contained-html",
                 "--tb=short",
                 "-v",
                 "-s"
-            ], capture_output=True, text=True, timeout=300)
+            ], capture_output=True, text=True, timeout=settings.TEST_TIMEOUT_SECONDS)
             
             # Parse results
             success = result.returncode == 0
@@ -134,8 +135,50 @@ logger = logging.getLogger(__name__)
 
 # Test Data
 TEST_DATA = {generated_test.test_data}
+BASE_URL = TEST_DATA.get("base_url", "")
 
 {fixture_code}
+
+# Generic locator helpers
+def _first_visible(driver, locators, timeout=10):
+    for by, value in locators:
+        try:
+            return WebDriverWait(driver, timeout).until(
+                EC.visibility_of_element_located((by, value))
+            )
+        except Exception:
+            continue
+    return None
+
+def find_input(driver, label: str, timeout=10):
+    label_l = label.lower()
+    candidates = [
+        (By.ID, label),
+        (By.NAME, label),
+        (By.NAME, label_l),
+        (By.CSS_SELECTOR, f"input[aria-label*='{label}']"),
+        (By.CSS_SELECTOR, f"input[placeholder*='{label}']"),
+        (By.XPATH, f\"//label[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{label_l}')]/following::input[1]\"),
+        (By.XPATH, f\"//input[contains(translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{label_l}')]\"),
+        (By.XPATH, f\"//input[contains(translate(@id, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{label_l}')]\"),
+        (By.XPATH, f\"//input[contains(translate(@placeholder, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{label_l}')]\"),
+    ]
+    return _first_visible(driver, candidates, timeout=timeout)
+
+def click_button(driver, text: str, timeout=10):
+    text_l = text.lower()
+    candidates = [
+        (By.ID, text),
+        (By.NAME, text),
+        (By.XPATH, f\"//button[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{text_l}')]\"),
+        (By.XPATH, f\"//a[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{text_l}')]\"),
+        (By.XPATH, f\"//*[@role='button' and contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '{text_l}')]\"),
+    ]
+    el = _first_visible(driver, candidates, timeout=timeout)
+    if el:
+        el.click()
+        return True
+    return False
 
 # Generated Test Code
 {generated_test.test_code}
@@ -151,11 +194,23 @@ TEST_DATA = {generated_test.test_data}
         fixtures = f"""@pytest.fixture
 def browser():
     \"\"\"Initialize webdriver\"\"\"
-    options = webdriver.ChromeOptions()
-    if {settings.HEADLESS}:
-        options.add_argument("--headless")
+    browser_type = "{settings.BROWSER_TYPE}".lower()
     
-    driver = webdriver.Chrome(options=options)
+    if browser_type in ["chrome", "chromium"]:
+        options = webdriver.ChromeOptions()
+        if {settings.HEADLESS}:
+            options.add_argument("--headless")
+        if "{settings.CHROME_BINARY}":
+            options.binary_location = "{settings.CHROME_BINARY}"
+        driver = webdriver.Chrome(options=options)
+    elif browser_type == "firefox":
+        options = webdriver.FirefoxOptions()
+        if {settings.HEADLESS}:
+            options.add_argument("--headless")
+        driver = webdriver.Firefox(options=options)
+    else:
+        raise ValueError(f"Unsupported BROWSER_TYPE: {settings.BROWSER_TYPE}")
+    
     driver.implicitly_wait({settings.IMPLICIT_WAIT})
     
     yield driver

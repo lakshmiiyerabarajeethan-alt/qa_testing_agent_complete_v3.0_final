@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-02-13T13:05:19.159880",
+  "stories_processed": 3,
+  "total_test_cases": 9,
+  "total_scenarios": 9,
+  "total_steps": 27,
+  "scenarios": {
+    "Happy Path Export Assets": {
+      "test_cases": [
+        {
+          "name": "happy_path_export_assets",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Edge Case: Export with No Assets Selected": {
+      "test_cases": [
+        {
+          "name": "edge_case_no_assets_selected",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Error Scenario: Export Function Fails": {
+      "test_cases": [
+        {
+          "name": "error_scenario_export_fails",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path - Finding and Linking Duplicate Assets": {
+      "test_cases": [
+        {
+          "name": "happy_path_duplicate_assets",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case - No Duplicate Assets Found": {
+      "test_cases": [
+        {
+          "name": "edge_case_no_duplicates",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario - System Fails to Process Query": {
+      "test_cases": [
+        {
+          "name": "error_scenario_query_failure",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path Password Reset": {
+      "test_cases": [
+        {
+          "name": "happy_path_password_reset",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Edge Case: Password Reset with Weak Password": {
+      "test_cases": [
+        {
+          "name": "edge_case_weak_password",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Error Scenario: Incorrect Current Password": {
+      "test_cases": [
+        {
+          "name": "error_scenario_incorrect_current_password",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

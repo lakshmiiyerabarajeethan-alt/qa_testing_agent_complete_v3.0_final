@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Test Report - devops_suite_latest</title>
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .report-id {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .timestamp {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .summary-section {
+            padding: 40px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .summary-section h2 {
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .summary-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .metric {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .metric.approved {
+            color: #28a745;
+        }
+        
+        .metric.rejected {
+            color: #dc3545;
+        }
+        
+        .metric .passed {
+            color: #28a745;
+        }
+        
+        .progress-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .progress-bar {
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-passed {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+        }
+        
+        .details-section {
+            padding: 40px;
+        }
+        
+        .details-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .test-details {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .test-item {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .test-item.passed {
+            border-left: 5px solid #28a745;
+        }
+        
+        .test-item.failed {
+            border-left: 5px solid #dc3545;
+        }
+        
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .test-header h3 {
+            margin: 0;
+            font-size: 1.1em;
+        }
+        
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-badge.passed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .test-content {
+            padding: 20px;
+        }
+        
+        .test-section {
+            margin-bottom: 20px;
+        }
+        
+        .test-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .test-section h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+        
+        .rejection-section {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .rejection-item {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .rejection-reason {
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .improvement-suggestions {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .logs-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .log-item {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .approved {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .rejected {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>QA Test Execution Report</h1>
+            <p class="report-id">Suite ID: devops_suite_latest</p>
+            <p class="timestamp">Generated: 2026-02-13 13:15:09</p>
+        </header>
+        
+        <div class="summary-section">
+            <h2>Executive Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h3>Total Tests</h3>
+                    <p class="metric">9</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Approved</h3>
+                    <p class="metric approved">0</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Rejected</h3>
+                    <p class="metric rejected">9</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Pass Rate</h3>
+                    <p class="metric">
+                        <span class="warning">0.0%</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="progress-section">
+                <h3>Test Results Distribution</h3>
+                <div class="progress-bar">
+                    <div class="progress-passed" style="width: 0.0%"></div>
+                </div>
+                <p class="progress-text">
+                    0 Passed | 9 Failed
+                </p>
+            </div>
+        </div>
+        
+        <div class="details-section">
+            <h2>Test Details</h2>
+            
+            <div class="test-details">
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 1: Happy Path Export Assets_happy_path_export_assets</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="rejected">
+                                No
+                            </span>
+                        </p>
+                        <p><strong>Rejection Reason:</strong> UI_CHANGE</p>
+                        <p><strong>Details:</strong> The provided test code snippet is incomplete and does not cover the implementation of all the test steps described in the scenario. Specifically, it lacks the implementation for selecting multiple assets, clicking the 'Export' button, and verifying the contents of the downloaded Excel file. Additionally, there are no assertions present in the provided code snippet to validate the expected outcomes of each step.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "user_type": "regular user",
+  "pre_conditions": "User is logged in and has permission to view and export assets. Search functionality is operational.",
+  "data_fields": {
+    "asset_name": "Name or identifier of the asset",
+    "asset_description": "A brief description of the asset",
+    "asset_type": "The category or type of asset",
+    "asset_status": "Current status of the asset (e.g., active, retired)",
+    "select_date": "The date when the asset was added or last updated"
+  },
+  "environmental_dependencies": [
+    "Database containing asset information",
+    "Functioning export service or module"
+  ],
+  "id": "2ddb100e-f05e-4e36-aaec-8220cfa7c01e",
+  "name": "kid",
+  "email": "jonesedgar@example.org",
+  "timestamp": "1976-11-14T11:45:13",
+  "base_url": "https://dev.mirrix.app/login",
+  "login_email": "lakshmi@unitofmeasure.com",
+  "login_password": "***REMOVED***"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 0.00s</p>
+        <p><strong>Error:</strong> <pre>name 'label' is not defined</pre></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 2: Edge Case: Export with No Assets Selected_edge_case_no_assets_selected</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="rejected">
+                                No
+                            </span>
+                        </p>
+                        <p><strong>Rejection Reason:</strong> UI_CHANGE</p>
+                        <p><strong>Details:</strong> The provided test code snippet is incomplete and does not fully implement the described test steps or verify the expected outcome. Specifically, the test steps outlined in the scenario involve navigating to the home page, performing a search, and attempting an export without selecting any assets to verify that a specific message is displayed. However, the provided test code does not include any actions or assertions related to these steps. It lacks the necessary commands to navigate to the search page, perform a search, click the 'Export' button without selecting assets, and verify that the correct user message is displayed.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "user_type": "regular user",
+  "pre_conditions": "User is logged in, and the system contains searchable assets.",
+  "data_fields": {
+    "search_term": "Any valid term that would return at least one asset.",
+    "asset_ids": "List of asset identifiers, if any specific assets need to be present for the test.",
+    "user_message": "The exact wording of the message expected to be displayed when no assets are selected."
+  },
+  "environmental_dependencies": [
+    "Database with searchable assets",
+    "Functioning export utility (even though it will not be triggered in this test)"
+  ],
+  "id": "f7131268-40cb-4873-804c-c1e440e32d57",
+  "name": "on",
+  "email": "serranoashley@example.net",
+  "timestamp": "2002-01-02T05:07:46",
+  "base_url": "https://dev.mirrix.app/login",
+  "login_email": "lakshmi@unitofmeasure.com",
+  "login_password": "***REMOVED***"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 0.00s</p>
+        <p><strong>Error:</strong> <pre>name 'label' is not defined</pre></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 3: Error Scenario: Export Function Fails_error_scenario_export_fails</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="rejected">
+                                No
+                            </span>
+                        </p>
+                        <p><strong>Rejection Reason:</strong> UI_CHANGE</p>
+                        <p><strong>Details:</strong> The provided test code snippet is incomplete, making it impossible to fully assess whether it implements all the steps correctly or if the assertions are aligned with the expected results. Furthermore, the test case description outlines a scenario to validate the system's behavior when an export function fails, but the test code does not include any assertions to verify that the correct error message is displayed to the user, which is a key requirement. Additionally, the test data includes sensitive information like login credentials, which is not a best practice for test data realism and security.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "user_type": "regular user",
+  "pre_conditions": "User is logged in and there are assets available to search and export.",
+  "data_fields": {
+    "asset_ids": "Unique identifiers for the assets selected for export",
+    "error_message": "The specific message displayed when the export fails due to a server error"
+  },
+  "environmental_dependencies": [
+    "Database with asset information",
+    "Export function backend service",
+    "Error handling service for capturing and displaying error messages"
+  ],
+  "id": "b395b1bc-6c2f-4e81-a70e-3ce3bfb7e3c2",
+  "name": "rock",
+  "email": "sharonscott@example.org",
+  "timestamp": "1991-03-01T17:54:19",
+  "base_url": "https://dev.mirrix.app/login",
+  "login_email": "lakshmi@unitofmeasure.com",
+  "login_password": "***REMOVED***"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 0.00s</p>
+        <p><strong>Error:</strong> <pre>name 'label' is not defined</pre></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 4: Happy Path - Finding and Linking Duplicate Assets_happy_path_duplicate_assets</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="rejected">
+                                No
+                            </span>
+                        </p>
+                        <p><strong>Rejection Reason:</strong> UI_CHANGE</p>
+                        <p><strong>Details:</strong> The provided test code snippet is incomplete and does not cover all the steps outlined in the test case scenario. Specifically, it lacks implementation for steps 2 to 5, which are crucial for validating the end-to-end process of identifying, reviewing, and linking duplicate assets. Additionally, there are no assertions present in the provided code snippet to verify the expected outcomes of each step.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "user_type": "admin, regular user with specific permissions",
+  "pre_conditions": "User account exists and is configured with necessary permissions; The system contains assets with potential duplicates for the test.",
+  "data_fields": {
+    "user_account": "An account with permissions for analytics and asset management.",
+    "asset_details": "Details of assets that could be duplicates, including identifiers, names, and any relevant metadata.",
+    "duplicate_criteria": "The criteria or attributes based on which assets are considered duplicates."
+  },
+  "environmental_dependencies": [
+    "A database or asset repository where assets are stored.",
+    "Access to the vectorisation query service or tool."
+  ],
+  "id": "fedd70d7-e562-4564-b0cc-1547f845566d",
+  "name": "pull",
+  "email": "robertpacheco@example.org",
+  "timestamp": "1984-07-29T00:25:22",
+  "base_url": "https://dev.mirrix.app/login",
+  "login_email": "lakshmi@unitofmeasure.com",
+  "login_password": "***REMOVED***"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 0.00s</p>
+        <p><strong>Error:</strong> <pre>name 'label' is not defined</pre></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 5: Edge Case - No Duplicate Assets Found_edge_case_no_duplicates</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="rejected">
+                                No
+                            </span>
+                        </p>
+                        <p><strong>Rejection Reason:</strong> UI_CHANGE</p>
+                        <p><strong>Details:</strong> The provided test code does not fully implement the described test steps, lacks assertions to verify the expected outcomes, and does not include error handling or teardown procedures.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "user_type": "regular user",
+  "pre_conditions": "User is logged in and has access to the Analytics tab. A dataset known to have no duplicates is available for testing.",
+  "data_fields": {
+    "dataset_id": "Unique identifier for the dataset to be tested",
+    "user_id": "Identifier for the user triggering the process",
+    "process_status": "Expected status messages, including success and types of failure messages"
+  },
+  "environmental_dependencies": [
+    "Database containing the datasets",
+    "Duplicate detection service must be operational"
+  ],
+  "id": "b0f55605-c5af-428a-a1bc-700d87e7d04b",
+  "name": "themselves",
+  "email": "jack31@example.org",
+  "timestamp": "1992-10-04T14:58:56",
+  "base_url": "https://dev.mirrix.app/login",
+  "login_email": "lakshmi@unitofmeasure.com",
+  "login_password": "***REMOVED***"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 0.00s</p>
+        <p><strong>Error:</strong> <pre>name 'label' is not defined</pre></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 6: Error Scenario - System Fails to Process Query_error_scenario_query_failure</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="rejected">
+                                No
+                            </span>
+                        </p>
+                        <p><strong>Rejection Reason:</strong> UI_CHANGE</p>
+                        <p><strong>Details:</strong> The provided test code snippet does not fully implement the described test steps nor does it include assertions to validate the expected outcomes. Specifically, the test case description outlines a scenario where a vectorisation query fails, and the system should display an error message with suggested actions. However, the test code does not contain steps to simulate the query failure, nor does it include assertions to check for the presence and correctness of the error message and suggested actions.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "user_type": "regular user, admin",
+  "pre_conditions": "User is logged in and has access to the Analytics tab. A valid dataset is available for the vectorisation query process.",
+  "data_fields": {
+    "dataset_criteria": "description of the valid dataset criteria for the vectorisation process",
+    "error_message_content": "specific text or structure of the error message to be displayed",
+    "suggested_actions": "list of actions or checks suggested to the user in case of a failure"
+  },
+  "environmental_dependencies": [
+    "Database containing datasets",
+    "Analytics processing service"
+  ],
+  "id": "32e32e60-daaa-4051-b50a-8fffca22f417",
+  "name": "protect",
+  "email": "jason68@example.org",
+  "timestamp": "1978-05-21T05:28:17",
+  "base_url": "https://dev.mirrix.app/login",
+  "login_email": "lakshmi@unitofmeasure.com",
+  "login_password": "***REMOVED***"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 0.00s</p>
+        <p><strong>Error:</strong> <pre>name 'label' is not defined</pre></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 7: Happy Path Password Reset_happy_path_password_reset</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="rejected">
+                                No
+                            </span>
+                        </p>
+                        <p><strong>Rejection Reason:</strong> UI_CHANGE</p>
+                        <p><strong>Details:</strong> The provided test code snippet does not fully implement the described test steps, lacks assertions to validate the expected outcomes, and does not cover the complete flow of resetting a password as per the requirements.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "user_type": "regular user",
+  "pre_conditions": "User is logged in and has navigated to the settings menu.",
+  "data_fields": {
+    "current_password": "The user's current valid password",
+    "new_password": "A new password that meets the system's complexity requirements",
+    "invalid_current_password": "A password that does not match the user's current password",
+    "invalid_new_password": "A new password that fails to meet the system's complexity requirements",
+    "same_as_current_password": "A new password that is the same as the current password"
+  },
+  "environmental_dependencies": [
+    "Database access for retrieving and updating the user's password",
+    "Password validation service for checking password complexity and history"
+  ],
+  "id": "9ac45cb4-0052-4f96-8ab8-2356e25ffb42",
+  "name": "manage",
+  "email": "ryan26@example.net",
+  "timestamp": "1971-10-16T04:04:57",
+  "base_url": "https://dev.mirrix.app/login",
+  "login_email": "lakshmi@unitofmeasure.com",
+  "login_password": "***REMOVED***"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 0.00s</p>
+        <p><strong>Error:</strong> <pre>name 'label' is not defined</pre></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 8: Edge Case: Password Reset with Weak Password_edge_case_weak_password</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="rejected">
+                                No
+                            </span>
+                        </p>
+                        <p><strong>Rejection Reason:</strong> UI_CHANGE</p>
+                        <p><strong>Details:</strong> The provided test code snippet does not fully implement the described test steps, lacks assertions to validate the expected outcomes, and does not include the actual interaction with the password reset form as described in the test steps. Furthermore, the test data provided, while realistic, is not utilized in the given code snippet, indicating an incomplete implementation.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "user_type": "regular user",
+  "pre_conditions": "User must be logged in and navigate to the settings menu to access password reset option.",
+  "data_fields": {
+    "current_password": "User's current password",
+    "new_password_weak": "A deliberately weak new password, e.g., 'password'",
+    "new_password_strong": "A strong new password meeting all predefined criteria"
+  },
+  "environmental_dependencies": [
+    "User account system",
+    "Password strength validation service (if applicable)"
+  ],
+  "id": "e526d95e-b212-403b-964a-48ec7a080872",
+  "name": "radio",
+  "email": "reedwilliam@example.org",
+  "timestamp": "1973-06-29T06:53:43",
+  "base_url": "https://dev.mirrix.app/login",
+  "login_email": "lakshmi@unitofmeasure.com",
+  "login_password": "***REMOVED***"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 0.00s</p>
+        <p><strong>Error:</strong> <pre>name 'label' is not defined</pre></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 9: Error Scenario: Incorrect Current Password_error_scenario_incorrect_current_password</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="rejected">
+                                No
+                            </span>
+                        </p>
+                        <p><strong>Rejection Reason:</strong> UI_CHANGE</p>
+                        <p><strong>Details:</strong> The provided test code does not fully implement the described test steps nor does it contain assertions to validate the expected outcome of the test scenario. Additionally, the error handling and screenshot capture mechanism on test failure is incorrectly implemented.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "user_type": "regular user",
+  "pre_conditions": "User account is already created and user is logged in or has access to the password reset option.",
+  "data_fields": {
+    "current_password": "The incorrect password entered by the user for the test.",
+    "new_password": "A new password that meets the system's security requirements."
+  },
+  "environmental_dependencies": [
+    "Database or user management system to validate current password against.",
+    "Secure connection for submitting password reset form to prevent information leakage."
+  ],
+  "id": "5ed02832-1e03-4584-a855-512fbab986bd",
+  "name": "well",
+  "email": "erin47@example.com",
+  "timestamp": "1988-07-04T21:56:30",
+  "base_url": "https://dev.mirrix.app/login",
+  "login_email": "lakshmi@unitofmeasure.com",
+  "login_password": "***REMOVED***"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 0.00s</p>
+        <p><strong>Error:</strong> <pre>name 'label' is not defined</pre></p></div>
+                </div>
+            </div>
+            </div>
+            
+            <div class="rejection-section"><h2>Rejection Details</h2>
+            <div class="rejection-item">
+                <h3>Happy Path Export Assets_happy_path_export_assets</h3>
+                <div class="rejection-reason">
+                    <p><strong>Primary Reason:</strong> UI_CHANGE</p>
+                    <p><strong>Details:</strong> The provided test code snippet is incomplete and does not cover the implementation of all the test steps described in the scenario. Specifically, it lacks the implementation for selecting multiple assets, clicking the 'Export' button, and verifying the contents of the downloaded Excel file. Additionally, there are no assertions present in the provided code snippet to validate the expected outcomes of each step.</p>
+                </div>
+                
+                <div class="rejection-history">
+                    <h4>Rejection History</h4>
+                    <ul>
+            <li>
+                Attempt 1: RejectionReason.UI_CHANGE
+                <br><small>The provided test code snippet is incomplete and does not cover the implementation of all the test steps described in the scenario. Specifically, it lacks the implementation for selecting multiple assets, clicking the 'Export' button, and verifying the contents of the downloaded Excel file. Additionally, there are no assertions present in the provided code snippet to validate the expected outcomes of each step.</small>
+            </li>
+            </ul>
+                </div>
+                
+                <div class="improvement-suggestions">
+                    <h4>Improvement Suggestions</h4>
+                    <p>1. Complete the test code by implementing the missing steps: selecting multiple assets, initiating the export, and verifying the downloaded Excel file's contents. This can be achieved by using Selenium's actions for interacting with web elements and a library like Pandas or OpenPyXL for reading and validating Excel file contents.
+2. Include assertions after each major action to validate that the application's state aligns with the expected outcomes. For example, after selecting assets, assert that they are indeed marked as selected; after the export, assert that the file download is initiated and the file exists in the download directory.
+3. Enhance error handling by incorporating more specific exceptions for each step of the process. This could involve catching exceptions related to file operations, timeouts during web interactions, and errors reading the Excel file.
+4. Ensure the test data, especially user credentials and asset details, are realistic and reflect typical use cases. Additionally, consider parameterizing the test to run with different sets of assets and user roles to cover more scenarios.
+5. Address potential flakiness by adding explicit waits or retries for operations that depend on network latency or asynchronous processing, such as file downloads or search result rendering. This could help make the test more reliable across different environments.</p>
+                </div>
+            </div>
+            
+            <div class="rejection-item">
+                <h3>Edge Case: Export with No Assets Selected_edge_case_no_assets_selected</h3>
+                <div class="rejection-reason">
+                    <p><strong>Primary Reason:</strong> UI_CHANGE</p>
+                    <p><strong>Details:</strong> The provided test code snippet is incomplete and does not fully implement the described test steps or verify the expected outcome. Specifically, the test steps outlined in the scenario involve navigating to the home page, performing a search, and attempting an export without selecting any assets to verify that a specific message is displayed. However, the provided test code does not include any actions or assertions related to these steps. It lacks the necessary commands to navigate to the search page, perform a search, click the 'Export' button without selecting assets, and verify that the correct user message is displayed.</p>
+                </div>
+                
+                <div class="rejection-history">
+                    <h4>Rejection History</h4>
+                    <ul>
+            <li>
+                Attempt 1: RejectionReason.UI_CHANGE
+                <br><small>The provided test code snippet is incomplete and does not fully implement the described test steps or verify the expected outcome. Specifically, the test steps outlined in the scenario involve navigating to the home page, performing a search, and attempting an export without selecting any assets to verify that a specific message is displayed. However, the provided test code does not include any actions or assertions related to these steps. It lacks the necessary commands to navigate to the search page, perform a search, click the 'Export' button without selecting assets, and verify that the correct user message is displayed.</small>
+            </li>
+            </ul>
+                </div>
+                
+                <div class="improvement-suggestions">
+                    <h4>Improvement Suggestions</h4>
+                    <p>1. Complete the test code to include navigation to the home page and performing a search as described in the test steps. Use Selenium's WebDriver to navigate and interact with the web elements.
+2. Implement a step to click the 'Export' button without selecting any assets. This can be done by locating the 'Export' button using Selenium's By locator and clicking it.
+3. Add an assertion to verify that the correct message is displayed to the user when attempting to export without selecting any assets. This can be achieved by waiting for the message element to be visible using WebDriverWait and then asserting its text content.
+4. Ensure realistic test data is used, particularly for the 'user_message' field in the test data. This field should contain the exact wording of the message expected to be displayed, which must be verified by the test.
+5. Consider adding error handling for scenarios where elements are not found or actions cannot be completed as expected. This can include using try-except blocks to catch NoSuchElementException or TimeoutException.
+6. Review and remove any hardcoded values, such as BASE_URL, LOGIN_EMAIL, and LOGIN_PASSWORD, from the test code. Instead, use a configuration file or environment variables to manage these values securely and make the test more flexible.</p>
+                </div>
+            </div>
+            
+            <div class="rejection-item">
+                <h3>Error Scenario: Export Function Fails_error_scenario_export_fails</h3>
+                <div class="rejection-reason">
+                    <p><strong>Primary Reason:</strong> UI_CHANGE</p>
+                    <p><strong>Details:</strong> The provided test code snippet is incomplete, making it impossible to fully assess whether it implements all the steps correctly or if the assertions are aligned with the expected results. Furthermore, the test case description outlines a scenario to validate the system's behavior when an export function fails, but the test code does not include any assertions to verify that the correct error message is displayed to the user, which is a key requirement. Additionally, the test data includes sensitive information like login credentials, which is not a best practice for test data realism and security.</p>
+                </div>
+                
+                <div class="rejection-history">
+                    <h4>Rejection History</h4>
+                    <ul>
+            <li>
+                Attempt 1: RejectionReason.UI_CHANGE
+                <br><small>The provided test code snippet is incomplete, making it impossible to fully assess whether it implements all the steps correctly or if the assertions are aligned with the expected results. Furthermore, the test case description outlines a scenario to validate the system's behavior when an export function fails, but the test code does not include any assertions to verify that the correct error message is displayed to the user, which is a key requirement. Additionally, the test data includes sensitive information like login credentials, which is not a best practice for test data realism and security.</small>
+            </li>
+            </ul>
+                </div>
+                
+                <div class="improvement-suggestions">
+                    <h4>Improvement Suggestions</h4>
+                    <p>1. Complete the test code to include setup for logging in and performing the required actions leading up to the export attempt. This should include navigating to the home page, performing a search, selecting multiple assets, and clicking the 'Export' button.
+2. Implement assertions to verify that the correct error message is displayed when the export fails. This is crucial for aligning with the test case requirements.
+3. Remove sensitive information such as login credentials from the test data. Instead, use environment variables or a secure vault for managing sensitive data.
+4. Add error handling within the test to catch and report any unexpected failures, ensuring the test can gracefully handle situations where elements are not found or the server does not respond as expected.
+5. Consider adding setup and teardown methods to handle pre-conditions and clean up after tests, ensuring tests do not depend on the state from previous tests and reducing potential flakiness.
+6. Ensure that the test data is realistic and reflects the types of assets and error messages that would be encountered in a live environment.</p>
+                </div>
+            </div>
+            
+            <div class="rejection-item">
+                <h3>Happy Path - Finding and Linking Duplicate Assets_happy_path_duplicate_assets</h3>
+                <div class="rejection-reason">
+                    <p><strong>Primary Reason:</strong> UI_CHANGE</p>
+                    <p><strong>Details:</strong> The provided test code snippet is incomplete and does not cover all the steps outlined in the test case scenario. Specifically, it lacks implementation for steps 2 to 5, which are crucial for validating the end-to-end process of identifying, reviewing, and linking duplicate assets. Additionally, there are no assertions present in the provided code snippet to verify the expected outcomes of each step.</p>
+                </div>
+                
+                <div class="rejection-history">
+                    <h4>Rejection History</h4>
+                    <ul>
+            <li>
+                Attempt 1: RejectionReason.UI_CHANGE
+                <br><small>The provided test code snippet is incomplete and does not cover all the steps outlined in the test case scenario. Specifically, it lacks implementation for steps 2 to 5, which are crucial for validating the end-to-end process of identifying, reviewing, and linking duplicate assets. Additionally, there are no assertions present in the provided code snippet to verify the expected outcomes of each step.</small>
+            </li>
+            </ul>
+                </div>
+                
+                <div class="improvement-suggestions">
+                    <h4>Improvement Suggestions</h4>
+                    <p>1. Complete the test code by implementing the missing steps (2 to 5) to ensure the test case validates the entire process as described in the scenario. This includes navigating to the Analytics tab, triggering the vectorisation query, reviewing and confirming the linking of duplicate assets, and verifying the report on linked duplicates is correctly displayed.
+2. Add assertions after each critical action to validate that the expected outcomes are achieved. For example, after logging in, assert that the Analytics tab is accessible; after triggering the vectorisation query, assert that the system finds duplicate assets; and after linking duplicates, assert that the widget displays the correct report.
+3. Ensure realistic test data is used, particularly for 'asset_details' and 'duplicate_criteria', to closely mimic real-world scenarios and improve the reliability of the test.
+4. Incorporate error handling for each step where applicable, such as timeouts or failed navigations, to increase the robustness of the test.
+5. Consider potential flakiness issues, such as dynamic content loading or network latency, and implement strategies to mitigate these, such as using WebDriverWait for elements that may take time to appear.
+6. Follow best practices for Selenium tests, including but not limited to, using Page Object Model (POM) for better maintainability, readability, and reusability of the code.</p>
+                </div>
+            </div>
+            
+            <div class="rejection-item">
+                <h3>Edge Case - No Duplicate Assets Found_edge_case_no_duplicates</h3>
+                <div class="rejection-reason">
+                    <p><strong>Primary Reason:</strong> UI_CHANGE</p>
+                    <p><strong>Details:</strong> The provided test code does not fully implement the described test steps, lacks assertions to verify the expected outcomes, and does not include error handling or teardown procedures.</p>
+                </div>
+                
+                <div class="rejection-history">
+                    <h4>Rejection History</h4>
+                    <ul>
+            <li>
+                Attempt 1: RejectionReason.UI_CHANGE
+                <br><small>The provided test code does not fully implement the described test steps, lacks assertions to verify the expected outcomes, and does not include error handling or teardown procedures.</small>
+            </li>
+            </ul>
+                </div>
+                
+                <div class="improvement-suggestions">
+                    <h4>Improvement Suggestions</h4>
+                    <p>Implement the missing test steps in the code. Specifically, add code to navigate to the Analytics tab after logging in, trigger the vectorisation query process, and check for notifications or messages about the outcome.
+Include assertions to verify that the Analytics tab is displayed after logging in, the vectorisation query process completes successfully, and the correct message is displayed to the user indicating no duplicate assets were found. This ensures that the test case aligns with the requirements and that the expected results are validated.
+Add realistic test data for the dataset_id, user_id, and process_status fields to ensure the test is meaningful and can be executed in a real-world scenario. The current test data does not provide specific values for these fields.
+Consider potential flakiness issues, such as network delays or asynchronous processing of the vectorisation query. Implement appropriate wait or retry mechanisms to ensure the test is reliable.
+Incorporate error handling to manage situations where elements are not found within the expected time frame, such as using try-except blocks around critical steps that may fail.
+Include teardown code to log out the user or reset the application state after the test completes. This is important for maintaining test isolation and ensuring that subsequent tests start with a clean state.
+Follow best practices for test automation, such as using descriptive variable names, avoiding hard-coded values (e.g., login credentials) by externalizing them into configuration files or environment variables, and organizing test data logically.</p>
+                </div>
+            </div>
+            
+            <div class="rejection-item">
+                <h3>Error Scenario - System Fails to Process Query_error_scenario_query_failure</h3>
+                <div class="rejection-reason">
+                    <p><strong>Primary Reason:</strong> UI_CHANGE</p>
+                    <p><strong>Details:</strong> The provided test code snippet does not fully implement the described test steps nor does it include assertions to validate the expected outcomes. Specifically, the test case description outlines a scenario where a vectorisation query fails, and the system should display an error message with suggested actions. However, the test code does not contain steps to simulate the query failure, nor does it include assertions to check for the presence and correctness of the error message and suggested actions.</p>
+                </div>
+                
+                <div class="rejection-history">
+                    <h4>Rejection History</h4>
+                    <ul>
+            <li>
+                Attempt 1: RejectionReason.UI_CHANGE
+                <br><small>The provided test code snippet does not fully implement the described test steps nor does it include assertions to validate the expected outcomes. Specifically, the test case description outlines a scenario where a vectorisation query fails, and the system should display an error message with suggested actions. However, the test code does not contain steps to simulate the query failure, nor does it include assertions to check for the presence and correctness of the error message and suggested actions.</small>
+            </li>
+            </ul>
+                </div>
+                
+                <div class="improvement-suggestions">
+                    <h4>Improvement Suggestions</h4>
+                    <p>Include a step in the test code to simulate the failure of the vectorisation query. This could involve setting up the test environment or test data in such a way that the query is guaranteed to fail.
+Add assertions to verify that the error message is displayed to the user upon query failure. The assertions should check that the error message matches the expected content as per the requirements.
+Ensure that the test also verifies the presence and correctness of the suggested actions or checks provided to the user along with the error message. This could involve checking the text of the suggestions against a predefined list of expected actions.
+The test data should be reviewed and updated to ensure it includes specific details required for the test, such as the 'description of the valid dataset criteria for the vectorisation process' and the 'specific text or structure of the error message to be displayed'. This will help in making the test more realistic and aligned with the requirements.
+Consider implementing error handling within the test to deal with unexpected failures or timeouts. This could involve using try-catch blocks or adding timeouts for waiting for certain elements, which can help in making the test more robust and reduce flakiness.
+Follow best practices for UI testing, such as using explicit waits instead of implicit waits to ensure that the test is stable and does not suffer from timing issues. Also, ensure that selectors used for elements are accurate and reflect the current state of the UI.</p>
+                </div>
+            </div>
+            
+            <div class="rejection-item">
+                <h3>Happy Path Password Reset_happy_path_password_reset</h3>
+                <div class="rejection-reason">
+                    <p><strong>Primary Reason:</strong> UI_CHANGE</p>
+                    <p><strong>Details:</strong> The provided test code snippet does not fully implement the described test steps, lacks assertions to validate the expected outcomes, and does not cover the complete flow of resetting a password as per the requirements.</p>
+                </div>
+                
+                <div class="rejection-history">
+                    <h4>Rejection History</h4>
+                    <ul>
+            <li>
+                Attempt 1: RejectionReason.UI_CHANGE
+                <br><small>The provided test code snippet does not fully implement the described test steps, lacks assertions to validate the expected outcomes, and does not cover the complete flow of resetting a password as per the requirements.</small>
+            </li>
+            </ul>
+                </div>
+                
+                <div class="improvement-suggestions">
+                    <h4>Improvement Suggestions</h4>
+                    <p>1. Complete the Implementation: The test code snippet ends abruptly without implementing the login fixture or the steps to navigate to the settings menu, select the 'Reset Password' option, enter the current and new passwords, and submit the form. This part of the code needs to be completed to cover the full test scenario.
+2. Add Assertions: The test lacks assertions to verify that each step's expected outcome occurs, such as verifying the settings menu's presence, the display of the password reset form, the acceptance of the new password, and the display of a success message. Assertions are crucial for validating the test's success criteria.
+3. Realistic Test Data: Ensure the test data, especially passwords, reflect realistic scenarios and complexity requirements as defined by the system. This includes testing with various password strengths and scenarios (e.g., invalid current password, new password same as current).
+4. Handle Potential Flakiness: Introduce explicit waits or checks to ensure that elements are present and interactable before performing actions on them. This reduces the risk of flakiness in tests due to elements not being loaded in time.
+5. Adequate Error Handling: Implement try-catch blocks or equivalent error handling around actions that might fail due to unexpected application behavior or environmental issues. This will make the test more robust and provide clearer failure messages.
+6. Follow Best Practices: Ensure the test code follows best practices for readability, maintainability, and efficiency. This includes using descriptive variable names, modularizing the test into smaller functions or methods where appropriate, and avoiding hard-coded values (e.g., URLs and credentials) directly in the test code.</p>
+                </div>
+            </div>
+            
+            <div class="rejection-item">
+                <h3>Edge Case: Password Reset with Weak Password_edge_case_weak_password</h3>
+                <div class="rejection-reason">
+                    <p><strong>Primary Reason:</strong> UI_CHANGE</p>
+                    <p><strong>Details:</strong> The provided test code snippet does not fully implement the described test steps, lacks assertions to validate the expected outcomes, and does not include the actual interaction with the password reset form as described in the test steps. Furthermore, the test data provided, while realistic, is not utilized in the given code snippet, indicating an incomplete implementation.</p>
+                </div>
+                
+                <div class="rejection-history">
+                    <h4>Rejection History</h4>
+                    <ul>
+            <li>
+                Attempt 1: RejectionReason.UI_CHANGE
+                <br><small>The provided test code snippet does not fully implement the described test steps, lacks assertions to validate the expected outcomes, and does not include the actual interaction with the password reset form as described in the test steps. Furthermore, the test data provided, while realistic, is not utilized in the given code snippet, indicating an incomplete implementation.</small>
+            </li>
+            </ul>
+                </div>
+                
+                <div class="improvement-suggestions">
+                    <h4>Improvement Suggestions</h4>
+                    <p>1. Implement the missing steps in the test code, specifically the interaction with the password reset form, including entering the current and new weak passwords, and submitting the form. 2. Add assertions to verify that the form indeed highlights the new password as too weak and prompts for a stronger password. This could involve checking for specific elements' presence or text content that indicates the password's weakness. 3. Utilize the provided test data within the test code, ensuring that the 'current_password' and 'new_password_weak' fields are used when interacting with the form. 4. Consider adding error handling for scenarios where elements related to the password reset process might not be found or when the form submission does not result in the expected outcome. 5. To address potential flakiness, ensure that waits are appropriately used before assertions to allow for any asynchronous processes to complete. This might involve waiting for specific elements to become visible or for text to appear that indicates the password's weakness.</p>
+                </div>
+            </div>
+            
+            <div class="rejection-item">
+                <h3>Error Scenario: Incorrect Current Password_error_scenario_incorrect_current_password</h3>
+                <div class="rejection-reason">
+                    <p><strong>Primary Reason:</strong> UI_CHANGE</p>
+                    <p><strong>Details:</strong> The provided test code does not fully implement the described test steps nor does it contain assertions to validate the expected outcome of the test scenario. Additionally, the error handling and screenshot capture mechanism on test failure is incorrectly implemented.</p>
+                </div>
+                
+                <div class="rejection-history">
+                    <h4>Rejection History</h4>
+                    <ul>
+            <li>
+                Attempt 1: RejectionReason.UI_CHANGE
+                <br><small>The provided test code does not fully implement the described test steps nor does it contain assertions to validate the expected outcome of the test scenario. Additionally, the error handling and screenshot capture mechanism on test failure is incorrectly implemented.</small>
+            </li>
+            </ul>
+                </div>
+                
+                <div class="improvement-suggestions">
+                    <h4>Improvement Suggestions</h4>
+                    <p>1. The test case steps require the user to navigate to the password reset option and submit a form with an incorrect current password and a new valid password. The provided code only navigates to the base URL but does not implement steps to interact with the UI elements for the password reset functionality.
+2. Assertions are missing to validate that the error message is displayed when an incorrect current password is submitted. After submitting the form, there should be an assertion to check the presence of the error message element and its text to ensure the system behaves as expected.
+3. The test data provided is appropriate, but the test code does not demonstrate how to use this data, especially the incorrect current password and the new valid password. Implementing parameterization to use this test data within the test would make the test more robust.
+4. The error handling mechanism for taking a screenshot on failure is incomplete and syntactically incorrect. The 'if pytest.raises(Exception):' statement will not work as intended. Instead, use pytest hooks like 'pytest_exception_interact' to handle exceptions and take screenshots.
+5. To reduce potential flakiness, ensure that the test waits for elements to be visible or interactable before attempting actions on them. This can be achieved through explicit waits, such as WebDriverWait for specific conditions like the visibility of elements or the presence of specific error messages.
+6. Best practices suggest separating test setup, actions, assertions, and teardown phases clearly within the test code. Use fixtures for setup and teardown phases, and keep the test actions and assertions within the test function itself.</p>
+                </div>
+            </div>
+            </div>
+            
+            <div class="logs-section"><h2>Execution Logs</h2></div>
+        </div>
+        
+        <footer>
+            <p>Report generated by QA Testing Agent</p>
+        </footer>
+    </div>
+</body>
+</html>

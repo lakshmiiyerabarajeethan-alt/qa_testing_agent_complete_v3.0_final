@@ -88,9 +88,8 @@ class QATestingPipeline:
         
         # Phase 4: Save to Excel
         logger.info("\n[Phase 4] Saving test cases to Excel...")
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         excel_path = self.excel_writer.write_test_cases(
-            test_cases, f"devops_tests_{timestamp}.xlsx"
+            test_cases, "devops_tests.xlsx"
         )
         
         # Phase 5: MANUAL APPROVAL (NEW)
@@ -101,7 +100,7 @@ class QATestingPipeline:
         approved, decision = workflow.start_approval_workflow(test_cases, len(stories))
         
         if not approved:
-            logger.info(f"\n⏸️  Workflow paused for: {decision}")
+            logger.info(f"\nWorkflow paused for: {decision}")
             logger.info("\nNext steps:")
             
             if decision == "MANUAL_REVIEW_REQUESTED":
@@ -130,7 +129,13 @@ class QATestingPipeline:
             if review.is_approved
         ]
         
-        logger.info(f"{len(approved_tests)}/{len(test_results)} tests approved for execution")
+        if settings.EXECUTE_REJECTED_TESTS:
+            approved_tests = [gen_test for gen_test, _, _ in test_results]
+        
+        if settings.EXECUTE_REJECTED_TESTS:
+            logger.info(f"Executing all {len(approved_tests)} tests (including rejected)")
+        else:
+            logger.info(f"{len(approved_tests)}/{len(test_results)} tests approved for execution")
         
         logger.info("\n[Phase 7] Executing approved tests...")
         execution_results = []
@@ -138,7 +143,7 @@ class QATestingPipeline:
             execution_results = self.executor.execute_batch(approved_tests)
         
         logger.info("\n[Phase 8] Generating final report...")
-        suite_id = f"devops_suite_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        suite_id = "devops_suite_latest"
         report_path = self.report_generator.generate_report(
             test_results, execution_results, suite_id
         )
@@ -184,7 +189,7 @@ class QATestingPipeline:
             execution_results = self.executor.execute_batch(approved_tests)
         
         logger.info("\n[Phase 4] Generating report...")
-        suite_id = f"qa_suite_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        suite_id = "qa_suite_latest"
         report_path = self.report_generator.generate_report(
             test_results, execution_results, suite_id
         )

@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-02-13T12:05:12.793724",
+  "stories_processed": 3,
+  "total_test_cases": 9,
+  "total_scenarios": 9,
+  "total_steps": 29,
+  "scenarios": {
+    "Happy Path - Export Selected Assets": {
+      "test_cases": [
+        {
+          "name": "export_selected_assets_success",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Edge Case - Export With No Assets Selected": {
+      "test_cases": [
+        {
+          "name": "export_no_assets_selected",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Error Scenario - Export Function Fails": {
+      "test_cases": [
+        {
+          "name": "export_function_failure",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path - Duplicate Assets Identification and Reporting": {
+      "test_cases": [
+        {
+          "name": "happy_path_duplicate_assets_identification",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case - No Duplicate Assets Found": {
+      "test_cases": [
+        {
+          "name": "edge_case_no_duplicates_found",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario - Failed to Execute Vectorisation Query": {
+      "test_cases": [
+        {
+          "name": "error_scenario_query_execution_failure",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path Password Reset": {
+      "test_cases": [
+        {
+          "name": "happy_path_password_reset",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Edge Case: Password Reset with Unregistered Email": {
+      "test_cases": [
+        {
+          "name": "edge_case_unregistered_email",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Error Scenario: Server Error During Password Reset": {
+      "test_cases": [
+        {
+          "name": "error_scenario_server_error",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests_20260213_120512.xlsx"
+}

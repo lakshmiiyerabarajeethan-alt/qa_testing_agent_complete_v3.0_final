@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-02-13T12:29:20.739144",
+  "stories_processed": 3,
+  "total_test_cases": 10,
+  "total_scenarios": 10,
+  "total_steps": 37,
+  "scenarios": {
+    "Happy Path Export Assets": {
+      "test_cases": [
+        {
+          "name": "export_assets_happy_path",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case: Export with No Assets Selected": {
+      "test_cases": [
+        {
+          "name": "export_no_assets_selected",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Error Scenario: Export Function Fails": {
+      "test_cases": [
+        {
+          "name": "export_function_failure",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Data Integrity: Exported Assets Verification": {
+      "test_cases": [
+        {
+          "name": "exported_assets_data_verification",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Happy Path - Find and Link Duplicate Assets": {
+      "test_cases": [
+        {
+          "name": "find_duplicate_assets_happy_path",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Edge Case - No Duplicate Assets Found": {
+      "test_cases": [
+        {
+          "name": "no_duplicate_assets_edge_case",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario - Vectorisation Query Fails": {
+      "test_cases": [
+        {
+          "name": "vectorisation_query_failure",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path - Password Reset": {
+      "test_cases": [
+        {
+          "name": "CSV-3_password_reset_happy_path",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case - Password Reset Without Matching Confirmation": {
+      "test_cases": [
+        {
+          "name": "CSV-3_password_reset_non_matching_confirmation",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Error Scenario - Password Reset Attempt With Weak Password": {
+      "test_cases": [
+        {
+          "name": "CSV-3_password_reset_weak_password",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

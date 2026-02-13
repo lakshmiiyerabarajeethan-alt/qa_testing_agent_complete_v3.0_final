@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-02-13T11:47:20.786551",
+  "stories_processed": 3,
+  "total_test_cases": 9,
+  "total_scenarios": 9,
+  "total_steps": 33,
+  "scenarios": {
+    "Happy Path Export Assets": {
+      "test_cases": [
+        {
+          "name": "export_assets_happy_path",
+          "steps": 6
+        }
+      ],
+      "step_count": 6
+    },
+    "Edge Case: Export with No Assets Selected": {
+      "test_cases": [
+        {
+          "name": "export_no_assets_selected",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Error Scenario: Export Function Failure": {
+      "test_cases": [
+        {
+          "name": "export_function_failure",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Happy Path - Find and Link Duplicate Assets": {
+      "test_cases": [
+        {
+          "name": "happy_path_find_and_link_duplicates",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Edge Case - No Duplicate Assets Found": {
+      "test_cases": [
+        {
+          "name": "edge_case_no_duplicates",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Error Scenario - System Timeout/Error During Duplicate Search": {
+      "test_cases": [
+        {
+          "name": "error_scenario_system_timeout",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path Password Reset": {
+      "test_cases": [
+        {
+          "name": "happy_path_password_reset",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Edge Case: Password Reset with Weak New Password": {
+      "test_cases": [
+        {
+          "name": "edge_case_weak_new_password",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Error Scenario: Incorrect Current Password": {
+      "test_cases": [
+        {
+          "name": "error_scenario_incorrect_current_password",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests_20260213_114720.xlsx"
+}

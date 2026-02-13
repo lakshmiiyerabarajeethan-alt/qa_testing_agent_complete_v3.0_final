@@ -5,6 +5,7 @@ Supports stories from CSV, Azure DevOps, Jira, Linear, or any source
 """
 import json
 import logging
+import re
 from typing import List, Union
 from openai import OpenAI
 from models import TestCase, TestStep
@@ -26,6 +27,27 @@ class TestCaseGeneratorAgent:
     def __init__(self):
         self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
         self.model = settings.OPENAI_MODEL
+
+    def _ensure_story_id(self, story, idx: int = None) -> None:
+        """
+        Ensure the story has an id attribute for downstream logging and metadata.
+        For CSV or generic stories that lack an id, create a stable fallback.
+        """
+        if getattr(story, "id", None):
+            return
+
+        if idx is not None:
+            fallback_id = f"CSV-{idx}"
+        elif getattr(story, "title", None):
+            fallback_id = f"CSV-{abs(hash(story.title)) % 100000}"
+        else:
+            fallback_id = "CSV-UNKNOWN"
+
+        try:
+            story.id = fallback_id
+        except Exception:
+            # If the story object is immutable, we just skip setting it.
+            pass
     
     def generate_test_cases_from_story(self, story) -> List[TestCase]:
         """
@@ -37,6 +59,7 @@ class TestCaseGeneratorAgent:
         Returns:
             List of TestCase objects
         """
+        self._ensure_story_id(story)
         logger.info(f"Generating test cases from story: {story.title}")
         
         prompt = self._build_prompt(story)
@@ -62,8 +85,12 @@ class TestCaseGeneratorAgent:
                 max_tokens=3000
             )
             
-            result_text = response.choices[0].message.content
-            result_json = json.loads(result_text)
+            result_text = response.choices[0].message.content or ""
+            result_json = self._safe_parse_json(result_text)
+            if result_json is None:
+                logger.error("Failed to parse JSON response: empty or invalid content")
+                logger.debug(f"Raw model response (first 500 chars): {result_text[:500]}")
+                return self._create_default_test_case(story)
             
             test_cases = self._parse_test_cases(result_json, story)
             
@@ -72,7 +99,7 @@ class TestCaseGeneratorAgent:
             
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse JSON response: {str(e)}")
-            # Return a basic test case if parsing fails
+            logger.debug(f"Raw model response (first 500 chars): {result_text[:500]}")
             return self._create_default_test_case(story)
         except Exception as e:
             logger.error(f"Error generating test cases: {str(e)}")
@@ -91,6 +118,7 @@ class TestCaseGeneratorAgent:
         all_test_cases = []
         
         for idx, story in enumerate(stories, 1):
+            self._ensure_story_id(story, idx=idx)
             logger.info(f"\n[{idx}/{len(stories)}] Processing story: {story.title}")
             
             try:
@@ -131,6 +159,8 @@ Please generate comprehensive test cases that:
 3. Test error conditions
 4. Validate user interactions
 5. Check data validation
+6. Include categories: Functional, Data Integrity, Permissions/Security, Boundary/Volume,
+   Error Handling, Performance, UX/Accessibility
 
 Return ONLY a JSON array with the following structure:
 [
@@ -163,6 +193,36 @@ Generate AT LEAST 3 test cases (happy path + edge cases + error scenario).
 Each test case should have 3-8 steps minimum.
 """
         return prompt
+
+    def _safe_parse_json(self, text: str):
+        """
+        Attempt to parse a JSON array from model output.
+        Accepts raw JSON or JSON wrapped in code fences/text.
+        """
+        if not text:
+            return None
+
+        cleaned = text.strip()
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", cleaned, flags=re.IGNORECASE | re.MULTILINE).strip()
+
+        # Direct parse attempt
+        try:
+            return json.loads(cleaned)
+        except json.JSONDecodeError:
+            pass
+
+        # Extract first JSON array from the response
+        start = cleaned.find("[")
+        end = cleaned.rfind("]")
+        if start == -1 or end == -1 or end <= start:
+            return None
+
+        snippet = cleaned[start:end + 1]
+        try:
+            return json.loads(snippet)
+        except json.JSONDecodeError:
+            return None
     
     def _parse_test_cases(self, json_data: list, story: AzureDevOpsStory) -> List[TestCase]:
         """

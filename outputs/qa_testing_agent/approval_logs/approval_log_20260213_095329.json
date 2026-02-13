@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-02-13T09:53:29.181039",
+  "stories_processed": 3,
+  "total_test_cases": 3,
+  "total_scenarios": 3,
+  "total_steps": 6,
+  "scenarios": {
+    "Home": {
+      "test_cases": [
+        {
+          "name": "test_csv-1_default",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Find": {
+      "test_cases": [
+        {
+          "name": "test_csv-2_default",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "User": {
+      "test_cases": [
+        {
+          "name": "test_csv-3_default",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests_20260213_095329.xlsx",
+  "approval_decision": "REVISIONS_REQUESTED",
+  "revision_request": "It looks like there is only reachable + happy path scenarios are present please add Functional scenarios, Data integrity, Permissions & security, Boundary & volume, Error handling, Performance, UX / accessibility",
+  "decision_timestamp": "2026-02-13T09:57:16.169725"
+}

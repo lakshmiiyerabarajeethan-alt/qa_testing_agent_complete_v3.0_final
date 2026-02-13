@@ -4,6 +4,7 @@ Reviews generated tests for quality and correctness
 """
 import json
 import logging
+import re
 from typing import Optional
 from openai import OpenAI
 from models import (TestCase, RequirementsAnalysis, GeneratedTestCase, 
@@ -38,6 +39,12 @@ class ReviewerAgent:
             test_case, requirements, generated_test
         )
         
+        improvement = review_feedback.get("improvement_suggestions")
+        if isinstance(improvement, list):
+            improvement = "\n".join(str(item) for item in improvement)
+        elif improvement is None:
+            improvement = ""
+
         result = ReviewResult(
             test_case_id=generated_test.test_case_id,
             is_approved=review_feedback.get("is_approved", False),
@@ -45,7 +52,7 @@ class ReviewerAgent:
                 review_feedback.get("rejection_reason")
             ),
             rejection_details=review_feedback.get("rejection_details"),
-            improvement_suggestions=review_feedback.get("improvement_suggestions")
+            improvement_suggestions=improvement
         )
         
         logger.info(
@@ -113,8 +120,12 @@ Return a JSON response with:
                 max_tokens=1500
             )
             
-            result_text = response.choices[0].message.content
-            result_json = json.loads(result_text)
+            result_text = response.choices[0].message.content or ""
+            result_json = self._safe_parse_json(result_text)
+            if result_json is None:
+                logger.error("Failed to parse review JSON: empty or invalid content")
+                logger.debug(f"Raw model response (first 500 chars): {result_text[:500]}")
+                raise json.JSONDecodeError("Invalid JSON", result_text, 0)
             
             return result_json
             
@@ -128,6 +139,34 @@ Return a JSON response with:
         except Exception as e:
             logger.error(f"Error during review: {str(e)}")
             raise
+
+    def _safe_parse_json(self, text: str):
+        """
+        Attempt to parse JSON from model output.
+        Accepts raw JSON or JSON wrapped in code fences/text.
+        """
+        if not text:
+            return None
+
+        cleaned = text.strip()
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", cleaned, flags=re.IGNORECASE | re.MULTILINE).strip()
+
+        try:
+            return json.loads(cleaned)
+        except json.JSONDecodeError:
+            pass
+
+        start = cleaned.find("{")
+        end = cleaned.rfind("}")
+        if start == -1 or end == -1 or end <= start:
+            return None
+
+        snippet = cleaned[start:end + 1]
+        try:
+            return json.loads(snippet)
+        except json.JSONDecodeError:
+            return None
     
     def _parse_rejection_reason(self, reason_str: Optional[str]) -> RejectionReason:
         """Parse rejection reason from string"""

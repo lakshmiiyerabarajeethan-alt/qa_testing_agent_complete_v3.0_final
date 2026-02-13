@@ -4,6 +4,7 @@ Analyzes test case requirements using OpenAI
 """
 import json
 import logging
+import re
 from typing import Optional
 from openai import OpenAI
 from models import TestCase, RequirementsAnalysis
@@ -47,8 +48,12 @@ class RequirementsAnalysisAgent:
                 max_tokens=settings.OPENAI_MAX_TOKENS
             )
             
-            result_text = response.choices[0].message.content
-            result_json = json.loads(result_text)
+            result_text = response.choices[0].message.content or ""
+            result_json = self._safe_parse_json(result_text)
+            if result_json is None:
+                logger.error("Failed to parse JSON response: empty or invalid content")
+                logger.error(f"Raw model response (first 500 chars): {result_text[:500]}")
+                return self._fallback_analysis(test_case, "Invalid JSON response")
             
             analysis = RequirementsAnalysis(
                 test_case_id=f"{test_case.test_scenario}_{test_case.test_case_name}",
@@ -63,7 +68,7 @@ class RequirementsAnalysisAgent:
             
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse JSON response: {str(e)}")
-            raise
+            return self._fallback_analysis(test_case, "JSON parse error")
         except Exception as e:
             logger.error(f"Error analyzing requirements: {str(e)}")
             raise
@@ -105,3 +110,63 @@ Please provide a JSON response with the following structure:
             base_prompt += f"\n\nPREVIOUS FEEDBACK (Retry context):\n{retry_context}\n\nPlease adjust the analysis and test data based on this feedback."
         
         return base_prompt
+
+    def _fallback_analysis(self, test_case: TestCase, reason: str) -> RequirementsAnalysis:
+        """
+        Provide a minimal, best-effort requirements analysis to keep the pipeline moving
+        when LLM output is not valid JSON.
+        """
+        scenario_text = (
+            f"Fallback analysis due to {reason}. "
+            f"Validate scenario '{test_case.test_scenario}' for test case '{test_case.test_case_name}'."
+        )
+        identified = [
+            f"Validate steps for scenario: {test_case.test_scenario}",
+            "Cover expected results for each step",
+            "Include basic negative and edge conditions where applicable"
+        ]
+        test_data_needs = {
+            "pre_conditions": "Environment ready for scenario execution",
+            "data_fields": {},
+            "environmental_dependencies": []
+        }
+        assumptions = [
+            "System under test is accessible",
+            "Test data can be created or mocked if needed"
+        ]
+        return RequirementsAnalysis(
+            test_case_id=f"{test_case.test_scenario}_{test_case.test_case_name}",
+            scenario_understanding=scenario_text,
+            identified_requirements=identified,
+            test_data_needs=test_data_needs,
+            assumptions=assumptions
+        )
+
+    def _safe_parse_json(self, text: str):
+        """
+        Attempt to parse JSON from model output.
+        Accepts raw JSON or JSON wrapped in code fences/text.
+        """
+        if not text:
+            return None
+
+        cleaned = text.strip()
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", cleaned, flags=re.IGNORECASE | re.MULTILINE).strip()
+
+        try:
+            return json.loads(cleaned)
+        except json.JSONDecodeError:
+            pass
+
+        # Try to extract JSON object from response
+        start = cleaned.find("{")
+        end = cleaned.rfind("}")
+        if start == -1 or end == -1 or end <= start:
+            return None
+
+        snippet = cleaned[start:end + 1]
+        try:
+            return json.loads(snippet)
+        except json.JSONDecodeError:
+            return None

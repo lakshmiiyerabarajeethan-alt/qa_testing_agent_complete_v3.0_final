@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-02-13T11:16:43.571972",
+  "stories_processed": 3,
+  "total_test_cases": 9,
+  "total_scenarios": 9,
+  "total_steps": 32,
+  "scenarios": {
+    "Happy Path Export Assets": {
+      "test_cases": [
+        {
+          "name": "happy_path_export_assets",
+          "steps": 6
+        }
+      ],
+      "step_count": 6
+    },
+    "Edge Case Export No Assets Selected": {
+      "test_cases": [
+        {
+          "name": "edge_case_no_assets_selected",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Error Scenario: Export Function Unavailable": {
+      "test_cases": [
+        {
+          "name": "error_scenario_export_unavailable",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path - Find and Link Duplicate Assets": {
+      "test_cases": [
+        {
+          "name": "happy_path_find_and_link_duplicates",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case - No Duplicate Assets Found": {
+      "test_cases": [
+        {
+          "name": "edge_case_no_duplicates",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario - Failure to Link Duplicate Assets": {
+      "test_cases": [
+        {
+          "name": "error_scenario_link_failure",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path: Non-AD User Password Reset": {
+      "test_cases": [
+        {
+          "name": "CSV-3_happy_path_password_reset",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case: Non-AD User Enters Unregistered Email": {
+      "test_cases": [
+        {
+          "name": "CSV-3_edge_case_unregistered_email",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario: Password Reset Form Submission With Empty Email Field": {
+      "test_cases": [
+        {
+          "name": "CSV-3_error_empty_email_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests_20260213_111643.xlsx"
+}

@@ -67,6 +67,22 @@ class TestDesignerAgent:
             test_case.test_scenario
         )
         test_data.update(scenario_data)
+
+        # Inject base URL if configured
+        if settings.BASE_URL:
+            test_data.setdefault("base_url", settings.BASE_URL)
+        if settings.LOGIN_EMAIL:
+            test_data.setdefault("login_email", settings.LOGIN_EMAIL)
+        if settings.LOGIN_PASSWORD:
+            test_data.setdefault("login_password", settings.LOGIN_PASSWORD)
+        if settings.LOGIN_EMAIL_SELECTOR:
+            test_data.setdefault("login_email_selector", settings.LOGIN_EMAIL_SELECTOR)
+        if settings.LOGIN_PASSWORD_SELECTOR:
+            test_data.setdefault("login_password_selector", settings.LOGIN_PASSWORD_SELECTOR)
+        if settings.LOGIN_BUTTON_SELECTOR:
+            test_data.setdefault("login_button_selector", settings.LOGIN_BUTTON_SELECTOR)
+        if settings.POST_LOGIN_SELECTOR:
+            test_data.setdefault("post_login_selector", settings.POST_LOGIN_SELECTOR)
         
         logger.info(f"Generated test data: {list(test_data.keys())}")
         return test_data
@@ -86,6 +102,13 @@ class TestDesignerAgent:
 
 Test Scenario: {test_case.test_scenario}
 Test Case: {test_case.test_case_name}
+Base URL (if provided): {settings.BASE_URL or "Not provided"}
+Login Email (if provided): {settings.LOGIN_EMAIL or "Not provided"}
+Login Password (if provided): {"***" if settings.LOGIN_PASSWORD else "Not provided"}
+Login Email Selector (if provided): {settings.LOGIN_EMAIL_SELECTOR or "Not provided"}
+Login Password Selector (if provided): {settings.LOGIN_PASSWORD_SELECTOR or "Not provided"}
+Login Button Selector (if provided): {settings.LOGIN_BUTTON_SELECTOR or "Not provided"}
+Post-Login Selector (if provided): {settings.POST_LOGIN_SELECTOR or "Not provided"}
 
 Requirements Understanding:
 {requirements.scenario_understanding}
@@ -102,9 +125,13 @@ Generate ONLY the test code (class and methods) that:
 3. Has explicit waits and error handling
 4. Includes assertions for each step
 5. Takes screenshots on failure
-6. Uses the test_data provided
+6. Uses the test_data provided (including base_url and login credentials if present)
 7. Has clear comments
 8. Follows best practices for UI testing
+9. If base_url is available, navigate using it instead of hard-coded URLs
+10. Use the provided pytest `browser` fixture and `BASE_URL` constant. Do not create a new webdriver instance.
+11. If login selectors are provided in test_data, use them for login.
+12. Prefer using helper functions `find_input(driver, label)` and `click_button(driver, text)` that are available in the test file for generic element location instead of hard-coded selectors.
 
 Important: Return ONLY valid Python code, no markdown or explanations.
 Use @pytest.fixture for setup/teardown.
