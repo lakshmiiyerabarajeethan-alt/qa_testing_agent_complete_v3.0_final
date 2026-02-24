@@ -1,0 +1,154 @@
+{
+  "timestamp": "2026-02-19T08:52:54.222332",
+  "stories_processed": 2,
+  "total_test_cases": 16,
+  "total_scenarios": 16,
+  "total_steps": 17,
+  "scenarios": {
+    "HAPPY_PATH - Auto-populate tags after initial selection": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_on_initial_selection",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "SEQUENTIAL_REFINEMENT - Further refine results using newly surfaced tags": {
+      "test_cases": [
+        {
+          "name": "refine_results_with_newly_surfaced_tags",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "STATE_PERSISTENCE - User-selected tags remain highlighted after additional tags load": {
+      "test_cases": [
+        {
+          "name": "user_selected_tags_remain_highlighted",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Display top 20 tags based on highest count": {
+      "test_cases": [
+        {
+          "name": "display_top_20_tags",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Newly added tags match existing UI style": {
+      "test_cases": [
+        {
+          "name": "new_tags_match_existing_ui_style",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Tags load correctly after async operation": {
+      "test_cases": [
+        {
+          "name": "tags_load_after_async_operation",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle failure in loading additional tags": {
+      "test_cases": [
+        {
+          "name": "handle_failure_loading_additional_tags",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REGRESSION - Existing filter functionality remains unaffected": {
+      "test_cases": [
+        {
+          "name": "existing_filter_functionality_unaffected",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "HAPPY_PATH - Apply OR operator in advanced filter": {
+      "test_cases": [
+        {
+          "name": "apply_or_operator_success",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Verify existing filters after OR operator application": {
+      "test_cases": [
+        {
+          "name": "existing_filters_persistence_post_or_application",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Filter panel reload timing after OR operator selection": {
+      "test_cases": [
+        {
+          "name": "filter_panel_reload_timing",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Filter reload failure handling": {
+      "test_cases": [
+        {
+          "name": "filter_reload_failure_handling",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Consistency in filter panel UI post-reload": {
+      "test_cases": [
+        {
+          "name": "filter_panel_ui_consistency_post_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Updated filter options relevance": {
+      "test_cases": [
+        {
+          "name": "updated_filter_options_relevance",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "PERFORMANCE_SCALE - Large dataset filter reload": {
+      "test_cases": [
+        {
+          "name": "large_dataset_filter_reload_performance",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "CLEAR_RESET_ALL - Functionality after applying OR operator": {
+      "test_cases": [
+        {
+          "name": "clear_filters_post_or_operator_application",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

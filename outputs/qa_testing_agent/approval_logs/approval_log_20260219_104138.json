@@ -1,0 +1,154 @@
+{
+  "timestamp": "2026-02-19T10:41:38.387291",
+  "stories_processed": 2,
+  "total_test_cases": 16,
+  "total_scenarios": 16,
+  "total_steps": 17,
+  "scenarios": {
+    "HAPPY_PATH - Select a tag and see additional tags auto-populate": {
+      "test_cases": [
+        {
+          "name": "auto_populate_additional_tags_after_initial_selection",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "SEQUENTIAL_REFINEMENT - Further refine results by selecting an auto-populated tag": {
+      "test_cases": [
+        {
+          "name": "refine_results_with_auto_populated_tag",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Verify UI consistency of auto-populated tags": {
+      "test_cases": [
+        {
+          "name": "ui_consistency_of_auto_populated_tags",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Ensure top 20 tags are displayed after initial filter": {
+      "test_cases": [
+        {
+          "name": "display_top_20_tags_post_initial_filter",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Verify tags load after async operation completes": {
+      "test_cases": [
+        {
+          "name": "verify_tags_load_post_async_operation",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "STATE_PERSISTENCE - User-selected tags remain highlighted after additional tags load": {
+      "test_cases": [
+        {
+          "name": "user_selected_tags_remain_highlighted",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle failure in loading additional tags": {
+      "test_cases": [
+        {
+          "name": "handle_failure_in_loading_additional_tags",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REGRESSION - Verify existing filter functionality remains unaffected": {
+      "test_cases": [
+        {
+          "name": "verify_existing_filter_functionality_post_update",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "HAPPY_PATH - Successfully adding an OR operator and reloading filters": {
+      "test_cases": [
+        {
+          "name": "successful_or_operator_addition_and_filter_reload",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Ensure previously selected filters remain after reload": {
+      "test_cases": [
+        {
+          "name": "persistence_of_previously_selected_filters_post_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Filter panel reloads without UI flicker or reset": {
+      "test_cases": [
+        {
+          "name": "async_filter_panel_reload_with_no_ui_flicker",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Filter results update automatically after applying OR operator": {
+      "test_cases": [
+        {
+          "name": "automatic_filter_results_update_post_or_operator_application",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handling filter reload failure gracefully": {
+      "test_cases": [
+        {
+          "name": "graceful_handling_of_filter_reload_failure",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "MULTI_COMBINATION - Applying multiple filters with OR operator": {
+      "test_cases": [
+        {
+          "name": "applying_multiple_filters_with_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "SEQUENTIAL_REFINEMENT - Sequentially refining search with OR operator": {
+      "test_cases": [
+        {
+          "name": "sequential_refinement_using_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REGRESSION - Verifying unrelated features remain functional": {
+      "test_cases": [
+        {
+          "name": "regression_test_for_unrelated_features_post_or_operator_usage",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

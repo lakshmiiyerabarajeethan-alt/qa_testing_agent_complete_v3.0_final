@@ -1,0 +1,1035 @@
+{
+  "source": "recorded_flow.py",
+  "actions": [
+    {
+      "raw": "page.goto(\"https://dev.mirrix.app/login\")",
+      "action": "goto",
+      "kind": "goto",
+      "url": "https://dev.mirrix.app/login",
+      "category": "navigation"
+    },
+    {
+      "raw": "page.get_by_role(\"textbox\", name=\"Email\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "textbox",
+      "name": "Email",
+      "category": "login"
+    },
+    {
+      "raw": "page.get_by_role(\"textbox\", name=\"Email\").fill(\"lakshmi@unitofmeasure.com\")",
+      "action": "fill",
+      "kind": "role",
+      "role": "textbox",
+      "name": "Email",
+      "category": "login"
+    },
+    {
+      "raw": "page.get_by_role(\"textbox\", name=\"Email\").press(\"Tab\")",
+      "action": "press",
+      "kind": "role",
+      "role": "textbox",
+      "name": "Email",
+      "category": "login"
+    },
+    {
+      "raw": "page.get_by_role(\"textbox\", name=\"Password\").fill(\"***REMOVED***\")",
+      "action": "fill",
+      "kind": "role",
+      "role": "textbox",
+      "name": "Password",
+      "category": "login"
+    },
+    {
+      "raw": "page.get_by_role(\"textbox\", name=\"Password\").press(\"Enter\")",
+      "action": "press",
+      "kind": "role",
+      "role": "textbox",
+      "name": "Password",
+      "category": "login"
+    },
+    {
+      "raw": "page.get_by_role(\"button\", name=\"Login\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "button",
+      "name": "Login",
+      "category": "login"
+    },
+    {
+      "raw": "page.get_by_role(\"img\", name=\"thumb\").nth(1).click()",
+      "action": "click",
+      "kind": "role",
+      "role": "img",
+      "name": "thumb",
+      "category": "asset"
+    },
+    {
+      "raw": "page.locator(\".bg-gray-50.border\").click()",
+      "action": "click",
+      "kind": "locator",
+      "selector": ".bg-gray-50.border",
+      "category": "other"
+    },
+    {
+      "raw": "page.locator(\"div\").filter(has_text=re.compile(r\"^Preview$\")).nth(5).click()",
+      "action": "click",
+      "kind": "filter_chain",
+      "selector": "div",
+      "filter": "Preview",
+      "category": "filter"
+    },
+    {
+      "raw": "page.get_by_role(\"button\", name=\"close\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "button",
+      "name": "close",
+      "category": "asset"
+    },
+    {
+      "raw": "page.get_by_role(\"tab\", name=\"References\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "tab",
+      "name": "References",
+      "category": "asset"
+    },
+    {
+      "raw": "page.get_by_text(\"Add Reference\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Add Reference",
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_role(\"button\", name=\"Cancel\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "button",
+      "name": "Cancel",
+      "category": "asset"
+    },
+    {
+      "raw": "page.locator(\"div\").filter(has_text=re.compile(r\"^Remove Reference$\")).click()",
+      "action": "click",
+      "kind": "filter_chain",
+      "selector": "div",
+      "filter": "Remove Reference",
+      "category": "filter"
+    },
+    {
+      "raw": "page.locator(\"div\").filter(has_text=re.compile(r\"^Select All$\")).click()",
+      "action": "click",
+      "kind": "filter_chain",
+      "selector": "div",
+      "filter": "Select All",
+      "category": "filter"
+    },
+    {
+      "raw": "page.get_by_text(\"AssetReferencesFolders\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "AssetReferencesFolders",
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_role(\"tab\", name=\"Folders\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "tab",
+      "name": "Folders",
+      "category": "asset"
+    },
+    {
+      "raw": "page.get_by_text(\"UploadedFromWebUI\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "UploadedFromWebUI",
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_role(\"link\", name=\"Folders\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "link",
+      "name": "Folders",
+      "category": "navigation"
+    },
+    {
+      "raw": "page.locator(\"div:nth-child(4) > .ant-tree-switcher\").click()",
+      "action": "click",
+      "kind": "locator",
+      "selector": "div:nth-child(4) > .ant-tree-switcher",
+      "category": "other"
+    },
+    {
+      "raw": "page.locator(\".ant-tree-treenode.ant-tree-treenode-leaf-last > .ant-tree-switcher\").click()",
+      "action": "click",
+      "kind": "locator",
+      "selector": ".ant-tree-treenode.ant-tree-treenode-leaf-last > .ant-tree-switcher",
+      "category": "other"
+    },
+    {
+      "raw": "page.get_by_role(\"link\", name=\"Tag Cloud\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "link",
+      "name": "Tag Cloud",
+      "category": "navigation"
+    },
+    {
+      "raw": "page.get_by_role(\"link\", name=\"Workflows\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "link",
+      "name": "Workflows",
+      "category": "navigation"
+    },
+    {
+      "raw": "page.get_by_role(\"heading\", name=\"Delete Asset Workflow\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "heading",
+      "name": "Delete Asset Workflow",
+      "category": "other"
+    },
+    {
+      "raw": "page.get_by_text(\"Delete Asset655\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Delete Asset655",
+      "category": "tag"
+    },
+    {
+      "raw": "page.get_by_text(\"Clear Search\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Clear Search",
+      "category": "system"
+    },
+    {
+      "raw": "page.get_by_role(\"link\", name=\"Products\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "link",
+      "name": "Products",
+      "category": "navigation"
+    },
+    {
+      "raw": "page.get_by_role(\"textbox\", name=\"Search\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "textbox",
+      "name": "Search",
+      "category": "search"
+    },
+    {
+      "raw": "page.locator(\".absolute\").click()",
+      "action": "click",
+      "kind": "locator",
+      "selector": ".absolute",
+      "category": "other"
+    },
+    {
+      "raw": "page.get_by_role(\"link\", name=\"Analytics\").click()",
+      "action": "click",
+      "kind": "role",
+      "role": "link",
+      "name": "Analytics",
+      "category": "navigation"
+    },
+    {
+      "raw": "page.locator(\"canvas\").nth(1).click(position={\"x\":129,\"y\":236})",
+      "action": "click",
+      "kind": "locator",
+      "selector": "canvas",
+      "category": "other"
+    },
+    {
+      "raw": "page.locator(\"canvas\").nth(1).click(position={\"x\":130,\"y\":264})",
+      "action": "click",
+      "kind": "locator",
+      "selector": "canvas",
+      "category": "other"
+    },
+    {
+      "raw": "page.locator(\".w-\\\\[24px\\\\].h-\\\\[24px\\\\].cursor-pointer.hover\\\\:text-\\\\[\\\\#0090AD\\\\].hover\\\\:bg-white.hover\\\\:rounded-\\\\[4px\\\\].text-\\\\[\\\\#CED2DA\\\\] > svg\").click()",
+      "action": "click",
+      "kind": "locator",
+      "selector": ".w-\\\\[24px\\\\].h-\\\\[24px\\\\].cursor-pointer.hover\\\\:text-\\\\[\\\\#0090AD\\\\].hover\\\\:bg-white.hover\\\\:rounded-\\\\[4px\\\\].text-\\\\[\\\\#CED2DA\\\\] > svg",
+      "category": "other"
+    },
+    {
+      "raw": "page.locator(\"path:nth-child(2)\").click()",
+      "action": "click",
+      "kind": "locator",
+      "selector": "path:nth-child(2)",
+      "category": "other"
+    },
+    {
+      "raw": "page.locator(\"path:nth-child(3)\").first.click()",
+      "action": "click",
+      "kind": "locator",
+      "selector": "path:nth-child(3)",
+      "category": "other"
+    },
+    {
+      "raw": "page.locator(\".w-full > path\").first.click()",
+      "action": "click",
+      "kind": "locator",
+      "selector": ".w-full > path",
+      "category": "other"
+    },
+    {
+      "raw": "page.locator(\"div\").filter(has_text=\"6\").nth(5).click()",
+      "action": "click",
+      "kind": "filter_chain",
+      "selector": "div",
+      "filter": "6",
+      "category": "filter"
+    },
+    {
+      "raw": "page.locator(\"[id=\\\"carbon:user-avatar-filled\\\"] #Vector\").click()",
+      "action": "click",
+      "kind": "other",
+      "category": "other"
+    },
+    {
+      "raw": "page.locator(\"span\").nth(2).click()",
+      "action": "click",
+      "kind": "locator",
+      "selector": "span",
+      "category": "other"
+    },
+    {
+      "raw": "page.locator(\"#rc-tabs-0-tab-filters div\").filter(has_text=re.compile(r\"^Filters$\")).click()",
+      "action": "click",
+      "kind": "filter_chain",
+      "selector": "#rc-tabs-0-tab-filters div",
+      "filter": "Filters",
+      "category": "filter"
+    },
+    {
+      "raw": "page.locator(\"a\").filter(has_text=\"Tags\").click()",
+      "action": "click",
+      "kind": "filter_chain",
+      "selector": "a",
+      "filter": "Tags",
+      "category": "filter"
+    },
+    {
+      "raw": "page.get_by_text(\"Vehicles105\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Vehicles105",
+      "category": "tag"
+    },
+    {
+      "raw": "page.get_by_text(\"Total 105 items\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Total 105 items",
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_text(\"Lakshmi1911104\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Lakshmi1911104",
+      "category": "tag"
+    },
+    {
+      "raw": "page.get_by_text(\"Total 120 items\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Total 120 items",
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_text(\"Plush Teddy Bear Mr Cuddles\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Plush Teddy Bear Mr Cuddles",
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_text(\"Mr Cuddles5\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Mr Cuddles5",
+      "category": "tag"
+    },
+    {
+      "raw": "page.get_by_text(\"EN719\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "EN719",
+      "category": "tag"
+    },
+    {
+      "raw": "page.get_by_text(\"Cowboy4\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Cowboy4",
+      "category": "tag"
+    },
+    {
+      "raw": "page.get_by_text(\"Total 197 items\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Total 197 items",
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_role(\"img\", name=\"thumb\").first.click()",
+      "action": "click",
+      "kind": "role",
+      "role": "img",
+      "name": "thumb",
+      "category": "asset"
+    },
+    {
+      "raw": "page.get_by_text(\"Filters\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Filters",
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_text(\"toys59\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "toys59",
+      "category": "tag"
+    },
+    {
+      "raw": "page.locator(\".absolute > svg > path\").first.click()",
+      "action": "click",
+      "kind": "locator",
+      "selector": ".absolute > svg > path",
+      "category": "other"
+    },
+    {
+      "raw": "page.locator(\"#rc_select_6\").fill(\"toy\")",
+      "action": "fill",
+      "kind": "fill_input",
+      "selector": "#rc_select_6",
+      "value": "toy",
+      "category": "search"
+    },
+    {
+      "raw": "page.get_by_text(\"toy\", exact=True).click()",
+      "action": "click",
+      "kind": "text",
+      "name": "toy",
+      "exact": true,
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_text(\"OR\", exact=True).click()",
+      "action": "click",
+      "kind": "text",
+      "name": "OR",
+      "exact": true,
+      "category": "search"
+    },
+    {
+      "raw": "page.get_by_text(\"Flower72\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Flower72",
+      "category": "tag"
+    },
+    {
+      "raw": "page.get_by_text(\"OR\").nth(4).click()",
+      "action": "click",
+      "kind": "text",
+      "name": "OR",
+      "category": "search"
+    },
+    {
+      "raw": "page.locator(\"#rc_select_6\").click()",
+      "action": "click",
+      "kind": "locator",
+      "selector": "#rc_select_6",
+      "category": "search"
+    },
+    {
+      "raw": "page.locator(\"#rc_select_6\").fill(\"doll\")",
+      "action": "fill",
+      "kind": "fill_input",
+      "selector": "#rc_select_6",
+      "value": "doll",
+      "category": "search"
+    },
+    {
+      "raw": "page.get_by_text(\"doll\", exact=True).click()",
+      "action": "click",
+      "kind": "text",
+      "name": "doll",
+      "exact": true,
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_text(\"Total 335 items\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Total 335 items",
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_text(\"Playful2\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Playful2",
+      "category": "tag"
+    },
+    {
+      "raw": "page.get_by_text(\"Total 318 items\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Total 318 items",
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_text(\"Alt Text (122)\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Alt Text (122)",
+      "category": "content"
+    },
+    {
+      "raw": "page.get_by_text(\"Name (31)\").click()",
+      "action": "click",
+      "kind": "text",
+      "name": "Name (31)",
+      "category": "content"
+    }
+  ],
+  "by_category": {
+    "navigation": [
+      {
+        "raw": "page.goto(\"https://dev.mirrix.app/login\")",
+        "action": "goto",
+        "kind": "goto",
+        "url": "https://dev.mirrix.app/login",
+        "category": "navigation"
+      },
+      {
+        "raw": "page.get_by_role(\"link\", name=\"Folders\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "link",
+        "name": "Folders",
+        "category": "navigation"
+      },
+      {
+        "raw": "page.get_by_role(\"link\", name=\"Tag Cloud\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "link",
+        "name": "Tag Cloud",
+        "category": "navigation"
+      },
+      {
+        "raw": "page.get_by_role(\"link\", name=\"Workflows\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "link",
+        "name": "Workflows",
+        "category": "navigation"
+      },
+      {
+        "raw": "page.get_by_role(\"link\", name=\"Products\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "link",
+        "name": "Products",
+        "category": "navigation"
+      },
+      {
+        "raw": "page.get_by_role(\"link\", name=\"Analytics\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "link",
+        "name": "Analytics",
+        "category": "navigation"
+      }
+    ],
+    "login": [
+      {
+        "raw": "page.get_by_role(\"textbox\", name=\"Email\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "textbox",
+        "name": "Email",
+        "category": "login"
+      },
+      {
+        "raw": "page.get_by_role(\"textbox\", name=\"Email\").fill(\"lakshmi@unitofmeasure.com\")",
+        "action": "fill",
+        "kind": "role",
+        "role": "textbox",
+        "name": "Email",
+        "category": "login"
+      },
+      {
+        "raw": "page.get_by_role(\"textbox\", name=\"Email\").press(\"Tab\")",
+        "action": "press",
+        "kind": "role",
+        "role": "textbox",
+        "name": "Email",
+        "category": "login"
+      },
+      {
+        "raw": "page.get_by_role(\"textbox\", name=\"Password\").fill(\"***REMOVED***\")",
+        "action": "fill",
+        "kind": "role",
+        "role": "textbox",
+        "name": "Password",
+        "category": "login"
+      },
+      {
+        "raw": "page.get_by_role(\"textbox\", name=\"Password\").press(\"Enter\")",
+        "action": "press",
+        "kind": "role",
+        "role": "textbox",
+        "name": "Password",
+        "category": "login"
+      },
+      {
+        "raw": "page.get_by_role(\"button\", name=\"Login\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "button",
+        "name": "Login",
+        "category": "login"
+      }
+    ],
+    "asset": [
+      {
+        "raw": "page.get_by_role(\"img\", name=\"thumb\").nth(1).click()",
+        "action": "click",
+        "kind": "role",
+        "role": "img",
+        "name": "thumb",
+        "category": "asset"
+      },
+      {
+        "raw": "page.get_by_role(\"button\", name=\"close\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "button",
+        "name": "close",
+        "category": "asset"
+      },
+      {
+        "raw": "page.get_by_role(\"tab\", name=\"References\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "tab",
+        "name": "References",
+        "category": "asset"
+      },
+      {
+        "raw": "page.get_by_role(\"button\", name=\"Cancel\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "button",
+        "name": "Cancel",
+        "category": "asset"
+      },
+      {
+        "raw": "page.get_by_role(\"tab\", name=\"Folders\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "tab",
+        "name": "Folders",
+        "category": "asset"
+      },
+      {
+        "raw": "page.get_by_role(\"img\", name=\"thumb\").first.click()",
+        "action": "click",
+        "kind": "role",
+        "role": "img",
+        "name": "thumb",
+        "category": "asset"
+      }
+    ],
+    "other": [
+      {
+        "raw": "page.locator(\".bg-gray-50.border\").click()",
+        "action": "click",
+        "kind": "locator",
+        "selector": ".bg-gray-50.border",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\"div:nth-child(4) > .ant-tree-switcher\").click()",
+        "action": "click",
+        "kind": "locator",
+        "selector": "div:nth-child(4) > .ant-tree-switcher",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\".ant-tree-treenode.ant-tree-treenode-leaf-last > .ant-tree-switcher\").click()",
+        "action": "click",
+        "kind": "locator",
+        "selector": ".ant-tree-treenode.ant-tree-treenode-leaf-last > .ant-tree-switcher",
+        "category": "other"
+      },
+      {
+        "raw": "page.get_by_role(\"heading\", name=\"Delete Asset Workflow\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "heading",
+        "name": "Delete Asset Workflow",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\".absolute\").click()",
+        "action": "click",
+        "kind": "locator",
+        "selector": ".absolute",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\"canvas\").nth(1).click(position={\"x\":129,\"y\":236})",
+        "action": "click",
+        "kind": "locator",
+        "selector": "canvas",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\"canvas\").nth(1).click(position={\"x\":130,\"y\":264})",
+        "action": "click",
+        "kind": "locator",
+        "selector": "canvas",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\".w-\\\\[24px\\\\].h-\\\\[24px\\\\].cursor-pointer.hover\\\\:text-\\\\[\\\\#0090AD\\\\].hover\\\\:bg-white.hover\\\\:rounded-\\\\[4px\\\\].text-\\\\[\\\\#CED2DA\\\\] > svg\").click()",
+        "action": "click",
+        "kind": "locator",
+        "selector": ".w-\\\\[24px\\\\].h-\\\\[24px\\\\].cursor-pointer.hover\\\\:text-\\\\[\\\\#0090AD\\\\].hover\\\\:bg-white.hover\\\\:rounded-\\\\[4px\\\\].text-\\\\[\\\\#CED2DA\\\\] > svg",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\"path:nth-child(2)\").click()",
+        "action": "click",
+        "kind": "locator",
+        "selector": "path:nth-child(2)",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\"path:nth-child(3)\").first.click()",
+        "action": "click",
+        "kind": "locator",
+        "selector": "path:nth-child(3)",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\".w-full > path\").first.click()",
+        "action": "click",
+        "kind": "locator",
+        "selector": ".w-full > path",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\"[id=\\\"carbon:user-avatar-filled\\\"] #Vector\").click()",
+        "action": "click",
+        "kind": "other",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\"span\").nth(2).click()",
+        "action": "click",
+        "kind": "locator",
+        "selector": "span",
+        "category": "other"
+      },
+      {
+        "raw": "page.locator(\".absolute > svg > path\").first.click()",
+        "action": "click",
+        "kind": "locator",
+        "selector": ".absolute > svg > path",
+        "category": "other"
+      }
+    ],
+    "filter": [
+      {
+        "raw": "page.locator(\"div\").filter(has_text=re.compile(r\"^Preview$\")).nth(5).click()",
+        "action": "click",
+        "kind": "filter_chain",
+        "selector": "div",
+        "filter": "Preview",
+        "category": "filter"
+      },
+      {
+        "raw": "page.locator(\"div\").filter(has_text=re.compile(r\"^Remove Reference$\")).click()",
+        "action": "click",
+        "kind": "filter_chain",
+        "selector": "div",
+        "filter": "Remove Reference",
+        "category": "filter"
+      },
+      {
+        "raw": "page.locator(\"div\").filter(has_text=re.compile(r\"^Select All$\")).click()",
+        "action": "click",
+        "kind": "filter_chain",
+        "selector": "div",
+        "filter": "Select All",
+        "category": "filter"
+      },
+      {
+        "raw": "page.locator(\"div\").filter(has_text=\"6\").nth(5).click()",
+        "action": "click",
+        "kind": "filter_chain",
+        "selector": "div",
+        "filter": "6",
+        "category": "filter"
+      },
+      {
+        "raw": "page.locator(\"#rc-tabs-0-tab-filters div\").filter(has_text=re.compile(r\"^Filters$\")).click()",
+        "action": "click",
+        "kind": "filter_chain",
+        "selector": "#rc-tabs-0-tab-filters div",
+        "filter": "Filters",
+        "category": "filter"
+      },
+      {
+        "raw": "page.locator(\"a\").filter(has_text=\"Tags\").click()",
+        "action": "click",
+        "kind": "filter_chain",
+        "selector": "a",
+        "filter": "Tags",
+        "category": "filter"
+      }
+    ],
+    "content": [
+      {
+        "raw": "page.get_by_text(\"Add Reference\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Add Reference",
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"AssetReferencesFolders\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "AssetReferencesFolders",
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"UploadedFromWebUI\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "UploadedFromWebUI",
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"Total 105 items\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Total 105 items",
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"Total 120 items\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Total 120 items",
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"Plush Teddy Bear Mr Cuddles\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Plush Teddy Bear Mr Cuddles",
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"Total 197 items\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Total 197 items",
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"Filters\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Filters",
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"toy\", exact=True).click()",
+        "action": "click",
+        "kind": "text",
+        "name": "toy",
+        "exact": true,
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"doll\", exact=True).click()",
+        "action": "click",
+        "kind": "text",
+        "name": "doll",
+        "exact": true,
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"Total 335 items\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Total 335 items",
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"Total 318 items\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Total 318 items",
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"Alt Text (122)\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Alt Text (122)",
+        "category": "content"
+      },
+      {
+        "raw": "page.get_by_text(\"Name (31)\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Name (31)",
+        "category": "content"
+      }
+    ],
+    "tag": [
+      {
+        "raw": "page.get_by_text(\"Delete Asset655\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Delete Asset655",
+        "category": "tag"
+      },
+      {
+        "raw": "page.get_by_text(\"Vehicles105\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Vehicles105",
+        "category": "tag"
+      },
+      {
+        "raw": "page.get_by_text(\"Lakshmi1911104\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Lakshmi1911104",
+        "category": "tag"
+      },
+      {
+        "raw": "page.get_by_text(\"Mr Cuddles5\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Mr Cuddles5",
+        "category": "tag"
+      },
+      {
+        "raw": "page.get_by_text(\"EN719\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "EN719",
+        "category": "tag"
+      },
+      {
+        "raw": "page.get_by_text(\"Cowboy4\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Cowboy4",
+        "category": "tag"
+      },
+      {
+        "raw": "page.get_by_text(\"toys59\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "toys59",
+        "category": "tag"
+      },
+      {
+        "raw": "page.get_by_text(\"Flower72\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Flower72",
+        "category": "tag"
+      },
+      {
+        "raw": "page.get_by_text(\"Playful2\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Playful2",
+        "category": "tag"
+      }
+    ],
+    "system": [
+      {
+        "raw": "page.get_by_text(\"Clear Search\").click()",
+        "action": "click",
+        "kind": "text",
+        "name": "Clear Search",
+        "category": "system"
+      }
+    ],
+    "search": [
+      {
+        "raw": "page.get_by_role(\"textbox\", name=\"Search\").click()",
+        "action": "click",
+        "kind": "role",
+        "role": "textbox",
+        "name": "Search",
+        "category": "search"
+      },
+      {
+        "raw": "page.locator(\"#rc_select_6\").fill(\"toy\")",
+        "action": "fill",
+        "kind": "fill_input",
+        "selector": "#rc_select_6",
+        "value": "toy",
+        "category": "search"
+      },
+      {
+        "raw": "page.get_by_text(\"OR\", exact=True).click()",
+        "action": "click",
+        "kind": "text",
+        "name": "OR",
+        "exact": true,
+        "category": "search"
+      },
+      {
+        "raw": "page.get_by_text(\"OR\").nth(4).click()",
+        "action": "click",
+        "kind": "text",
+        "name": "OR",
+        "category": "search"
+      },
+      {
+        "raw": "page.locator(\"#rc_select_6\").click()",
+        "action": "click",
+        "kind": "locator",
+        "selector": "#rc_select_6",
+        "category": "search"
+      },
+      {
+        "raw": "page.locator(\"#rc_select_6\").fill(\"doll\")",
+        "action": "fill",
+        "kind": "fill_input",
+        "selector": "#rc_select_6",
+        "value": "doll",
+        "category": "search"
+      }
+    ]
+  }
+}

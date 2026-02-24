@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-02-16T10:59:10.474961",
+  "stories_processed": 3,
+  "total_test_cases": 10,
+  "total_scenarios": 10,
+  "total_steps": 34,
+  "scenarios": {
+    "Happy Path - Export Selected Assets": {
+      "test_cases": [
+        {
+          "name": "CSV-1_Happy_Path_Export",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case - Export Without Selection": {
+      "test_cases": [
+        {
+          "name": "CSV-1_Edge_Case_No_Selection",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario - Export Functionality Unavailable": {
+      "test_cases": [
+        {
+          "name": "CSV-1_Error_Export_Unavailable",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path - Find and Link Duplicate Assets": {
+      "test_cases": [
+        {
+          "name": "find_and_link_duplicate_assets_happy_path",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case - No Duplicate Assets Found": {
+      "test_cases": [
+        {
+          "name": "no_duplicates_edge_case",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario - System Fails to Execute the Vectorisation Query": {
+      "test_cases": [
+        {
+          "name": "vectorisation_query_execution_failure",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path Password Reset": {
+      "test_cases": [
+        {
+          "name": "CSV-3_HP_01",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Edge Case: Password Reset with Weak New Password": {
+      "test_cases": [
+        {
+          "name": "CSV-3_EC_01",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario: Incorrect Current Password": {
+      "test_cases": [
+        {
+          "name": "CSV-3_ES_01",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Data Integrity: Validate Password Change on Re-login": {
+      "test_cases": [
+        {
+          "name": "CSV-3_DI_01",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

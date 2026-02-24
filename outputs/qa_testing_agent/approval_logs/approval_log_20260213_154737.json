@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-02-13T15:47:37.186455",
+  "stories_processed": 3,
+  "total_test_cases": 10,
+  "total_scenarios": 10,
+  "total_steps": 35,
+  "scenarios": {
+    "Happy Path Export Assets": {
+      "test_cases": [
+        {
+          "name": "export_assets_happy_path",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Edge Case: Export With No Assets Selected": {
+      "test_cases": [
+        {
+          "name": "export_no_assets_selected",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Error Scenario: Export Function Unavailable": {
+      "test_cases": [
+        {
+          "name": "export_function_error",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path - Find and Link Duplicate Assets": {
+      "test_cases": [
+        {
+          "name": "find_and_link_duplicate_assets_happy_path",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case - No Duplicate Assets Found": {
+      "test_cases": [
+        {
+          "name": "no_duplicate_assets_found_edge_case",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario - System Unable to Process Query": {
+      "test_cases": [
+        {
+          "name": "system_unable_to_process_query_error",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path Password Reset": {
+      "test_cases": [
+        {
+          "name": "happy_path_password_reset",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Edge Case: Reset Password with Weak New Password": {
+      "test_cases": [
+        {
+          "name": "edge_case_weak_new_password",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Error Scenario: Reset Password with Incorrect Current Password": {
+      "test_cases": [
+        {
+          "name": "error_scenario_incorrect_current_password",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Data Integrity: Validate Successful Password Change": {
+      "test_cases": [
+        {
+          "name": "data_integrity_validate_password_change",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

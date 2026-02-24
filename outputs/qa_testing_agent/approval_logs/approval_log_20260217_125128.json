@@ -1,0 +1,154 @@
+{
+  "timestamp": "2026-02-17T12:51:28.374985",
+  "stories_processed": 2,
+  "total_test_cases": 16,
+  "total_scenarios": 16,
+  "total_steps": 18,
+  "scenarios": {
+    "HAPPY_PATH - Filter assets using a single tag and auto-populate additional tags": {
+      "test_cases": [
+        {
+          "name": "single_tag_selection_and_auto_populate_additional_tags",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "SEQUENTIAL_REFINEMENT - Further refine results using newly surfaced tags": {
+      "test_cases": [
+        {
+          "name": "refine_results_with_newly_surfaced_tags",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "STATE_PERSISTENCE - User-selected tags remain highlighted after additional tags load": {
+      "test_cases": [
+        {
+          "name": "user_selected_tags_remain_highlighted",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Ensure top 20 tags are displayed without omission": {
+      "test_cases": [
+        {
+          "name": "verify_top_20_tags_displayed",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Newly added tags match existing UI style": {
+      "test_cases": [
+        {
+          "name": "new_tags_match_existing_ui_style",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - UI updates seamlessly after loading additional tags": {
+      "test_cases": [
+        {
+          "name": "seamless_ui_update_post_loading",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle failure in loading additional tags": {
+      "test_cases": [
+        {
+          "name": "handle_failure_in_loading_additional_tags",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REGRESSION - Existing filter functionality remains unaffected": {
+      "test_cases": [
+        {
+          "name": "existing_filter_functionality_unaffected",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "HAPPY_PATH - Successfully applying OR operator in Advanced Filter": {
+      "test_cases": [
+        {
+          "name": "apply_or_operator_success",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "STATE_PERSISTENCE - Filter panel state after applying OR operator": {
+      "test_cases": [
+        {
+          "name": "filter_panel_state_persistence",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Applying OR operator with slow network": {
+      "test_cases": [
+        {
+          "name": "or_operator_slow_network",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handling errors during filter panel reload": {
+      "test_cases": [
+        {
+          "name": "filter_panel_reload_error_handling",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Filter options based on metadata and previous filters": {
+      "test_cases": [
+        {
+          "name": "filter_options_based_on_metadata",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - UI consistency after applying OR operator": {
+      "test_cases": [
+        {
+          "name": "ui_consistency_after_applying_or",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "PERFORMANCE_SCALE - Applying OR operator with large data sets": {
+      "test_cases": [
+        {
+          "name": "or_operator_large_data_sets",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "FILTER_RESULTS_UPDATE_AUTOMATICALLY - Results update after applying OR operator": {
+      "test_cases": [
+        {
+          "name": "results_update_after_applying_or",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

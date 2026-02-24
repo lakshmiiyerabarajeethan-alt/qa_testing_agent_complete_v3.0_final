@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-02-13T16:18:49.250122",
+  "stories_processed": 3,
+  "total_test_cases": 9,
+  "total_scenarios": 9,
+  "total_steps": 31,
+  "scenarios": {
+    "Happy Path Export Assets": {
+      "test_cases": [
+        {
+          "name": "export_assets_happy_path",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case Scenario - No Assets Selected": {
+      "test_cases": [
+        {
+          "name": "export_no_assets_selected",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Error Scenario - Export Function Failure": {
+      "test_cases": [
+        {
+          "name": "export_function_failure",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Happy Path - Find and Link Duplicate Assets": {
+      "test_cases": [
+        {
+          "name": "happy_path_find_and_link_duplicates",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Edge Case - No Duplicate Assets Found": {
+      "test_cases": [
+        {
+          "name": "edge_case_no_duplicates",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario - System Timeout During Search": {
+      "test_cases": [
+        {
+          "name": "error_scenario_system_timeout",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path Password Reset": {
+      "test_cases": [
+        {
+          "name": "happy_path_password_reset",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Edge Case: Password Reset with Weak Password": {
+      "test_cases": [
+        {
+          "name": "edge_case_weak_password",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario: Password Reset without Internet Connection": {
+      "test_cases": [
+        {
+          "name": "error_scenario_no_internet",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

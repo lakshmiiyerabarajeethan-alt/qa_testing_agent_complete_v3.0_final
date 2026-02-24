@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-02-16T12:12:18.883360",
+  "stories_processed": 2,
+  "total_test_cases": 2,
+  "total_scenarios": 2,
+  "total_steps": 7,
+  "scenarios": {
+    "Auto-Populate": {
+      "test_cases": [
+        {
+          "name": "test_csv-1_default",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Reload": {
+      "test_cases": [
+        {
+          "name": "test_csv-2_default",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx",
+  "approval_decision": "REVISIONS_REQUESTED",
+  "revision_request": "the test cases dont look apt i am looking for 1) Core functionality",
+  "decision_timestamp": "2026-02-16T12:14:48.185233"
+}

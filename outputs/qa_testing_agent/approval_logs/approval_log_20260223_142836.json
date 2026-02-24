@@ -1,0 +1,172 @@
+{
+  "timestamp": "2026-02-23T14:28:36.776682",
+  "stories_processed": 2,
+  "total_test_cases": 18,
+  "total_scenarios": 18,
+  "total_steps": 27,
+  "scenarios": {
+    "HAPPY_PATH - Auto-populate additional tags after results load": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_after_results_load",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Select multiple tags for filtering": {
+      "test_cases": [
+        {
+          "name": "select_multiple_tags_for_filtering",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Further refine results with additional tags": {
+      "test_cases": [
+        {
+          "name": "further_refine_with_additional_tags",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "STATE_PERSISTENCE - User-selected tags remain highlighted": {
+      "test_cases": [
+        {
+          "name": "user_selected_tags_remain_highlighted",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - Display all tags associated with returned results": {
+      "test_cases": [
+        {
+          "name": "display_all_tags_associated_with_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Consistent styling of newly added tags": {
+      "test_cases": [
+        {
+          "name": "consistent_styling_of_newly_added_tags",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - Handle zero results gracefully": {
+      "test_cases": [
+        {
+          "name": "handle_zero_results_gracefully",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Seamless UI update after loading": {
+      "test_cases": [
+        {
+          "name": "seamless_ui_update_after_loading",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ERROR_FAILURE - Network error during tag population": {
+      "test_cases": [
+        {
+          "name": "network_error_during_tag_population",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "HAPPY_PATH - Full Filter Reload on OR Operator Selection": {
+      "test_cases": [
+        {
+          "name": "full_filter_reload_on_or_operator_selection",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - Updated Filter Options Based on Previous Selections": {
+      "test_cases": [
+        {
+          "name": "updated_filter_options_based_on_previous_selections",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "STATE_PERSISTENCE - No Loss of Existing Filters After Reload": {
+      "test_cases": [
+        {
+          "name": "no_loss_of_existing_filters_after_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Smooth Reload Experience": {
+      "test_cases": [
+        {
+          "name": "smooth_reload_experience",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Filter Results Update Automatically": {
+      "test_cases": [
+        {
+          "name": "filter_results_update_automatically",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle Filter Reload Failure Gracefully": {
+      "test_cases": [
+        {
+          "name": "handle_filter_reload_failure_gracefully",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REMOVAL_DESELECTION - Undo OR Operator Selection": {
+      "test_cases": [
+        {
+          "name": "undo_or_operator_selection",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BOUNDARY_EMPTY - No Filters Applied": {
+      "test_cases": [
+        {
+          "name": "no_filters_applied",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "MIXED_DATA - Filters with Mixed Metadata": {
+      "test_cases": [
+        {
+          "name": "filters_with_mixed_metadata",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

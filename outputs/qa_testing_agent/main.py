@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import Optional
 
 from config.settings import settings
+from utils.token_tracker import token_tracker
 from parsers.excel_parser import TestCaseParser
 from orchestrator import QATestingOrchestrator
 from executors.test_executor import TestExecutor
@@ -56,6 +57,7 @@ class QATestingPipeline:
         logger.info("QA TESTING AGENT - CSV STORIES INTEGRATION")
         logger.info("="*70)
         
+        token_tracker.reset()  # clear any usage from previous runs
         pipeline_start = datetime.now()
         
         # Phase 1: Read CSV stories
@@ -159,6 +161,7 @@ class QATestingPipeline:
         logger.info("QA TESTING AGENT - EXCEL INPUT")
         logger.info("="*70)
         
+        token_tracker.reset()  # clear any usage from previous runs
         pipeline_start = datetime.now()
         
         logger.info("\n[Phase 1] Parsing test cases from Excel...")
@@ -225,6 +228,9 @@ class QATestingPipeline:
             logger.info(f"Results: Passed: {passed}, Failed: {failed}, Rate: {rate:.1f}%")
         
         logger.info("="*70 + "\n")
+        
+        # Token usage across all agents for this run
+        token_tracker.print_summary()
 
 def main():
     """Main entry point"""

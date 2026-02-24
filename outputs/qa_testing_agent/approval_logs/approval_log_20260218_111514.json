@@ -1,0 +1,154 @@
+{
+  "timestamp": "2026-02-18T11:15:14.618718",
+  "stories_processed": 2,
+  "total_test_cases": 16,
+  "total_scenarios": 16,
+  "total_steps": 17,
+  "scenarios": {
+    "HAPPY_PATH - Verify auto-population of tags after initial filter": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_after_initial_selection",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "SEQUENTIAL_REFINEMENT - Further refine results using newly surfaced tags": {
+      "test_cases": [
+        {
+          "name": "refine_results_with_newly_surfaced_tags",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "STATE_PERSISTENCE - User-selected tags remain highlighted after async refresh": {
+      "test_cases": [
+        {
+          "name": "user_selected_tags_persist_after_refresh",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Verify top 20 tags logic": {
+      "test_cases": [
+        {
+          "name": "verify_top_20_tags_displayed",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Newly added tags match existing UI style": {
+      "test_cases": [
+        {
+          "name": "new_tags_match_existing_ui_style",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Loader state during tag auto-population": {
+      "test_cases": [
+        {
+          "name": "loader_state_during_tag_auto_population",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REGRESSION - Unrelated features remain functional": {
+      "test_cases": [
+        {
+          "name": "unrelated_features_still_functional_after_update",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle failure in tag fetching": {
+      "test_cases": [
+        {
+          "name": "handle_failure_in_tag_fetching",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "HAPPY_PATH - Applying OR operator in Advanced Filter": {
+      "test_cases": [
+        {
+          "name": "apply_or_operator_success",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Retain applied filters after reload": {
+      "test_cases": [
+        {
+          "name": "retain_filters_after_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Smooth reload experience": {
+      "test_cases": [
+        {
+          "name": "smooth_reload_experience",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Filter results update automatically": {
+      "test_cases": [
+        {
+          "name": "automatic_results_update_post_filter",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle filter reload failure": {
+      "test_cases": [
+        {
+          "name": "filter_reload_failure_handling",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Updated filter options based on metadata": {
+      "test_cases": [
+        {
+          "name": "updated_filter_options_post_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REGRESSION - Verify existing functionality": {
+      "test_cases": [
+        {
+          "name": "verify_existing_functionality_post_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "PERFORMANCE_SCALE - Large data set filter application": {
+      "test_cases": [
+        {
+          "name": "large_data_set_filter_application",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

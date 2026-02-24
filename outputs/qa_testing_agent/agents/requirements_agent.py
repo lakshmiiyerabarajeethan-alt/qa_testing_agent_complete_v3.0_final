@@ -1,172 +1,123 @@
 """
-Requirements Analysis Agent
-Analyzes test case requirements using OpenAI
+Requirements Analysis Agent - Analyzes test case steps and extracts
+structured requirements for the Test Designer Agent.
+
+Updated to pass BASE_URL and credentials as part of analysis so the designer
+has all the context it needs to generate complete tests.
 """
-import json
 import logging
-import re
-from typing import Optional
+import json
 from openai import OpenAI
 from models import TestCase, RequirementsAnalysis
 from config.settings import settings
+from utils.token_tracker import token_tracker
 
 logger = logging.getLogger(__name__)
 
+
+SYSTEM_PROMPT = """You are a senior QA engineer analyzing test cases.
+
+Extract structured requirements from the test case steps.
+Focus on:
+1. What the test scenario is testing
+2. What actions need to be performed (clicks, form fills, navigation, etc.)
+3. What assertions need to be made (verifications, checks)
+4. What data is needed
+
+Return valid JSON only:
+{
+    "scenario_understanding": "Clear description of what this test verifies",
+    "identified_requirements": ["requirement 1", "requirement 2", ...],
+    "test_data_needs": {
+        "key": "value describing what data is needed"
+    },
+    "assumptions": ["assumption 1", "assumption 2"]
+}
+"""
+
+
 class RequirementsAnalysisAgent:
-    """Analyzes test case requirements"""
-    
+    """Analyzes test case requirements for the test designer"""
+
     def __init__(self):
         self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
         self.model = settings.OPENAI_MODEL
-    
-    def analyze(self, test_case: TestCase, retry_context: Optional[str] = None) -> RequirementsAnalysis:
-        """
-        Analyze test case requirements
-        
-        Args:
-            test_case: TestCase to analyze
-            retry_context: Context if this is a retry due to data issue
-            
-        Returns:
-            RequirementsAnalysis object
-        """
-        prompt = self._build_prompt(test_case, retry_context)
-        
+
+    def analyze(self, test_case: TestCase, retry_context: str = None) -> RequirementsAnalysis:
+        """Analyze test case and extract requirements"""
+
+        steps_text = "\n".join([
+            f"  Step {s.step_no}: {s.description}\n  Expected: {s.expected_results}"
+            for s in test_case.steps
+        ])
+
+        prompt = f"""Analyze this test case and extract requirements:
+
+Test Scenario: {test_case.test_scenario}
+Test Case: {test_case.test_case_name}
+Base URL: {settings.BASE_URL}
+
+Steps:
+{steps_text}
+
+Additional Test Data: {json.dumps(test_case.test_data or {}, indent=2)}
+
+Return JSON with requirements analysis.
+"""
+
+        if retry_context:
+            prompt = f"Previous attempt context:\n{retry_context}\n\n{prompt}"
+
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {
-                        "role": "system",
-                        "content": """You are an expert QA analyst specializing in requirements analysis.
-                        Your job is to deeply understand test requirements, identify all edge cases,
-                        and determine what test data is needed. Always respond with valid JSON."""
-                    },
+                    {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=settings.OPENAI_TEMPERATURE,
-                max_tokens=settings.OPENAI_MAX_TOKENS
+                temperature=0.3,
+                max_tokens=1500,
             )
-            
-            result_text = response.choices[0].message.content or ""
-            result_json = self._safe_parse_json(result_text)
-            if result_json is None:
-                logger.error("Failed to parse JSON response: empty or invalid content")
-                logger.error(f"Raw model response (first 500 chars): {result_text[:500]}")
-                return self._fallback_analysis(test_case, "Invalid JSON response")
-            
-            analysis = RequirementsAnalysis(
-                test_case_id=f"{test_case.test_scenario}_{test_case.test_case_name}",
-                scenario_understanding=result_json.get("scenario_understanding", ""),
-                identified_requirements=result_json.get("identified_requirements", []),
-                test_data_needs=result_json.get("test_data_needs", {}),
-                assumptions=result_json.get("assumptions", [])
+            token_tracker.record("RequirementsAgent", response)
+
+            raw = response.choices[0].message.content.strip()
+            if raw.startswith("```"):
+                lines = raw.split("\n")
+                raw = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+
+            data = json.loads(raw)
+
+            test_case_id = f"{test_case.test_scenario}_{test_case.test_case_name}"
+
+            result = RequirementsAnalysis(
+                test_case_id=test_case_id,
+                scenario_understanding=data.get("scenario_understanding", ""),
+                identified_requirements=data.get("identified_requirements", []),
+                test_data_needs=data.get("test_data_needs", {}),
+                assumptions=data.get("assumptions", []),
             )
-            
-            logger.info(f"Requirements analysis completed for {analysis.test_case_id}")
-            return analysis
-            
+
+            logger.info(f"Requirements analysis completed for {test_case_id}")
+            return result
+
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON response: {str(e)}")
-            return self._fallback_analysis(test_case, "JSON parse error")
+            logger.error(f"Failed to parse requirements JSON: {e}")
+            test_case_id = f"{test_case.test_scenario}_{test_case.test_case_name}"
+            return RequirementsAnalysis(
+                test_case_id=test_case_id,
+                scenario_understanding=f"Test case: {test_case.test_scenario} - {test_case.test_case_name}",
+                identified_requirements=[s.description for s in test_case.steps],
+                test_data_needs={"base_url": settings.BASE_URL},
+                assumptions=["Standard browser-based web application"],
+            )
+
         except Exception as e:
-            logger.error(f"Error analyzing requirements: {str(e)}")
-            raise
-    
-    def _build_prompt(self, test_case: TestCase, retry_context: Optional[str] = None) -> str:
-        """Build the analysis prompt"""
-        steps_text = "\n".join([
-            f"Step {step.step_no}: {step.description}\n  Expected: {step.expected_results}"
-            for step in test_case.steps
-        ])
-        
-        base_prompt = f"""Analyze the following test case and provide detailed requirements analysis:
-
-Test Scenario: {test_case.test_scenario}
-Test Case Name: {test_case.test_case_name}
-Test Steps:
-{steps_text}
-
-Remarks: {test_case.remarks or 'None'}
-
-Please provide a JSON response with the following structure:
-{{
-  "scenario_understanding": "Clear explanation of what this test case is validating",
-  "identified_requirements": [
-    "List of all functional requirements this test must cover",
-    "Include both positive and negative scenarios"
-  ],
-  "test_data_needs": {{
-    "user_type": "e.g., admin, regular user",
-    "pre_conditions": "What system state is needed before test runs",
-    "data_fields": {{"field_name": "description"}},
-    "environmental_dependencies": ["any external systems needed"]
-  }},
-  "assumptions": ["Assumption 1", "Assumption 2"]
-}}
-"""
-        
-        if retry_context:
-            base_prompt += f"\n\nPREVIOUS FEEDBACK (Retry context):\n{retry_context}\n\nPlease adjust the analysis and test data based on this feedback."
-        
-        return base_prompt
-
-    def _fallback_analysis(self, test_case: TestCase, reason: str) -> RequirementsAnalysis:
-        """
-        Provide a minimal, best-effort requirements analysis to keep the pipeline moving
-        when LLM output is not valid JSON.
-        """
-        scenario_text = (
-            f"Fallback analysis due to {reason}. "
-            f"Validate scenario '{test_case.test_scenario}' for test case '{test_case.test_case_name}'."
-        )
-        identified = [
-            f"Validate steps for scenario: {test_case.test_scenario}",
-            "Cover expected results for each step",
-            "Include basic negative and edge conditions where applicable"
-        ]
-        test_data_needs = {
-            "pre_conditions": "Environment ready for scenario execution",
-            "data_fields": {},
-            "environmental_dependencies": []
-        }
-        assumptions = [
-            "System under test is accessible",
-            "Test data can be created or mocked if needed"
-        ]
-        return RequirementsAnalysis(
-            test_case_id=f"{test_case.test_scenario}_{test_case.test_case_name}",
-            scenario_understanding=scenario_text,
-            identified_requirements=identified,
-            test_data_needs=test_data_needs,
-            assumptions=assumptions
-        )
-
-    def _safe_parse_json(self, text: str):
-        """
-        Attempt to parse JSON from model output.
-        Accepts raw JSON or JSON wrapped in code fences/text.
-        """
-        if not text:
-            return None
-
-        cleaned = text.strip()
-        if cleaned.startswith("```"):
-            cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", cleaned, flags=re.IGNORECASE | re.MULTILINE).strip()
-
-        try:
-            return json.loads(cleaned)
-        except json.JSONDecodeError:
-            pass
-
-        # Try to extract JSON object from response
-        start = cleaned.find("{")
-        end = cleaned.rfind("}")
-        if start == -1 or end == -1 or end <= start:
-            return None
-
-        snippet = cleaned[start:end + 1]
-        try:
-            return json.loads(snippet)
-        except json.JSONDecodeError:
-            return None
+            logger.error(f"Requirements analysis error: {e}", exc_info=True)
+            test_case_id = f"{test_case.test_scenario}_{test_case.test_case_name}"
+            return RequirementsAnalysis(
+                test_case_id=test_case_id,
+                scenario_understanding=test_case.test_scenario,
+                identified_requirements=[s.description for s in test_case.steps],
+                test_data_needs={},
+                assumptions=[],
+            )

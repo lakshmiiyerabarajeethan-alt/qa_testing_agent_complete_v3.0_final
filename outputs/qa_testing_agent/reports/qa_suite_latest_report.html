@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Test Report - qa_suite_latest</title>
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .report-id {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .timestamp {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .summary-section {
+            padding: 40px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .summary-section h2 {
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .summary-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .metric {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .metric.approved {
+            color: #28a745;
+        }
+        
+        .metric.rejected {
+            color: #dc3545;
+        }
+        
+        .metric .passed {
+            color: #28a745;
+        }
+        
+        .progress-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .progress-bar {
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-passed {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+        }
+        
+        .details-section {
+            padding: 40px;
+        }
+        
+        .details-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .test-details {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .test-item {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .test-item.passed {
+            border-left: 5px solid #28a745;
+        }
+        
+        .test-item.failed {
+            border-left: 5px solid #dc3545;
+        }
+        
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .test-header h3 {
+            margin: 0;
+            font-size: 1.1em;
+        }
+        
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-badge.passed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .test-content {
+            padding: 20px;
+        }
+        
+        .test-section {
+            margin-bottom: 20px;
+        }
+        
+        .test-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .test-section h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+        
+        .rejection-section {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .rejection-item {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .rejection-reason {
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .improvement-suggestions {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .logs-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .log-item {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .approved {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .rejected {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>QA Test Execution Report</h1>
+            <p class="report-id">Suite ID: qa_suite_latest</p>
+            <p class="timestamp">Generated: 2026-02-23 13:40:09</p>
+        </header>
+        
+        <div class="summary-section">
+            <h2>Executive Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h3>Total Tests</h3>
+                    <p class="metric">16</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Approved</h3>
+                    <p class="metric approved">15</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Rejected</h3>
+                    <p class="metric rejected">1</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Pass Rate</h3>
+                    <p class="metric">
+                        <span class="warning">0.0%</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="progress-section">
+                <h3>Test Results Distribution</h3>
+                <div class="progress-bar">
+                    <div class="progress-passed" style="width: 0.0%"></div>
+                </div>
+                <p class="progress-text">
+                    0 Passed | 15 Failed
+                </p>
+            </div>
+        </div>
+        
+        <div class="details-section">
+            <h2>Test Details</h2>
+            
+            <div class="test-details">
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 1: auto_populate_and_select_additional_tags</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all the steps described in the test case with appropriate Playwright actions and assertions.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-44388",
+  "story_title": "Auto-Populate Additional Tags in Filter After Results Load"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.60s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/auto_populate_and_select_additional_tags_20260223_133629.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 2: sequential_refinement_with_multiple_tags</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all described steps with appropriate Playwright actions and assertions.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-44388",
+  "story_title": "Auto-Populate Additional Tags in Filter After Results Load"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.51s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/sequential_refinement_with_multiple_tags_20260223_133643.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 3: user_selected_tags_remain_highlighted</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all steps described in the test case, includes assertions, navigates to the correct URL, and uses intelligent element discovery.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-44388",
+  "story_title": "Auto-Populate Additional Tags in Filter After Results Load"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.48s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/user_selected_tags_remain_highlighted_20260223_133658.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 4: display_top_20_tags_only</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all steps described in the test case, includes assertions for expected results, navigates to the correct URL, and uses intelligent element discovery.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-44388",
+  "story_title": "Auto-Populate Additional Tags in Filter After Results Load"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.55s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/display_top_20_tags_only_20260223_133712.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 5: new_tags_match_existing_ui_style</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all the steps described in the test case, including assertions to verify that the styles of newly added tags match those of existing tags. It navigates to the correct URL and uses intelligent element discovery methods.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-44388",
+  "story_title": "Auto-Populate Additional Tags in Filter After Results Load"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.61s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/new_tags_match_existing_ui_style_20260223_133727.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 6: async_load_tags_without_ui_flicker</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all steps described in the test case, includes assertions for expected results, navigates to the correct URL, and uses intelligent element discovery.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-44388",
+  "story_title": "Auto-Populate Additional Tags in Filter After Results Load"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.66s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/async_load_tags_without_ui_flicker_20260223_133741.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 7: filter_functionality_post_update</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all the steps described in the test case, includes assertions for expected results, navigates to the correct URL, and uses intelligent element discovery.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-44388",
+  "story_title": "Auto-Populate Additional Tags in Filter After Results Load"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.67s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/filter_functionality_post_update_20260223_133756.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 8: handle_failure_in_loading_additional_tags</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all steps described in the test case, including simulating a network error, attempting to load additional tags, and verifying the presence of an error message. It uses intelligent element discovery and includes assertions.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-44388",
+  "story_title": "Auto-Populate Additional Tags in Filter After Results Load"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 15.95s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/handle_failure_in_loading_additional_tag_20260223_133811.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 9: apply_or_operator_reload_filters_success</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all the steps described in the test case with appropriate Playwright actions and assertions.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-59442",
+  "story_title": "Reload Filters When OR operator Is Selected in Advanced Filter"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.96s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/apply_or_operator_reload_filters_success_20260223_133827.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 10: existing_filters_persist_after_reload</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all steps described in the test case, including applying a filter, selecting the OR operator, reloading the page, and verifying that the filters persist. It uses intelligent element discovery and includes assertions for expected results.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-59442",
+  "story_title": "Reload Filters When OR operator Is Selected in Advanced Filter"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.34s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/existing_filters_persist_after_reload_20260223_133842.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 11: filter_panel_reload_no_ui_flicker</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all steps described in the test case, includes assertions for expected results, navigates to the correct URL, and uses intelligent element discovery.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-59442",
+  "story_title": "Reload Filters When OR operator Is Selected in Advanced Filter"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.46s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/filter_panel_reload_no_ui_flicker_20260223_133856.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 12: filter_reload_failure_error_handling</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all steps described in the test case, including assertions for expected results.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-59442",
+  "story_title": "Reload Filters When OR operator Is Selected in Advanced Filter"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.79s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/filter_reload_failure_error_handling_20260223_133910.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 13: ui_consistency_after_filter_reload</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all the steps described in the test case, includes assertions for expected results, navigates to the correct URL, and uses intelligent element discovery.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-59442",
+  "story_title": "Reload Filters When OR operator Is Selected in Advanced Filter"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.47s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/ui_consistency_after_filter_reload_20260223_133925.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 14: updated_filter_options_post_or_operator</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all the steps described in the test case, includes assertions for expected results, navigates to the correct URL, and uses intelligent element discovery.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-59442",
+  "story_title": "Reload Filters When OR operator Is Selected in Advanced Filter"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.53s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/updated_filter_options_post_or_operator_20260223_133940.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 15: filter_reload_performance_large_datasets</h3>
+                    <span class="status-badge failed">FAILED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="approved">
+                                Yes
+                            </span>
+                        </p>
+                        
+                        <p><strong>Details:</strong> The test code implements all steps described in the test case, including assertions for expected results.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-59442",
+  "story_title": "Reload Filters When OR operator Is Selected in Advanced Filter"
+}</pre>
+        </div>
+        
+                    
+                    
+        <div class="test-section">
+            <h4>Execution Details</h4>
+            <p><strong>Duration:</strong> 14.51s</p>
+        <p><strong>Error:</strong> <pre>playwright._impl._errors.TimeoutError: Locator.click: Timeout 10000ms exceeded. | Call log: | - waiting for locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first</pre></p><p><strong>Screenshot:</strong> <a href="screenshots/filter_reload_performance_large_datasets_20260223_133954.png">View</a></p></div>
+                </div>
+            </div>
+            
+            <div class="test-item failed">
+                <div class="test-header">
+                    <h3>Test 16: clear_filters_functionality_post_or_application</h3>
+                    <span class="status-badge failed">NOT EXECUTED</span>
+                </div>
+                
+                <div class="test-content">
+                    <div class="test-section">
+                        <h4>Review Status</h4>
+                        <p>
+                            <strong>Approved:</strong> 
+                            <span class="rejected">
+                                No
+                            </span>
+                        </p>
+                        <p><strong>Rejection Reason:</strong> NONE</p>
+                        <p><strong>Details:</strong> The test is complete and executable, covering all steps with appropriate assertions.</p>
+                    </div>
+                    
+                    
+        <div class="test-section">
+            <h4>Test Data</h4>
+            <pre class="code-block">{
+  "story_id": "CSV-59442",
+  "story_title": "Reload Filters When OR operator Is Selected in Advanced Filter"
+}</pre>
+        </div>
+        
+                    
+                    
+                </div>
+            </div>
+            </div>
+            
+            <div class="rejection-section"><h2>Rejection Details</h2>
+            <div class="rejection-item">
+                <h3>clear_filters_functionality_post_or_application</h3>
+                <div class="rejection-reason">
+                    <p><strong>Primary Reason:</strong> NONE</p>
+                    <p><strong>Details:</strong> The test is complete and executable, covering all steps with appropriate assertions.</p>
+                </div>
+                
+                <div class="rejection-history">
+                    <h4>Rejection History</h4>
+                    <ul>
+            <li>
+                Attempt 1: DATA_ISSUE
+                <br><small>The test is missing assertions for verifying the system returns to its baseline state after clearing filters.</small>
+            </li>
+            
+            <li>
+                Attempt 2: NONE
+                <br><small>The test is complete and executable, covering all steps with appropriate assertions.</small>
+            </li>
+            </ul>
+                </div>
+                
+                <div class="improvement-suggestions">
+                    <h4>Improvement Suggestions</h4>
+                    <p>Ensure that the test environment settings are correctly configured, such as BASE_URL and FEATURE_URL, to avoid navigation issues.</p>
+                </div>
+            </div>
+            </div>
+            
+            <div class="logs-section"><h2>Execution Logs</h2>
+                <div class="log-item">
+                    <h3>auto_populate_and_select_additional_tags</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_auto_populate_and_select_additional_tags.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>sequential_refinement_with_multiple_tags</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_sequential_refinement_with_multiple_tags.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>user_selected_tags_remain_highlighted</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_user_selected_tags_remain_highlighted.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>display_top_20_tags_only</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_display_top_20_tags_only.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>new_tags_match_existing_ui_style</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_new_tags_match_existing_ui_style.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>async_load_tags_without_ui_flicker</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_async_load_tags_without_ui_flicker.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>filter_functionality_post_update</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_filter_functionality_post_update.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>handle_failure_in_loading_additional_tags</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_handle_failure_in_loading_additional_tags.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>apply_or_operator_reload_filters_success</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_apply_or_operator_reload_filters_success.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>existing_filters_persist_after_reload</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_existing_filters_persist_after_reload.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>filter_panel_reload_no_ui_flicker</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_filter_panel_reload_no_ui_flicker.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>filter_reload_failure_error_handling</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_filter_reload_failure_error_handling.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>ui_consistency_after_filter_reload</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_ui_consistency_after_filter_reload.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>updated_filter_options_post_or_operator</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_updated_filter_options_post_or_operator.py</pre>
+                    </details>
+                </div>
+                
+                <div class="log-item">
+                    <h3>filter_reload_performance_large_datasets</h3>
+                    <details>
+                        <summary>View Logs</summary>
+                        <pre>Test file: C:\Users\laksh\qa_testing_agent_complete_v3.0_final\outputs\qa_testing_agent\reports\_run_filter_reload_performance_large_datasets.py</pre>
+                    </details>
+                </div>
+                </div>
+        </div>
+        
+        <footer>
+            <p>Report generated by QA Testing Agent</p>
+        </footer>
+    </div>
+</body>
+</html>

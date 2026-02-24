@@ -64,13 +64,22 @@ class TestCaseParser:
                     case_name = row_values[header_map.get('Test Case', 0)]
                     test_data = row_values[header_map.get('Test Data', 0)]
                     remarks = row_values[header_map.get('Remarks', 0)]
+                    if isinstance(test_data, str):
+                        try:
+                            import ast
+                            test_data = ast.literal_eval(test_data)
+                        except Exception:
+                            test_data = {"raw": test_data}
+                    if test_data is None:
+                        test_data = {}
                     
                     current_scenario = scenario
                     current_case = TestCase(
                         test_scenario=scenario,
                         test_case_name=case_name or f"{scenario}_test",
                         test_data=test_data,
-                        remarks=remarks
+                        remarks=remarks,
+                        steps=[]
                     )
                     steps = []
                 

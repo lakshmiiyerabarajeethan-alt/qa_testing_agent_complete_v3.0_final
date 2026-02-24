@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-02-16T11:29:35.981849",
+  "stories_processed": 2,
+  "total_test_cases": 6,
+  "total_scenarios": 6,
+  "total_steps": 22,
+  "scenarios": {
+    "Happy Path - Auto Populate Additional Tags": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_happy_path",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Edge Case - Filtering with Maximum Number of Tags": {
+      "test_cases": [
+        {
+          "name": "max_tags_filtering_edge_case",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario - Failed to Load Additional Tags": {
+      "test_cases": [
+        {
+          "name": "error_loading_additional_tags",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path Filter Reload with OR Operator": {
+      "test_cases": [
+        {
+          "name": "test_case_filter_reload_OR_operator",
+          "steps": 6
+        }
+      ],
+      "step_count": 6
+    },
+    "Edge Case Scenario with Maximum Filters": {
+      "test_cases": [
+        {
+          "name": "test_case_maximum_filters_edge_case",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario: Filter Reload Failure": {
+      "test_cases": [
+        {
+          "name": "test_case_filter_reload_failure",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

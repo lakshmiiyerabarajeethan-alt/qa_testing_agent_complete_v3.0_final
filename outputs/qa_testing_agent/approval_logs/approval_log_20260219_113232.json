@@ -1,0 +1,154 @@
+{
+  "timestamp": "2026-02-19T11:32:32.981589",
+  "stories_processed": 2,
+  "total_test_cases": 16,
+  "total_scenarios": 16,
+  "total_steps": 19,
+  "scenarios": {
+    "HAPPY_PATH - User selects a tag and additional tags populate correctly": {
+      "test_cases": [
+        {
+          "name": "successful_tag_selection_and_auto_population",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - User refines search by selecting an additional tag": {
+      "test_cases": [
+        {
+          "name": "refine_search_with_additional_tag",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - User-selected tags remain highlighted after additional tags load": {
+      "test_cases": [
+        {
+          "name": "user_selected_tags_remain_highlighted",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Ensure top 20 tags are displayed without omission": {
+      "test_cases": [
+        {
+          "name": "display_top_20_tags_correctly",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Newly added tags match existing UI style": {
+      "test_cases": [
+        {
+          "name": "new_tags_match_existing_ui_style",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - UI updates seamlessly after loader completes": {
+      "test_cases": [
+        {
+          "name": "ui_updates_after_loader_completes",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle failure in loading additional tags": {
+      "test_cases": [
+        {
+          "name": "handle_failure_in_loading_additional_tags",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "PERFORMANCE_SCALE - Large set of tags loads efficiently": {
+      "test_cases": [
+        {
+          "name": "efficient_loading_for_large_tag_set",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "HAPPY_PATH - Successfully apply OR operator and reload filters": {
+      "test_cases": [
+        {
+          "name": "apply_or_operator_successfully",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Ensure existing filters remain after applying OR operator": {
+      "test_cases": [
+        {
+          "name": "existing_filters_persist_after_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Filter panel reloads without UI reset or flicker": {
+      "test_cases": [
+        {
+          "name": "smooth_filter_panel_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Updated filter options based on metadata and selections": {
+      "test_cases": [
+        {
+          "name": "updated_filter_options_post_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle filter reload failure gracefully": {
+      "test_cases": [
+        {
+          "name": "graceful_handling_of_filter_reload_failure",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "PERFORMANCE_SCALE - Filter reload performance with large data sets": {
+      "test_cases": [
+        {
+          "name": "filter_reload_performance_large_datasets",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "CLEAR_RESET_ALL - Clear all filters returns to initial state": {
+      "test_cases": [
+        {
+          "name": "clear_all_filters_after_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REGRESSION - Verify existing features work post filter reload": {
+      "test_cases": [
+        {
+          "name": "verify_existing_features_post_filter_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

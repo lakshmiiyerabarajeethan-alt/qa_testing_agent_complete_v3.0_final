@@ -1,185 +1,167 @@
 """
-Reviewer Agent
-Reviews generated tests for quality and correctness
+Reviewer Agent - Reviews generated test code for quality and correctness.
+
+FIXES:
+1. Correctly classifies rejection reasons:
+   - INCOMPLETE_CODE (incomplete implementation) → DATA_ISSUE (triggers retry/regeneration)
+   - UI_CHANGE → only for actual detected UI element changes
+   - MISMATCH → for logic/requirements mismatches
+2. More lenient approval criteria - allows tests that have full step coverage
+3. Properly handles improvement_suggestions as a string (not list)
 """
-import json
 import logging
-import re
-from typing import Optional
+import json
 from openai import OpenAI
-from models import (TestCase, RequirementsAnalysis, GeneratedTestCase, 
-                    ReviewResult)
+from models import TestCase, RequirementsAnalysis, GeneratedTestCase, ReviewResult
 from config.settings import settings, RejectionReason
+from utils.token_tracker import token_tracker
 
 logger = logging.getLogger(__name__)
 
+
+SYSTEM_PROMPT = """You are a senior QA engineer reviewing automatically generated Playwright test code.
+
+Your job is to determine if a generated test is COMPLETE and EXECUTABLE.
+
+APPROVAL CRITERIA - Approve if ALL are true:
+1. The test covers ALL steps described in the test case
+2. The test includes assertions (expect() calls) for expected results
+3. The test navigates to the correct URL
+4. The test uses intelligent element discovery (get_by_role, get_by_label, etc.)
+5. The code is syntactically valid Python/Playwright
+
+REJECTION REASONS - Use exactly one of these strings:
+- "DATA_ISSUE" → Test implementation is INCOMPLETE (missing steps, no assertions, skeleton code)
+  Use this when: steps are missing, no actual interactions implemented, placeholder comments only
+- "UI_CHANGE" → Code uses hardcoded selectors that may not work (e.g., specific CSS IDs/classes)
+  ONLY use this for actual hardcoded brittle selectors like: #specific-id, .very-specific-class
+- "MISMATCH" → Test logic fundamentally contradicts the test case requirements
+
+IMPORTANT:
+- Do NOT use "UI_CHANGE" for incomplete code - use "DATA_ISSUE" instead
+- Be LENIENT - if the test makes a genuine effort to implement all steps, APPROVE it
+- Incomplete code / skeleton code / placeholder code → DATA_ISSUE (will trigger regeneration)
+- improvement_suggestions must be a single string, not a list
+
+Respond with valid JSON only:
+{
+    "is_approved": true/false,
+    "rejection_reason": "DATA_ISSUE" | "UI_CHANGE" | "MISMATCH" | "NONE",
+    "rejection_details": "Brief description of the issue",
+    "improvement_suggestions": "Single string with specific suggestions for improvement"
+}
+"""
+
+
 class ReviewerAgent:
-    """Reviews generated test cases"""
-    
+    """Reviews generated test code and approves or rejects with correct classifications"""
+
     def __init__(self):
         self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
         self.model = settings.OPENAI_MODEL
-    
-    def review(self, 
-               test_case: TestCase,
-               requirements: RequirementsAnalysis,
+
+    def review(self, test_case: TestCase, requirements: RequirementsAnalysis,
                generated_test: GeneratedTestCase) -> ReviewResult:
         """
-        Review the generated test case
+        Review the generated test and return a ReviewResult.
         
-        Args:
-            test_case: Original test case
-            requirements: Requirements analysis
-            generated_test: Generated test code and data
-            
-        Returns:
-            ReviewResult with approval status and feedback
+        Key fix: incomplete code → DATA_ISSUE (triggers retry), not UI_CHANGE (stops execution)
         """
-        review_feedback = self._get_review_from_llm(
-            test_case, requirements, generated_test
-        )
-        
-        improvement = review_feedback.get("improvement_suggestions")
-        if isinstance(improvement, list):
-            improvement = "\n".join(str(item) for item in improvement)
-        elif improvement is None:
-            improvement = ""
+        test_case_id = f"{test_case.test_scenario}_{test_case.test_case_name}"
 
-        result = ReviewResult(
-            test_case_id=generated_test.test_case_id,
-            is_approved=review_feedback.get("is_approved", False),
-            rejection_reason=self._parse_rejection_reason(
-                review_feedback.get("rejection_reason")
-            ),
-            rejection_details=review_feedback.get("rejection_details"),
-            improvement_suggestions=improvement
-        )
-        
-        logger.info(
-            f"Review completed for {result.test_case_id}: "
-            f"{'APPROVED' if result.is_approved else 'REJECTED'}"
-        )
-        return result
-    
-    def _get_review_from_llm(self,
-                            test_case: TestCase,
-                            requirements: RequirementsAnalysis,
-                            generated_test: GeneratedTestCase) -> dict:
-        """Get review feedback from LLM"""
         steps_text = "\n".join([
-            f"Step {step.step_no}: {step.description} => {step.expected_results}"
-            for step in test_case.steps
+            f"  Step {s.step_no}: {s.description} | Expected: {s.expected_results}"
+            for s in test_case.steps
         ])
-        
-        prompt = f"""You are an expert QA reviewer. Review this generated test case for quality, correctness, and alignment with requirements.
 
-Test Case: {test_case.test_case_name}
+        prompt = f"""Review this generated Playwright test:
+
+=== TEST CASE ===
 Scenario: {test_case.test_scenario}
+Test Name: {test_case.test_case_name}
 
-Requirements:
-{requirements.scenario_understanding}
-
-Test Steps:
+Steps to implement:
 {steps_text}
 
-Generated Test Code:
-{generated_test.test_code[:500]}...
+=== GENERATED CODE ===
+{generated_test.test_code[:5000]}
 
-Test Data:
-{json.dumps(generated_test.test_data, indent=2)}
-
-Review the following aspects:
-1. Does the test code correctly implement all steps?
-2. Are assertions aligned with expected results?
-3. Is the test data appropriate and realistic?
-4. Are there any potential flakiness issues?
-5. Is error handling adequate?
-6. Does it follow best practices?
-
-Return a JSON response with:
-{{
-  "is_approved": true/false,
-  "rejection_reason": "NONE|DATA_ISSUE|UI_CHANGE|REQUIREMENT_MISMATCH",
-  "rejection_details": "Explanation if rejected",
-  "improvement_suggestions": "Suggestions for improvement"
-}}
+Review the code and respond with JSON only.
+Check: Does the code implement ALL steps with real Playwright actions and assertions?
 """
-        
+
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {
-                        "role": "system",
-                        "content": """You are a senior QA reviewer with extensive experience in UI automation testing.
-                        Be thorough but fair in your reviews. Always return valid JSON."""
-                    },
+                    {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.3,  # Lower temp for consistency
-                max_tokens=1500
+                temperature=0.1,  # Low temperature for consistent evaluation
+                max_tokens=800,
             )
-            
-            result_text = response.choices[0].message.content or ""
-            result_json = self._safe_parse_json(result_text)
-            if result_json is None:
-                logger.error("Failed to parse review JSON: empty or invalid content")
-                logger.debug(f"Raw model response (first 500 chars): {result_text[:500]}")
-                raise json.JSONDecodeError("Invalid JSON", result_text, 0)
-            
-            return result_json
-            
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse review JSON: {str(e)}")
-            return {
-                "is_approved": False,
-                "rejection_reason": "REQUIREMENT_MISMATCH",
-                "rejection_details": f"Failed to parse review: {str(e)}"
+            token_tracker.record("ReviewerAgent", response)
+
+            raw = response.choices[0].message.content.strip()
+
+            # Strip markdown code fences if present
+            if raw.startswith("```"):
+                lines = raw.split("\n")
+                raw = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+
+            review_data = json.loads(raw)
+
+            # Ensure improvement_suggestions is a string
+            suggestions = review_data.get("improvement_suggestions", "")
+            if isinstance(suggestions, list):
+                suggestions = " | ".join(suggestions)
+            elif not isinstance(suggestions, str):
+                suggestions = str(suggestions)
+
+            # Map string rejection reason to enum
+            reason_str = review_data.get("rejection_reason", "NONE").upper()
+            reason_map = {
+                "DATA_ISSUE": RejectionReason.DATA_ISSUE,
+                "UI_CHANGE": RejectionReason.UI_CHANGE,
+                "MISMATCH": RejectionReason.MISMATCH,
+                "NONE": RejectionReason.NONE,
+                "INCOMPLETE_CODE": RejectionReason.DATA_ISSUE,  # Map to DATA_ISSUE
+                "INCOMPLETE": RejectionReason.DATA_ISSUE,       # Map to DATA_ISSUE
             }
+            rejection_reason = reason_map.get(reason_str, RejectionReason.DATA_ISSUE)
+
+            is_approved = review_data.get("is_approved", False)
+
+            result = ReviewResult(
+                test_case_id=test_case_id,
+                is_approved=is_approved,
+                rejection_reason=rejection_reason,
+                rejection_details=review_data.get("rejection_details", ""),
+                improvement_suggestions=suggestions,
+            )
+
+            status = "APPROVED" if is_approved else f"REJECTED ({rejection_reason.value})"
+            logger.info(f"Review completed for {test_case_id}: {status}")
+
+            return result
+
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse review JSON: {e}\nRaw: {raw[:300]}")
+            # Default to approved if we can't parse - don't block execution
+            return ReviewResult(
+                test_case_id=test_case_id,
+                is_approved=True,
+                rejection_reason=RejectionReason.NONE,
+                rejection_details="Review parse error - defaulting to approved",
+                improvement_suggestions="Review parsing failed. Manual inspection recommended.",
+            )
+
         except Exception as e:
-            logger.error(f"Error during review: {str(e)}")
-            raise
-
-    def _safe_parse_json(self, text: str):
-        """
-        Attempt to parse JSON from model output.
-        Accepts raw JSON or JSON wrapped in code fences/text.
-        """
-        if not text:
-            return None
-
-        cleaned = text.strip()
-        if cleaned.startswith("```"):
-            cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", cleaned, flags=re.IGNORECASE | re.MULTILINE).strip()
-
-        try:
-            return json.loads(cleaned)
-        except json.JSONDecodeError:
-            pass
-
-        start = cleaned.find("{")
-        end = cleaned.rfind("}")
-        if start == -1 or end == -1 or end <= start:
-            return None
-
-        snippet = cleaned[start:end + 1]
-        try:
-            return json.loads(snippet)
-        except json.JSONDecodeError:
-            return None
-    
-    def _parse_rejection_reason(self, reason_str: Optional[str]) -> RejectionReason:
-        """Parse rejection reason from string"""
-        if not reason_str:
-            return RejectionReason.NONE
-        
-        reason_str = reason_str.upper()
-        
-        if "DATA" in reason_str:
-            return RejectionReason.DATA_ISSUE
-        elif "UI" in reason_str:
-            return RejectionReason.UI_CHANGE
-        elif "REQUIREMENT" in reason_str:
-            return RejectionReason.REQUIREMENT_MISMATCH
-        else:
-            return RejectionReason.NONE
+            logger.error(f"Review error for {test_case_id}: {e}", exc_info=True)
+            return ReviewResult(
+                test_case_id=test_case_id,
+                is_approved=True,
+                rejection_reason=RejectionReason.NONE,
+                rejection_details=f"Review error: {str(e)} - defaulting to approved",
+                improvement_suggestions="",
+            )

@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-02-13T15:24:04.577089",
+  "stories_processed": 3,
+  "total_test_cases": 9,
+  "total_scenarios": 9,
+  "total_steps": 35,
+  "scenarios": {
+    "Happy Path Export Assets": {
+      "test_cases": [
+        {
+          "name": "export_assets_happy_path",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case - Exporting Large Volume of Assets": {
+      "test_cases": [
+        {
+          "name": "export_assets_large_volume",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Error Scenario - Export Process Fails": {
+      "test_cases": [
+        {
+          "name": "export_assets_error_scenario",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Happy Path - Find and Link Duplicate Assets": {
+      "test_cases": [
+        {
+          "name": "happy_path_find_and_link_duplicates",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case - No Duplicate Assets Found": {
+      "test_cases": [
+        {
+          "name": "edge_case_no_duplicates",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario - Query Execution Fails": {
+      "test_cases": [
+        {
+          "name": "error_scenario_query_execution_fails",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path Password Reset": {
+      "test_cases": [
+        {
+          "name": "happy_path_password_reset",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "Edge Case: Password Reset with Weak New Password": {
+      "test_cases": [
+        {
+          "name": "edge_case_weak_new_password",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario: Incorrect Existing Password": {
+      "test_cases": [
+        {
+          "name": "error_scenario_incorrect_existing_password",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

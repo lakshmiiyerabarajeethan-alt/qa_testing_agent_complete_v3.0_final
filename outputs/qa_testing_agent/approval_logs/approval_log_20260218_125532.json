@@ -1,0 +1,163 @@
+{
+  "timestamp": "2026-02-18T12:55:32.418225",
+  "stories_processed": 2,
+  "total_test_cases": 17,
+  "total_scenarios": 17,
+  "total_steps": 19,
+  "scenarios": {
+    "HAPPY_PATH - Verify additional tags auto-populate after initial filter": {
+      "test_cases": [
+        {
+          "name": "auto_populate_additional_tags_on_initial_filter",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Further refine search with newly surfaced tags": {
+      "test_cases": [
+        {
+          "name": "refine_search_with_newly_surfaced_tags",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "STATE_PERSISTENCE - User-selected tags remain highlighted after additional tags load": {
+      "test_cases": [
+        {
+          "name": "user_selected_tags_remain_highlighted",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Verify top 20 tags concept": {
+      "test_cases": [
+        {
+          "name": "verify_top_20_tags_displayed",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Newly added tags match existing filter UI style": {
+      "test_cases": [
+        {
+          "name": "newly_added_tags_ui_consistency",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - UI updates seamlessly after loader completes": {
+      "test_cases": [
+        {
+          "name": "ui_updates_seamlessly_post_loader",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BOUNDARY_EMPTY - No additional tags available": {
+      "test_cases": [
+        {
+          "name": "no_additional_tags_scenario",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "MIXED_DATA - Assets with and without additional tags": {
+      "test_cases": [
+        {
+          "name": "mixed_data_assets_filtering",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Network error during additional tags loading": {
+      "test_cases": [
+        {
+          "name": "network_error_during_additional_tags_loading",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "HAPPY_PATH - Apply OR operator and verify filter reload": {
+      "test_cases": [
+        {
+          "name": "apply_or_operator_filter_reload",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Ensure existing filters remain after reload": {
+      "test_cases": [
+        {
+          "name": "existing_filters_persistence_post_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Filter panel reloads without UI reset": {
+      "test_cases": [
+        {
+          "name": "filter_panel_reload_no_ui_reset",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle filter reload failure gracefully": {
+      "test_cases": [
+        {
+          "name": "graceful_handling_of_filter_reload_failure",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Updated filter options based on metadata": {
+      "test_cases": [
+        {
+          "name": "updated_filter_options_based_on_metadata",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Verify UI consistency after filter reload": {
+      "test_cases": [
+        {
+          "name": "verify_ui_consistency_post_filter_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "PERFORMANCE_SCALE - Filter reload performance with large datasets": {
+      "test_cases": [
+        {
+          "name": "filter_reload_performance_large_datasets",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "CLEAR_RESET_ALL - Verify functionality of clear filters after using OR operator": {
+      "test_cases": [
+        {
+          "name": "clear_filters_functionality_post_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

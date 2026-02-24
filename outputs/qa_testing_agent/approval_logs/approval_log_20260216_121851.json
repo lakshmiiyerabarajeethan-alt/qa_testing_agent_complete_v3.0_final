@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-02-16T12:18:51.932429",
+  "stories_processed": 2,
+  "total_test_cases": 6,
+  "total_scenarios": 6,
+  "total_steps": 23,
+  "scenarios": {
+    "Happy Path - Auto-Populate and Filter Using Additional Tags": {
+      "test_cases": [
+        {
+          "name": "happy_path_auto_populate_additional_tags",
+          "steps": 5
+        }
+      ],
+      "step_count": 5
+    },
+    "Edge Case - Filtering with Maximum Number of Tags": {
+      "test_cases": [
+        {
+          "name": "edge_case_max_number_tags",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "Error Scenario - Network Failure on Tag Filtering": {
+      "test_cases": [
+        {
+          "name": "error_scenario_network_failure",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Happy Path - Applying OR Operator in Advanced Filter": {
+      "test_cases": [
+        {
+          "name": "apply_OR_operator_successful_reload",
+          "steps": 6
+        }
+      ],
+      "step_count": 6
+    },
+    "Edge Case - Applying OR Operator with Maximum Number of Filters": {
+      "test_cases": [
+        {
+          "name": "apply_OR_operator_max_filters",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "Error Scenario - Filter Reload Fails": {
+      "test_cases": [
+        {
+          "name": "filter_reload_failure",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

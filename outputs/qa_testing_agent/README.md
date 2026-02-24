@@ -1,359 +1,336 @@
-# QA Testing Agent - Multi-Agent Automated Testing System
+# QA Testing Agent v4.0 - Page Inspection System
 
-A sophisticated end-to-end automated QA testing system that uses multi-agent orchestration with OpenAI to intelligently generate, review, and execute Selenium/Playwright UI tests from test case specifications.
-
-## 🎯 Features
-
-### Multi-Agent Architecture
-- **Requirements Analysis Agent**: Deep understanding of test requirements and edge cases
-- **Test Designer Agent**: Generates production-ready Selenium/Playwright Python code
-- **Reviewer Agent**: Quality assurance and approval/rejection workflow
-
-### Intelligent Workflows
-- Sequential pipeline: Requirements → Design → Review → Execution
-- Auto-retry logic for data issues with context feedback
-- Manual intervention prompts for UI changes
-- Comprehensive rejection tracking and reporting
-
-### Mock Data & Fixtures
-- Automatic test data generation using Faker
-- Scenario-aware data generation (login, customer, financial, product)
-- Parameterized test support
-- Fixture management and auto-injection
-
-### Comprehensive Reporting
-- Professional HTML reports with CSS styling
-- Test scenario details and step-by-step execution
-- Coverage metrics and pass/fail rates
-- Screenshot capture on failures
-- Rejection reasons and improvement suggestions
-- Execution logs and detailed debugging information
-
-### Error Handling
-- Graceful failure handling with detailed error messages
-- Automatic retry with modified data for data-related issues
-- UI change detection with execution stop
-- Comprehensive logging (file and console)
-
-## 📋 Architecture
-
-```
-┌─────────────────────┐
-│  Excel Test Cases   │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  Test Case Parser   │
-└──────────┬──────────┘
-           │
-           ▼
-┌──────────────────────────────────────┐
-│     QA Testing Orchestrator          │
-│  ┌──────────────────────────────┐   │
-│  │ Requirements Analysis Agent  │   │
-│  └──────────┬───────────────────┘   │
-│             │                        │
-│  ┌──────────▼───────────────────┐   │
-│  │    Test Designer Agent       │   │
-│  └──────────┬───────────────────┘   │
-│             │                        │
-│  ┌──────────▼───────────────────┐   │
-│  │    Reviewer Agent            │   │
-│  │  (Approval/Rejection)        │   │
-│  └──────────┬───────────────────┘   │
-└─────────────┼──────────────────────┘
-              │
-     ┌────────┴────────┐
-     │                 │
-     ▼                 ▼
- APPROVED        REJECTED
-     │                 │
-     ▼                 ▼
-[Execution]      [Reporting]
-     │                 │
-     └────────┬────────┘
-              │
-              ▼
-      [HTML Report]
-```
-
-## 🚀 Quick Start
-
-### 1. Installation
-
-```bash
-# Clone/setup project
-cd qa_testing_agent
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Download browser drivers
-playwright install  # or chromedriver for Selenium
-```
-
-### 2. Configuration
-
-```bash
-# Copy example env file
-cp .env.example .env
-
-# Edit .env with your settings
-nano .env
-```
-
-Required environment variables:
-- `OPENAI_API_KEY`: Your OpenAI API key
-- `OPENAI_MODEL`: GPT model to use (e.g., gpt-4-turbo-preview)
-
-### 3. Prepare Test Cases
-
-Create test input folder with Excel files:
-
-```bash
-mkdir test_inputs
-# Copy your Excel test case files here
-```
-
-Excel Format (must match structure):
-```
-Test Scenario | Test Case | Test Data | Step No. | Step Description | Expected Results | ...
-```
-
-See the provided `Metsa_Version_upgrade_DEV.xlsx` for format reference.
-
-### 4. Run Pipeline
-
-```bash
-python main.py
-```
-
-This will:
-1. Parse all Excel test cases
-2. Analyze requirements with AI
-3. Generate test code with AI
-4. Review test code with AI
-5. Execute approved tests
-6. Generate HTML report
-
-## 📊 Report Structure
-
-The generated HTML report includes:
-
-- **Executive Summary**: Total tests, approval rate, pass rate
-- **Test Details**: Each test with status, approval info, test data
-- **Execution Results**: Pass/fail status, duration, error messages
-- **Rejection Details**: Reasons for rejection and retry history
-- **Execution Logs**: Detailed logs from test execution
-- **Screenshots**: Failure screenshots for debugging
-
-## 🔄 Retry Logic
-
-### Data Issue Rejection
-- **Trigger**: When test data is invalid or incomplete
-- **Action**: Auto-retry with corrected data
-- **Max Attempts**: Configurable (default: 3)
-
-### UI Change Rejection
-- **Trigger**: When UI elements or selectors have changed
-- **Action**: Stop execution immediately
-- **Report**: Includes detailed UI change information
-- **Manual Intervention**: Required to fix test case
-
-### Requirement Mismatch
-- **Trigger**: When test doesn't match requirements
-- **Action**: Stop execution
-- **Report**: Detailed mismatch information
-
-## 📝 Test Case Flow
-
-```
-Input Test Case
-    │
-    ▼
-Requirements Analysis
-    │ Extract: Requirements, Edge Cases, Data Needs
-    ▼
-Test Design
-    │ Generate: Python Code, Test Data, Fixtures
-    ▼
-Review
-    │ Check: Code Quality, Requirements Match, Data Validity
-    ├─ APPROVED ──▶ Execute ──▶ Results
-    ├─ DATA ISSUE ──▶ Retry (up to max_retries)
-    ├─ UI CHANGE ──▶ Stop & Report (manual fix needed)
-    └─ MISMATCH ──▶ Stop & Report
-```
-
-## 🛠 Configuration Options
-
-Edit `config/settings.py` or `.env`:
-
-```python
-# OpenAI
-OPENAI_MODEL = "gpt-4-turbo-preview"  # or gpt-3.5-turbo
-OPENAI_TEMPERATURE = 0.7  # 0-1, lower = more deterministic
-
-# Execution
-HEADLESS = True  # Run browser in headless mode
-IMPLICIT_WAIT = 10  # Seconds for element waits
-SCREENSHOT_ON_FAILURE = True  # Capture screenshots
-
-# Retry
-MAX_RETRY_LOOPS = 3  # Max retry attempts
-```
-
-## 📂 Project Structure
-
-```
-qa_testing_agent/
-├── agents/                 # AI agents
-│   ├── requirements_agent.py
-│   ├── test_designer_agent.py
-│   └── reviewer_agent.py
-├── parsers/                # Input parsers
-│   └── excel_parser.py
-├── generators/             # Code/data generators
-│   └── mock_data_generator.py
-├── executors/              # Test execution
-│   └── test_executor.py
-├── utils/                  # Utilities
-│   └── report_generator.py
-├── config/                 # Configuration
-│   └── settings.py
-├── test_inputs/            # Input test cases
-├── reports/                # Generated reports
-├── models.py              # Data models
-├── orchestrator.py        # Main orchestrator
-├── main.py               # Entry point
-├── requirements.txt      # Dependencies
-├── .env.example         # Environment template
-└── README.md            # This file
-```
-
-## 🔍 Logging
-
-Logs are written to:
-- **Console**: Real-time output
-- **File**: `qa_agent.log` for detailed review
-
-Log levels:
-- `INFO`: Process steps and summaries
-- `WARNING`: Non-critical issues
-- `ERROR`: Critical failures
-
-## 💾 Generated Output
-
-### Reports Directory
-```
-reports/
-├── qa_suite_YYYYMMDD_HHMMSS_report.html  # Main report
-├── screenshots/                          # Failure screenshots
-└── test_execution/
-    ├── test_*.py              # Generated test files
-    └── report_*.html          # Individual test reports
-```
-
-## 🎓 Example Usage
-
-```python
-from main import QATestingPipeline
-from config.settings import settings
-
-# Initialize pipeline
-pipeline = QATestingPipeline()
-
-# Run complete workflow
-report_path = pipeline.run()
-
-# Access report
-print(f"Report generated at: {report_path}")
-```
-
-## 🐛 Troubleshooting
-
-### "OPENAI_API_KEY not set"
-- Add `OPENAI_API_KEY` to `.env` file
-- Or set environment variable: `export OPENAI_API_KEY=your_key`
-
-### "No test cases found"
-- Ensure test_inputs folder exists
-- Check Excel files are in correct format
-- Verify column headers match expected names
-
-### Tests executing but failing
-- Check screenshot in report for UI issues
-- Review execution logs for error messages
-- Verify test data generation in report
-- Check app/environment is accessible
-
-### JSON parsing errors
-- May indicate LLM response format issue
-- Verify OpenAI API quota and rate limits
-- Check model availability
-- Review LLM prompt construction
-
-## 🚦 Best Practices
-
-1. **Test Case Design**
-   - Clear step descriptions
-   - Specific expected results
-   - Include both positive and negative cases
-
-2. **Data Management**
-   - Let system generate mock data
-   - Specify data requirements in Excel
-   - Review generated data in reports
-
-3. **Report Review**
-   - Check rejection reasons carefully
-   - Review failed test screenshots
-   - Examine execution logs for patterns
-
-4. **CI/CD Integration**
-   - Run as scheduled test job
-   - Parse HTML report for metrics
-   - Archive reports for history
-
-## 📈 Metrics & Analytics
-
-The report includes:
-- **Pass Rate**: % of tests passed
-- **Approval Rate**: % of tests approved by reviewer
-- **Test Duration**: Individual and total
-- **Coverage**: Tests per scenario
-
-## 🔐 Security Considerations
-
-- Store `.env` securely (don't commit to git)
-- Limit OpenAI API key access
-- Use headless mode in production
-- Sanitize sensitive data from logs
-
-## 🤝 Contributing
-
-Improvements welcome! Areas for enhancement:
-- Support for additional UI frameworks
-- API testing capabilities
-- Performance testing integration
-- Dashboard for metrics
-- Slack/Teams integration
-
-## 📄 License
-
-[Your License Here]
-
-## 📞 Support
-
-- Check logs: `qa_agent.log`
-- Review generated reports in `reports/` folder
-- Examine HTML reports for detailed error info
+**Release Date:** February 18, 2026  
+**Major Feature:** Real DOM selector capture - no more guessing at element IDs!
 
 ---
 
-**Built with OpenAI, Selenium, Playwright, and Python** 🚀
+## 🎯 What This Solves
+
+**Your Problem:**
+```
+Tests timing out after 5 minutes because:
+  playwright._impl._errors.TimeoutError: 
+  Locator.click: Timeout 300000ms exceeded.
+  waiting for locator("[data-testid='filter-panel']")
+```
+
+**Root Cause:** LLM guesses at selectors without seeing your real page
+
+**Solution:** Page Inspector captures REAL selectors from your application:
+- Logs in
+- Navigates to your feature page  
+- Executes preconditions
+- Captures actual DOM (classes, IDs, data-testids)
+- Feeds real selectors to test generator
+- Tests use exact elements from your page → no more timeouts
+
+---
+
+## 📦 Package Contents
+
+```
+page_inspection_v4/
+├── QUICK_INSTALL.md              ← Start here! 3-step install
+├── agents/
+│   ├── page_inspector_agent.py   ← NEW: DOM capture system
+│   └── test_designer_agent.py    ← UPDATED: Uses real selectors
+├── orchestrator.py                ← UPDATED: Runs inspection
+├── config/
+│   └── settings.py                ← UPDATED: ENABLE_PAGE_INSPECTION
+└── docs/
+    └── PAGE_INSPECTION_GUIDE.md   ← Full documentation
+```
+
+---
+
+## ⚡ Quick Start
+
+### 1. Copy Files
+```bash
+cd page_inspection_v4
+
+# Copy new file
+cp agents/page_inspector_agent.py /path/to/your/project/agents/
+
+# Replace updated files
+cp agents/test_designer_agent.py /path/to/your/project/agents/
+cp orchestrator.py /path/to/your/project/
+cp config/settings.py /path/to/your/project/config/
+```
+
+### 2. Verify .env Configuration
+```bash
+# Your .env should have:
+FEATURE_URL=https://dev.mirrix.app/assets
+PRECONDITION_STEPS=["Click the Filter button", "Expand the Tags section"]
+HEADLESS=false  # Recommended for debugging
+```
+
+### 3. Run
+```bash
+cd /path/to/your/project
+python main.py
+```
+
+---
+
+## 🎬 What Happens During Execution
+
+```
+======================================================================
+QA TESTING AGENT
+======================================================================
+
+Select option (1-4): 1
+
+======================================================================
+PAGE INSPECTION - Capturing real DOM selectors
+======================================================================
+2026-02-18 11:30:15 - INFO - Starting page inspection...
+2026-02-18 11:30:15 - INFO - Target: https://dev.mirrix.app/assets
+2026-02-18 11:30:16 - INFO - Step 1: Logging in...
+2026-02-18 11:30:17 - INFO - Login successful
+2026-02-18 11:30:18 - INFO - Step 2: Navigating to FEATURE_URL
+2026-02-18 11:30:19 - INFO - Step 3: Executing 2 precondition steps...
+2026-02-18 11:30:20 - INFO - Step 4: Capturing page DOM...
+2026-02-18 11:30:20 - INFO - Found filter panel: class=filter-sidebar
+2026-02-18 11:30:20 - INFO - Found 15 tags: Vehicles, Flower, toys...
+2026-02-18 11:30:20 - INFO - ✓ Page inspection successful
+2026-02-18 11:30:20 - INFO -   - Captured 15 tag elements
+2026-02-18 11:30:20 - INFO -   - Captured 8 buttons
+2026-02-18 11:30:20 - INFO -   Tests will use REAL selectors
+======================================================================
+
+[1/16] Processing test case
+Processing: auto_populate_tags_after_initial_selection
+...
+[Test Designer receives real selectors]
+...
+Executing tests...
+✅ Test passed - elements found immediately (no timeouts!)
+```
+
+---
+
+## ✅ Before vs After
+
+### Before (Guessing Selectors)
+```python
+# Generated test (wrong selectors):
+page.locator("[data-testid='filter-panel']").click()  # ❌ Doesn't exist
+page.get_by_text("Tag A").click()                      # ❌ Generic name
+# Result: Timeout after 5 minutes ❌
+```
+
+### After (Real Selectors)
+```python
+# Generated test (actual selectors from your page):
+page.locator(".filter-sidebar").click()                # ✅ Real class
+page.get_by_text("Vehicles").click()                   # ✅ Real tag name
+# Result: Test passes immediately ✅
+```
+
+---
+
+## 🔧 How It Works Internally
+
+```
+┌─────────────────────────────────────────────┐
+│ User runs: python main.py                   │
+└─────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────┐
+│ Orchestrator.process_test_suite() called   │
+└─────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────┐
+│ Page Inspector runs ONCE (before all tests)│
+│   1. Launch browser                         │
+│   2. Login to application                   │
+│   3. Navigate to FEATURE_URL                │
+│   4. Execute PRECONDITION_STEPS             │
+│   5. Capture DOM:                           │
+│      - Filter panel selector                │
+│      - Tags section selector                │
+│      - All tag items with names             │
+│      - All buttons                          │
+│      - All input fields                     │
+│   6. Cache results                          │
+└─────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────┐
+│ Test Designer Agent (for each test case):  │
+│   - Receives captured selectors             │
+│   - Sees: "Use .filter-sidebar for panel"  │
+│   - Sees: "Tags: Vehicles, Flower, toys..."│
+│   - Generates code with REAL selectors      │
+└─────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────┐
+│ Tests Execute:                              │
+│   - Elements found immediately              │
+│   - No timeouts                             │
+│   - Tests pass ✅                           │
+└─────────────────────────────────────────────┘
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Tests still timing out
+
+**Check 1:** Was page inspection successful?
+```bash
+# Look for this in logs:
+✓ Page inspection successful
+  Tests will use REAL selectors from your application
+```
+
+If you see `✗ Page inspection failed`, check:
+- FEATURE_URL is correct
+- LOGIN_EMAIL and LOGIN_PASSWORD are valid
+- PRECONDITION_STEPS descriptions match your UI
+
+**Check 2:** Verify selectors were captured
+```bash
+# Look for this in logs during test generation:
+REAL PAGE SELECTORS (from actual inspection):
+Filter Panel: .filter-sidebar
+Tags Section: .tag-list
+Available Tags (15 found):
+  - 'Vehicles'
+  - 'Flower'
+  ...
+```
+
+**Check 3:** Examine generated test file
+```bash
+# Look at reports/test_*.py to see if it uses real selectors:
+cat reports/test_auto_populate_tags.py
+# Should contain .filter-sidebar, not generic [data-testid='filter-panel']
+```
+
+### Page inspection fails
+
+**Run with visible browser:**
+```bash
+# In .env:
+HEADLESS=false
+```
+
+Watch what happens during inspection. Common issues:
+- Login fails → check credentials
+- Wrong page loaded → check FEATURE_URL
+- Preconditions fail → check step descriptions
+
+### Selectors not captured
+
+Your page might use different selectors. Check `PAGE_INSPECTION_GUIDE.md` section "Customization" to add your selectors.
+
+---
+
+## 📖 Documentation
+
+| File | Purpose |
+|------|---------|
+| **QUICK_INSTALL.md** | 3-step installation guide |
+| **PAGE_INSPECTION_GUIDE.md** | Complete documentation with examples |
+| **This README** | Overview and quick reference |
+
+---
+
+## 🆕 What's New in v4.0
+
+### New Features
+✅ **Page Inspector Agent** - Captures real DOM from your application  
+✅ **Smart Element Detection** - Tries multiple selector strategies  
+✅ **Caching** - Inspection runs once, reused for all tests  
+✅ **Fallback Support** - Tests still work if inspection fails  
+
+### Updated Components
+✅ **Test Designer** - Now receives and uses real selectors  
+✅ **Orchestrator** - Runs inspection before test generation  
+✅ **Settings** - Added ENABLE_PAGE_INSPECTION flag  
+
+### Bug Fixes from v3.0
+✅ Token tracking maintained  
+✅ Precondition system maintained  
+✅ All previous fixes preserved  
+
+---
+
+## 🔄 Upgrading from v3.0
+
+If you have v3.0 installed:
+
+1. **Backup** (optional):
+   ```bash
+   cp agents/test_designer_agent.py agents/test_designer_agent.py.backup
+   cp orchestrator.py orchestrator.py.backup
+   cp config/settings.py config/settings.py.backup
+   ```
+
+2. **Install v4.0**:
+   ```bash
+   # Add new file
+   cp page_inspection_v4/agents/page_inspector_agent.py agents/
+   
+   # Replace updated files
+   cp page_inspection_v4/agents/test_designer_agent.py agents/
+   cp page_inspection_v4/orchestrator.py .
+   cp page_inspection_v4/config/settings.py config/
+   ```
+
+3. **No .env changes needed** - v4.0 is backwards compatible
+
+---
+
+## 💰 Performance & Cost
+
+**Page Inspection:**
+- Runs: Once per pipeline (5-10 seconds)
+- Cost: ~1-2K tokens
+- Saves: 10-50+ test regenerations due to wrong selectors
+
+**Net Result:** Much faster pipeline, lower overall API costs
+
+---
+
+## ✅ Verification Checklist
+
+After installation, verify:
+
+- [ ] `page_inspector_agent.py` is in `agents/` folder
+- [ ] All 3 updated files replaced
+- [ ] `.env` has `FEATURE_URL` and `PRECONDITION_STEPS`
+- [ ] Run pipeline - see "PAGE INSPECTION" phase in logs
+- [ ] See "✓ Page inspection successful" message
+- [ ] Generated tests use real selectors (check `reports/`)
+- [ ] Tests execute without timeout errors
+
+---
+
+## 🚀 Next Steps
+
+1. **Read QUICK_INSTALL.md** for installation
+2. **Run with HEADLESS=false** to watch inspection
+3. **Check logs** for successful inspection
+4. **Examine generated tests** in `reports/` folder
+5. **Run tests** - should pass without timeouts!
+
+---
+
+## 📞 Support
+
+**Installation Issues:** See QUICK_INSTALL.md  
+**Configuration Issues:** See PAGE_INSPECTION_GUIDE.md  
+**Customization:** See PAGE_INSPECTION_GUIDE.md → "Customization" section
+
+---
+
+**Thank you for using QA Testing Agent!** 🎉
+
+Your tests now use real selectors from your actual application.  
+No more guessing. No more timeouts. Just working tests.
