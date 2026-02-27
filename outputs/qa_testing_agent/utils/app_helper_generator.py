@@ -250,8 +250,17 @@ def _build_search_helpers(actions: List[Dict]) -> str:
             continue
         seen.add(fn)
         body = (
+            f'clicked = False\n'
             f'if nth == 0:\n'
-            f'    page.get_by_text("{op}", exact=True).click()\n'
+            f'    try:\n'
+            f'        loc = page.get_by_role("button", name=re.compile(r"^{op}$", re.IGNORECASE)).first\n'
+            f'        if loc.is_visible(timeout=2000):\n'
+            f'            loc.click()\n'
+            f'            clicked = True\n'
+            f'    except Exception:\n'
+            f'        pass\n'
+            f'    if not clicked:\n'
+            f'        page.get_by_text("{op}", exact=True).first.click()\n'
             f'else:\n'
             f'    page.get_by_text("{op}").nth(nth).click()\n'
             f'page.wait_for_load_state("networkidle")'
@@ -277,19 +286,61 @@ def _build_tag_helpers(actions: List[Dict]) -> str:
             samples.append(core)
     sample_str = ", ".join(samples)
 
+    tag_locator_body = (
+        'pattern = re.compile(rf"^{re.escape(tag_name)}(\\d+)?$", re.IGNORECASE)\n'
+        'loc = page.locator("a,div,span,li,button").filter(has_text=pattern).first\n'
+        'try:\n'
+        '    if loc.is_visible(timeout=1000):\n'
+        '        return loc\n'
+        'except Exception:\n'
+        '    pass\n'
+        'return page.get_by_text(tag_name, exact=True).first'
+    )
+    is_selected_body = (
+        'loc = _app_tag_locator(page, tag_name)\n'
+        'try:\n'
+        '    cls = (loc.get_attribute("class") or "").lower()\n'
+        '    if "selected" in cls or "active" in cls:\n'
+        '        return True\n'
+        '    if (loc.get_attribute("aria-selected") == "true" or loc.get_attribute("aria-pressed") == "true"):\n'
+        '        return True\n'
+        'except Exception:\n'
+        '    pass\n'
+        'return False'
+    )
     click_body = (
-        'page.get_by_text(re.compile(rf"^{re.escape(tag_name)}\\d+$")).first.click()\n'
+        'loc = _app_tag_locator(page, tag_name)\n'
+        'try:\n'
+        '    loc.click()\n'
+        'except Exception:\n'
+        '    try:\n'
+        '        page.get_by_text(re.compile(rf"^{re.escape(tag_name)}\\d+$")).first.click()\n'
+        '    except Exception:\n'
+        '        page.get_by_text(tag_name, exact=True).first.click()\n'
         'page.wait_for_load_state("networkidle")'
     )
     tags_body = (
         'try:\n'
-        '    elems = page.locator("a").filter(\n'
-        '        has_text=re.compile(r"^\\w[\\w\\s]+\\d+$")\n'
-        '    ).all()\n'
-        '    return [\n'
-        '        re.sub(r"\\d+$", "", e.inner_text(timeout=2000).strip()).strip()\n'
-        '        for e in elems\n'
-        '    ]\n'
+        '    tags = []\n'
+        '    for tag in ["a", "div", "span", "li"]:\n'
+        '        elems = page.locator(tag).filter(\n'
+        '            has_text=re.compile(r"^\\w[\\w\\s]+\\d+$")\n'
+        '        ).all()\n'
+        '        for e in elems:\n'
+        '            t = re.sub(r"\\d+$", "", e.inner_text(timeout=2000).strip()).strip()\n'
+        '            if t and t not in tags:\n'
+        '                tags.append(t)\n'
+        '        if tags:\n'
+        '            break\n'
+        '    if not tags:\n'
+        '        sel = page.locator("*[aria-selected=\'true\'], *[aria-pressed=\'true\'], .selected, .active").all()\n'
+        '        for e in sel:\n'
+        '            t = (e.inner_text(timeout=2000) or \"\").strip()\n'
+        '            if t:\n'
+        '                t = re.sub(r"\\d+$", "", t).strip()\n'
+        '                if t and t not in tags and len(t) <= 30:\n'
+        '                    tags.append(t)\n'
+        '    return tags\n'
         'except Exception:\n'
         '    return []'
     )
@@ -304,6 +355,8 @@ def _build_tag_helpers(actions: List[Dict]) -> str:
         '    return 0'
     )
     assert_body = (
+        'if expected is None and expected_count is not None:\n'
+        '    expected = expected_count\n'
         'actual = _app_get_result_count(page)\n'
         'assert actual == expected, (\n'
         '    f"{msg or \'Result count\'}: expected {expected}, got {actual}"\n'
@@ -311,6 +364,16 @@ def _build_tag_helpers(actions: List[Dict]) -> str:
     )
 
     return "\n".join([
+        _fn(
+            "_app_tag_locator", "page, tag_name: str",
+            "Return a locator for a tag item by name (count suffix optional).",
+            tag_locator_body,
+        ),
+        _fn(
+            "_app_is_tag_selected", "page, tag_name: str",
+            "Return True if the tag appears selected/active.",
+            is_selected_body,
+        ),
         _fn(
             "_app_click_tag", "page, tag_name: str",
             f"Click a tag filter item by name only (count suffix is ignored). "
@@ -324,7 +387,7 @@ def _build_tag_helpers(actions: List[Dict]) -> str:
         _fn("_app_get_result_count", "page",
             "Read the total result count from a 'Total N items' label. Returns 0 if not found.",
             count_body),
-        _fn("_app_assert_result_count", "page, expected: int, msg: str = ''",
+        _fn("_app_assert_result_count", "page, expected: int = None, msg: str = '', expected_count: int = None",
             "Assert the total result count equals expected.",
             assert_body),
     ])
@@ -554,6 +617,9 @@ class AppHelperGenerator:
             # Skip empty, too-long (workflow titles), or multi-word phrases with 4+ words
             if not core or len(core) > 30:
                 continue
+            # Skip very short fragments like "EN"
+            if len(core) < 3 and core.isupper():
+                continue
             word_count = len(core.split())
             if word_count > 3:
                 continue
@@ -575,6 +641,8 @@ class AppHelperGenerator:
             "_app_navigate_to",
             "_app_open_filter_panel",
             "_app_search",
+            "_app_tag_locator",
+            "_app_is_tag_selected",
             "_app_click_tag",
             "_app_get_visible_tags",
             "_app_get_result_count",

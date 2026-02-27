@@ -1,0 +1,244 @@
+{
+  "timestamp": "2026-02-27T13:48:36.822743",
+  "stories_processed": 3,
+  "total_test_cases": 26,
+  "total_scenarios": 26,
+  "total_steps": 49,
+  "scenarios": {
+    "HAPPY_PATH - Category/Field Name filter visibility": {
+      "test_cases": [
+        {
+          "name": "category_field_filter_visible_after_search",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "MULTI_COMBINATION - Selecting multiple metadata fields": {
+      "test_cases": [
+        {
+          "name": "select_multiple_metadata_fields",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Drill down using multiple filters": {
+      "test_cases": [
+        {
+          "name": "drill_down_with_multiple_filters",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "STATE_PERSISTENCE - Saved search retains filter selections": {
+      "test_cases": [
+        {
+          "name": "saved_search_retains_filters",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "UI_UX_CONSISTENCY - Visual consistency of filter block": {
+      "test_cases": [
+        {
+          "name": "filter_block_visual_consistency",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REMOVAL_DESELECTION - Deselecting a metadata field": {
+      "test_cases": [
+        {
+          "name": "deselect_metadata_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "CLEAR_RESET_ALL - Clearing all search parameters": {
+      "test_cases": [
+        {
+          "name": "clear_all_search_parameters",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No results for a selected field": {
+      "test_cases": [
+        {
+          "name": "no_results_for_selected_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MIXED_DATA - Mixed metadata fields with varying counts": {
+      "test_cases": [
+        {
+          "name": "mixed_metadata_fields_varying_counts",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "PERFORMANCE_SCALE - Large dataset response time": {
+      "test_cases": [
+        {
+          "name": "large_dataset_response_time",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "HAPPY_PATH - Auto-populate additional tags after results load": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_after_results_load",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Multiple tags appear in filter panel": {
+      "test_cases": [
+        {
+          "name": "multiple_tags_appear_in_filter_panel",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Further filter using newly surfaced tags": {
+      "test_cases": [
+        {
+          "name": "further_filter_with_new_tags",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "STATE_PERSISTENCE - User-selected tags remain highlighted": {
+      "test_cases": [
+        {
+          "name": "user_selected_tags_remain_highlighted",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No additional tags to populate": {
+      "test_cases": [
+        {
+          "name": "no_additional_tags_to_populate",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Newly added tags appear in consistent style": {
+      "test_cases": [
+        {
+          "name": "new_tags_appear_consistent_style",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - All tags associated with results are displayed": {
+      "test_cases": [
+        {
+          "name": "all_associated_tags_displayed",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ASYNC_TIMING - UI updates seamlessly after loader completes": {
+      "test_cases": [
+        {
+          "name": "ui_updates_seamlessly_after_loader",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "HAPPY_PATH - Full filter reload on OR operator selection": {
+      "test_cases": [
+        {
+          "name": "full_filter_reload_on_or_operator_selection",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "MULTI_COMBINATION - Applying multiple filters with OR operator": {
+      "test_cases": [
+        {
+          "name": "multiple_filters_with_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "STATE_PERSISTENCE - Retain existing filters after reload": {
+      "test_cases": [
+        {
+          "name": "retain_existing_filters_after_reload",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Smooth reload without flicker": {
+      "test_cases": [
+        {
+          "name": "smooth_reload_without_flicker",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - Updated filter options based on previous selections": {
+      "test_cases": [
+        {
+          "name": "updated_filter_options_based_on_previous_selections",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "LIFECYCLE_TRANSITION - Filter results update automatically": {
+      "test_cases": [
+        {
+          "name": "filter_results_update_automatically",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handling reload failure": {
+      "test_cases": [
+        {
+          "name": "handling_reload_failure",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BOUNDARY_EMPTY - Applying OR operator with no initial filters": {
+      "test_cases": [
+        {
+          "name": "or_operator_with_no_initial_filters",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

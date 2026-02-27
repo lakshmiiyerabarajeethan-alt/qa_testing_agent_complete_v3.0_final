@@ -1,0 +1,172 @@
+{
+  "timestamp": "2026-02-27T08:27:10.332392",
+  "stories_processed": 2,
+  "total_test_cases": 18,
+  "total_scenarios": 18,
+  "total_steps": 33,
+  "scenarios": {
+    "HAPPY_PATH - Auto-populate additional tags after results load": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_after_results_load",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Select multiple tags after auto-population": {
+      "test_cases": [
+        {
+          "name": "select_multiple_tags_after_auto_population",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "SEQUENTIAL_REFINEMENT - Drill down using newly surfaced tags": {
+      "test_cases": [
+        {
+          "name": "drill_down_using_newly_surfaced_tags",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "STATE_PERSISTENCE - Ensure selected tags remain after reload": {
+      "test_cases": [
+        {
+          "name": "ensure_selected_tags_remain_after_reload",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "BUSINESS_RULES - Display all tags associated with results": {
+      "test_cases": [
+        {
+          "name": "display_all_tags_associated_with_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Verify visual consistency of newly added tags": {
+      "test_cases": [
+        {
+          "name": "verify_visual_consistency_of_newly_added_tags",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "REMOVAL_DESELECTION - Deselect a tag and verify results": {
+      "test_cases": [
+        {
+          "name": "deselect_a_tag_and_verify_results",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "ERROR_FAILURE - Handle network error during tag population": {
+      "test_cases": [
+        {
+          "name": "handle_network_error_during_tag_population",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "HAPPY_PATH - Full filter reload on OR operator selection": {
+      "test_cases": [
+        {
+          "name": "full_filter_reload_on_or_operator",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Multiple filters with OR operator": {
+      "test_cases": [
+        {
+          "name": "multiple_filters_with_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "STATE_PERSISTENCE - Existing filters remain after reload": {
+      "test_cases": [
+        {
+          "name": "existing_filters_remain_after_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Smooth reload without flicker": {
+      "test_cases": [
+        {
+          "name": "smooth_reload_without_flicker",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BOUNDARY_EMPTY - Reload with no additional filters": {
+      "test_cases": [
+        {
+          "name": "reload_with_no_additional_filters",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle reload failure gracefully": {
+      "test_cases": [
+        {
+          "name": "handle_reload_failure_gracefully",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "PERFORMANCE_SCALE - Reload with large data set": {
+      "test_cases": [
+        {
+          "name": "reload_with_large_data_set",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REMOVAL_DESELECTION - Deselect OR operator": {
+      "test_cases": [
+        {
+          "name": "deselect_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "CLEAR_RESET_ALL - Reset filters after OR selection": {
+      "test_cases": [
+        {
+          "name": "reset_filters_after_or_selection",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "LIFECYCLE_TRANSITION - Filters update based on context": {
+      "test_cases": [
+        {
+          "name": "filters_update_based_on_context",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

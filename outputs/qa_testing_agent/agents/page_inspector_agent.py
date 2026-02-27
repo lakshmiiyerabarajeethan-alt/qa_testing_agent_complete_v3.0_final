@@ -310,6 +310,25 @@ class SmartPageInspectorV2:
     
     def _find_filter_panel(self, page: Page) -> Dict:
         """Find the filter panel container"""
+        # Try known tab/text patterns first (from RC-tabs/Ant Design)
+        try:
+            loc = page.locator("[id*='tab-filters']").filter(
+                has_text=re.compile(r"^Filters$", re.IGNORECASE)
+            ).first
+            if loc.is_visible(timeout=1000):
+                logger.info("Found filter panel via rc-tabs id")
+                return {"selector": "[id*='tab-filters']", "type": "css", "value": "tab-filters"}
+        except Exception:
+            pass
+        for role in ["tab", "link", "button"]:
+            try:
+                loc = page.get_by_role(role, name=re.compile(r"^Filters$", re.IGNORECASE)).first
+                if loc.is_visible(timeout=1000):
+                    logger.info(f"Found filter panel via role={role} text=Filters")
+                    return {"selector": f"role={role} name=Filters", "type": "role", "value": "Filters"}
+            except Exception:
+                continue
+
         candidates = [
             ("data-testid", "filter-panel"),
             ("data-testid", "filter-container"),
@@ -347,6 +366,31 @@ class SmartPageInspectorV2:
     
     def _find_tags_section(self, page: Page) -> Dict:
         """Find the tags section container"""
+        # Try common text/anchor patterns first
+        tag_name_pat = re.compile(r"^Tags(\s*\(\d+\))?$", re.IGNORECASE)
+        for role in ["link", "tab", "button"]:
+            try:
+                loc = page.get_by_role(role, name=tag_name_pat).first
+                if loc.is_visible(timeout=1000):
+                    logger.info(f"Found tags section via role={role} text=Tags")
+                    return {"selector": f"role={role} name=Tags", "type": "role", "value": "Tags"}
+            except Exception:
+                continue
+        try:
+            loc = page.locator("a").filter(has_text=tag_name_pat).first
+            if loc.is_visible(timeout=1000):
+                logger.info("Found tags section via anchor text")
+                return {"selector": "a:has-text('Tags')", "type": "text", "value": "Tags"}
+        except Exception:
+            pass
+        try:
+            loc = page.locator("a").filter(has_text=re.compile(r"Tags", re.IGNORECASE)).first
+            if loc.is_visible(timeout=1000):
+                logger.info("Found tags section via anchor partial match")
+                return {"selector": "a:has-text('Tags')", "type": "text", "value": "Tags"}
+        except Exception:
+            pass
+
         candidates = [
             ("data-testid", "tags-section"),
             ("data-testid", "tags"),
@@ -412,6 +456,62 @@ class SmartPageInspectorV2:
                         break
             except:
                 continue
+
+        # Fallback: look for anchor tags with trailing counts (e.g., "Vehicles105")
+        if not tags:
+            try:
+                for tag in ["a", "div", "span", "li"]:
+                    elements = page.locator(tag).filter(
+                        has_text=re.compile(r"^[A-Za-z][\w\s]+\d+$")
+                    ).all()
+                    if elements:
+                        logger.info(f"Found {len(elements)} tags using <{tag}> text+count pattern")
+                        for elem in elements[:30]:
+                            try:
+                                text = elem.inner_text()
+                                if text.strip():
+                                    tags.append({
+                                        "name": text.strip(),
+                                        "selector": f"{tag}:text-count",
+                                        "text": text.strip(),
+                                    })
+                            except:
+                                continue
+                        if tags:
+                            break
+            except:
+                pass
+
+        # Fallback: use selector_map tag names to probe for visible tags
+        if not tags:
+            try:
+                folder = getattr(settings, "UI_SNAPSHOT_FOLDER", "./ui_snapshot")
+                map_file = getattr(settings, "SELECTOR_MAP_FILE", "selector_map.json")
+                selector_map = load_selector_map(folder, map_file) or {}
+                tag_actions = selector_map.get("by_category", {}).get("tag", [])
+                seen = set()
+                for a in tag_actions:
+                    raw_name = a.get("name") or a.get("text") or ""
+                    core = re.sub(r"\\d+$", "", str(raw_name)).strip()
+                    if not core or core in seen:
+                        continue
+                    seen.add(core)
+                    try:
+                        loc = page.get_by_text(
+                            re.compile(rf"^{re.escape(core)}\d+$")
+                        ).first
+                        if loc.is_visible(timeout=1000):
+                            tags.append({
+                                "name": core,
+                                "selector": f"text~={core}+count",
+                                "text": core,
+                            })
+                    except Exception:
+                        continue
+                    if len(tags) >= 20:
+                        break
+            except Exception:
+                pass
         
         if not tags:
             logger.warning("Could not find any tag elements")

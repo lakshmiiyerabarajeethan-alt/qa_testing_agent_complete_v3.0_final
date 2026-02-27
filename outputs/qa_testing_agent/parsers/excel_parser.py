@@ -17,14 +17,15 @@ class TestCaseParser:
         self.input_folder = input_folder
         self.test_cases: List[TestCase] = []
     
-    def parse_folder(self) -> List[TestCase]:
-        """Parse all Excel files in input folder"""
+    def parse_folder(self, file_filter: str | None = None) -> List[TestCase]:
+        """Parse Excel files in input folder (optionally filtered by filename)"""
         if not os.path.exists(self.input_folder):
             logger.warning(f"Input folder not found: {self.input_folder}")
             return []
+
+        self.test_cases = []
         
-        excel_files = [f for f in os.listdir(self.input_folder) 
-                      if f.endswith(('.xlsx', '.xls'))]
+        excel_files = self._resolve_excel_files(file_filter)
         
         logger.info(f"Found {len(excel_files)} Excel files")
         
@@ -33,6 +34,39 @@ class TestCaseParser:
             self._parse_excel(filepath)
         
         return self.test_cases
+
+    def list_excel_files(self, file_filter: str | None = None) -> List[str]:
+        try:
+            return sorted(self._resolve_excel_files(file_filter))
+        except Exception as e:
+            logger.error(f"Error listing Excel files: {str(e)}")
+            return []
+
+    def _resolve_excel_files(self, file_filter: str | None) -> List[str]:
+        excel_files = [f for f in os.listdir(self.input_folder)
+                       if f.endswith(('.xlsx', '.xls'))]
+        if not file_filter:
+            return excel_files
+
+        name = str(file_filter).strip()
+        if not name:
+            return excel_files
+
+        name_lower = name.lower()
+        exact = [
+            f for f in excel_files
+            if f.lower() == name_lower or os.path.splitext(f)[0].lower() == name_lower
+        ]
+        if exact:
+            return exact
+
+        partial = [
+            f for f in excel_files
+            if name_lower in f.lower() or name_lower in os.path.splitext(f)[0].lower()
+        ]
+        if not partial:
+            logger.warning(f"No Excel files matched filter: {name}")
+        return partial
     
     def _parse_excel(self, filepath: str) -> None:
         """Parse a single Excel file"""

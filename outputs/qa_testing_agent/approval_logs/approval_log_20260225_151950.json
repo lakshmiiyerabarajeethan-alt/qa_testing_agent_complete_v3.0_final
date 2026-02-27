@@ -1,0 +1,154 @@
+{
+  "timestamp": "2026-02-25T15:19:50.169748",
+  "stories_processed": 2,
+  "total_test_cases": 16,
+  "total_scenarios": 16,
+  "total_steps": 26,
+  "scenarios": {
+    "HAPPY_PATH - Auto-populate additional tags after results load": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_after_results_load",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Further refine results using newly surfaced tags": {
+      "test_cases": [
+        {
+          "name": "further_refine_with_new_tags",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "STATE_PERSISTENCE - User-selected tags remain highlighted": {
+      "test_cases": [
+        {
+          "name": "user_selected_tags_remain_highlighted",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - All tags associated with results are displayed": {
+      "test_cases": [
+        {
+          "name": "all_tags_displayed_for_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Newly added tags match existing filter style": {
+      "test_cases": [
+        {
+          "name": "new_tags_match_existing_style",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No additional tags available": {
+      "test_cases": [
+        {
+          "name": "no_additional_tags_available",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ASYNC_TIMING - UI updates seamlessly after loader completes": {
+      "test_cases": [
+        {
+          "name": "ui_updates_seamlessly_after_loader",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "REMOVAL_DESELECTION - Deselecting a tag removes it from the filter": {
+      "test_cases": [
+        {
+          "name": "deselect_tag_removes_from_filter",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "HAPPY_PATH - Full filter reload on OR operator selection": {
+      "test_cases": [
+        {
+          "name": "full_filter_reload_on_or_operator_selection",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Apply multiple filters with OR operator": {
+      "test_cases": [
+        {
+          "name": "apply_multiple_filters_with_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "STATE_PERSISTENCE - Retain existing filters after reload": {
+      "test_cases": [
+        {
+          "name": "retain_existing_filters_after_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Smooth reload with no UI flicker": {
+      "test_cases": [
+        {
+          "name": "smooth_reload_no_ui_flicker",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BOUNDARY_EMPTY - Apply OR operator with no initial filters": {
+      "test_cases": [
+        {
+          "name": "apply_or_operator_with_no_initial_filters",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Automatic update of filter results": {
+      "test_cases": [
+        {
+          "name": "automatic_update_of_filter_results",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle filter reload failure gracefully": {
+      "test_cases": [
+        {
+          "name": "handle_filter_reload_failure_gracefully",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "LIFECYCLE_TRANSITION - Updated filter options based on metadata": {
+      "test_cases": [
+        {
+          "name": "updated_filter_options_based_on_metadata",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

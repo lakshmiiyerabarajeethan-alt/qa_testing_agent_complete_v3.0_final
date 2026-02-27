@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-02-27T13:51:50.664906",
+  "stories_processed": 1,
+  "total_test_cases": 9,
+  "total_scenarios": 9,
+  "total_steps": 15,
+  "scenarios": {
+    "HAPPY_PATH - Display of Category / Field Name filter": {
+      "test_cases": [
+        {
+          "name": "category_filter_visible_after_search",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Visual styling of filter block": {
+      "test_cases": [
+        {
+          "name": "category_filter_visual_styling",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "MULTI_COMBINATION - Selecting multiple metadata fields": {
+      "test_cases": [
+        {
+          "name": "select_multiple_metadata_fields",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No results in a specific field": {
+      "test_cases": [
+        {
+          "name": "no_results_in_language_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "REMOVAL_DESELECTION - Removing a selected filter": {
+      "test_cases": [
+        {
+          "name": "remove_selected_filter_chip",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Saving and restoring searches": {
+      "test_cases": [
+        {
+          "name": "save_and_restore_search_with_filters",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "CLEAR_RESET_ALL - Clearing all search parameters": {
+      "test_cases": [
+        {
+          "name": "clear_search_resets_all_filters",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "PERFORMANCE_SCALE - Handling large data sets": {
+      "test_cases": [
+        {
+          "name": "performance_with_large_metadata_fields",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Loader states and updates": {
+      "test_cases": [
+        {
+          "name": "loader_state_during_filter_selection",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests_407_csv.xlsx"
+}

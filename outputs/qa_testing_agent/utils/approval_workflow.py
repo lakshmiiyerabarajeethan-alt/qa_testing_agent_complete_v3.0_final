@@ -45,7 +45,9 @@ class ApprovalWorkflow:
     
     def start_approval_workflow(self, 
                                test_cases: List[TestCase],
-                               story_count: int = 0) -> Tuple[bool, str]:
+                               story_count: int = 0,
+                               auto_approve: bool = False,
+                               external_waiter=None) -> Tuple[bool, str]:
         """
         Start manual approval workflow
         
@@ -69,15 +71,24 @@ class ApprovalWorkflow:
         # Save approval log
         self._save_approval_log(summary)
         
-        # Get user decision
-        decision = self._get_user_decision()
+        if auto_approve:
+            logger.info("\nAuto-approval enabled - continuing with execution...")
+            return True, "APPROVED_AUTO"
+
+        if external_waiter:
+            logger.info("\nAwaiting external approval decision...")
+            decision = external_waiter(self.excel_path)
+            decision = (decision or "").strip()
+        else:
+            # Get user decision
+            decision = self._get_user_decision()
         
-        if decision == "1":
+        if decision in ["1", "APPROVED", "APPROVE"] or decision.startswith("APPROVED"):
             # Approved - continue
             logger.info("\nTest cases APPROVED - continuing with execution...")
-            return True, "APPROVED"
+            return True, decision if decision.startswith("APPROVED") else "APPROVED"
             
-        elif decision == "2":
+        elif decision in ["2", "MANUAL_REVIEW_REQUESTED", "REVIEW"]:
             # Review Excel manually
             logger.info("\nPlease review and modify the Excel file:")
             logger.info(f"Location: {self.excel_path}")
@@ -85,17 +96,31 @@ class ApprovalWorkflow:
             logger.info("The system will detect the modified file and continue.")
             return False, "MANUAL_REVIEW_REQUESTED"
             
-        elif decision == "3":
+        elif decision.startswith("REJECTED") or decision in ["3", "REJECT"]:
             # Rejected - need regeneration
             logger.info("\nTest cases REJECTED")
-            reason = input("\nProvide rejection reason (for logging): ").strip()
+            reason = ""
+            if decision.startswith("REJECTED:"):
+                reason = decision.split(":", 1)[1].strip()
+            elif external_waiter:
+                reason = "Rejected via external approval"
+            else:
+                reason = input("\nProvide rejection reason (for logging): ").strip()
             self._log_rejection(reason)
             return False, f"REJECTED: {reason}"
             
-        elif decision == "4":
+        elif decision.startswith("REVISIONS_REQUESTED") or decision.startswith("REVISIONS") or decision in ["4", "REVISION", "REVISIONS"]:
             # Request revisions
             logger.info("\nRevision requested.")
-            revisions = input("Describe required revisions: ").strip()
+            revisions = ""
+            if decision.startswith("REVISIONS_REQUESTED:"):
+                revisions = decision.split(":", 1)[1].strip()
+            elif decision.startswith("REVISIONS:"):
+                revisions = decision.split(":", 1)[1].strip()
+            elif external_waiter:
+                revisions = "Revisions requested via external approval"
+            else:
+                revisions = input("Describe required revisions: ").strip()
             self._log_revision_request(revisions)
             return False, f"REVISIONS_REQUESTED: {revisions}"
             

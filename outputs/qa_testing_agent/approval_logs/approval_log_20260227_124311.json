@@ -1,0 +1,154 @@
+{
+  "timestamp": "2026-02-27T12:43:11.482832",
+  "stories_processed": 2,
+  "total_test_cases": 16,
+  "total_scenarios": 16,
+  "total_steps": 25,
+  "scenarios": {
+    "HAPPY_PATH - Auto-populate additional tags after results load": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_after_results_load",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Select multiple tags to refine results": {
+      "test_cases": [
+        {
+          "name": "select_multiple_tags_to_refine_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - User selections survive page refresh": {
+      "test_cases": [
+        {
+          "name": "user_selections_survive_page_refresh",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - Display all tags associated with returned assets": {
+      "test_cases": [
+        {
+          "name": "display_all_tags_associated_with_returned_assets",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Newly added tags appear with consistent styling": {
+      "test_cases": [
+        {
+          "name": "newly_added_tags_consistent_styling",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "REMOVAL_DESELECTION - Deselect a tag and observe results": {
+      "test_cases": [
+        {
+          "name": "deselect_tag_and_observe_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "CLEAR_RESET_ALL - Clear all filters and reset to baseline": {
+      "test_cases": [
+        {
+          "name": "clear_all_filters_and_reset",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ERROR_FAILURE - Handle network error gracefully": {
+      "test_cases": [
+        {
+          "name": "handle_network_error_gracefully",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "HAPPY_PATH - Reload on OR Operator Selection": {
+      "test_cases": [
+        {
+          "name": "reload_on_or_operator_selection",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "MULTI_COMBINATION - Multiple Filters with OR Operator": {
+      "test_cases": [
+        {
+          "name": "multiple_filters_with_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "STATE_PERSISTENCE - Preserve Existing Filters After Reload": {
+      "test_cases": [
+        {
+          "name": "preserve_existing_filters_after_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Smooth Reload Experience": {
+      "test_cases": [
+        {
+          "name": "smooth_reload_experience",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "LIFECYCLE_TRANSITION - Updated Filter Options Post-Reload": {
+      "test_cases": [
+        {
+          "name": "updated_filter_options_post_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Handle Reload Failures Gracefully": {
+      "test_cases": [
+        {
+          "name": "handle_reload_failures_gracefully",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Automatic Results Update": {
+      "test_cases": [
+        {
+          "name": "automatic_results_update",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BOUNDARY_EMPTY - No Filters Applied": {
+      "test_cases": [
+        {
+          "name": "no_filters_applied",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}

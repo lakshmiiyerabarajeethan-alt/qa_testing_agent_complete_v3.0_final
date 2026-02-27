@@ -35,6 +35,15 @@ from typing import Dict, List, Optional
 # Line parser
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _normalize_line(raw: str) -> str:
+    raw = raw.strip()
+    if raw.startswith("await "):
+        raw = raw[len("await "):]
+    if raw.endswith(";"):
+        raw = raw[:-1]
+    return raw.strip()
+
+
 def _parse_line(raw: str) -> Optional[Dict]:
     """
     Parse a single stripped source line into an action dict.
@@ -45,15 +54,36 @@ def _parse_line(raw: str) -> Optional[Dict]:
       kind    – "role"|"text"|"filter_chain"|"locator"|"fill_input"|"goto"|"other"
       action  – "click"|"fill"|"press"|"goto"|"interact"
     """
+    raw = _normalize_line(raw)
     if not raw.startswith("page."):
         return None
 
     base: Dict = {"raw": raw, "action": _detect_action(raw)}
 
     # goto
-    m = re.match(r'page\.goto\("([^"]+)"\)', raw)
+    m = re.match(r'page\.goto\([\'"]([^\'"]+)[\'"]\)', raw)
     if m:
         return {**base, "kind": "goto", "url": m.group(1)}
+
+    # filter chain (JS): page.locator("sel").filter({ hasText: "Filters" })
+    m = re.match(
+        r'page\.locator\([\'"]([^\'"]+)[\'"]\)'
+        r'(?:\.nth\(\d+\))?'
+        r'\.filter\(\{\s*hasText:\s*(/[^/]+/(?:[a-z]+)?|[\'"][^\'"]+[\'"])\s*\}\)',
+        raw,
+    )
+    if m:
+        selector = m.group(1)
+        raw_filt = m.group(2).strip()
+        if raw_filt.startswith("/"):
+            # Strip regex delimiters and anchors
+            parts = raw_filt.split("/")
+            if len(parts) >= 3:
+                raw_filt = parts[1]
+        raw_filt = raw_filt.strip("'\"")
+        raw_filt = re.sub(r"^\^|\$$", "", raw_filt)
+        label = re.sub(r"[\^$()?+*\\]", "", raw_filt).strip()
+        return {**base, "kind": "filter_chain", "selector": selector, "filter": label}
 
     # filter chain: page.locator("sel").filter(has_text=<str or re.compile>)
     m = re.match(
@@ -69,31 +99,48 @@ def _parse_line(raw: str) -> Optional[Dict]:
         return {**base, "kind": "filter_chain", "selector": selector, "filter": label}
 
     # get_by_role (with optional .nth() / .first)
+    # getByRole (JS)
     m = re.match(
-        r'page\.get_by_role\("([^"]+)",\s*name="([^"]+)"\)'
+        r'page\.getByRole\([\'"]([^\'"]+)[\'"]\s*,\s*\{\s*name:\s*[\'"]([^\'"]+)[\'"]',
+        raw,
+    )
+    if m:
+        return {**base, "kind": "role", "role": m.group(1), "name": m.group(2)}
+
+    # get_by_role (with optional .nth() / .first)
+    m = re.match(
+        r'page\.get_by_role\([\'"]([^\'"]+)[\'"],\s*name=[\'"]([^\'"]+)[\'"]\)'
         r'(?:\.nth\(\d+\)|\.first)?',
         raw,
     )
     if m:
         return {**base, "kind": "role", "role": m.group(1), "name": m.group(2)}
 
+    # getByText (JS) with optional exact
+    m = re.match(
+        r'page\.getByText\([\'"]([^\'"]+)[\'"](?:,\s*\{\s*exact:\s*(true|false)\s*\})?\)',
+        raw,
+    )
+    if m:
+        return {**base, "kind": "text", "name": m.group(1), "exact": (m.group(2) == "true")}
+
     # get_by_text with exact=True
-    m = re.match(r'page\.get_by_text\("([^"]+)",\s*exact=True\)', raw)
+    m = re.match(r'page\.get_by_text\([\'"]([^\'"]+)[\'"],\s*exact=True\)', raw)
     if m:
         return {**base, "kind": "text", "name": m.group(1), "exact": True}
 
     # get_by_text with optional .nth()
-    m = re.match(r'page\.get_by_text\("([^"]+)"\)(?:\.nth\(\d+\))?', raw)
+    m = re.match(r'page\.get_by_text\([\'"]([^\'"]+)[\'"]\)(?:\.nth\(\d+\))?', raw)
     if m:
         return {**base, "kind": "text", "name": m.group(1)}
 
     # locator().fill("value")
-    m = re.match(r'page\.locator\("([^"]+)"\)\.fill\("([^"]*)"\)', raw)
+    m = re.match(r'page\.locator\([\'"]([^\'"]+)[\'"]\)\.fill\([\'"]([^\'"]*)[\'"]\)', raw)
     if m:
         return {**base, "kind": "fill_input", "selector": m.group(1), "value": m.group(2)}
 
     # locator with .first / .nth()
-    m = re.match(r'page\.locator\("([^"]+)"\)(?:\.first|\.nth\(\d+\))?', raw)
+    m = re.match(r'page\.locator\([\'"]([^\'"]+)[\'"]\)(?:\.first|\.nth\(\d+\))?', raw)
     if m:
         return {**base, "kind": "locator", "selector": m.group(1)}
 
@@ -107,6 +154,8 @@ def _parse_line(raw: str) -> Optional[Dict]:
 def _detect_action(raw: str) -> str:
     if ".fill("  in raw: return "fill"
     if ".press(" in raw: return "press"
+    if ".setInputFiles(" in raw: return "set_input_files"
+    if ".uncheck(" in raw: return "uncheck"
     if ".click(" in raw: return "click"
     if ".check(" in raw: return "check"
     if "page.goto(" in raw: return "goto"

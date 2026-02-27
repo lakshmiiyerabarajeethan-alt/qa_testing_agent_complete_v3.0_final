@@ -85,7 +85,7 @@ class CSVStoryReader:
         self.file_encoding = 'utf-8'
         os.makedirs(stories_folder, exist_ok=True)
     
-    def read_all_stories(self) -> List[CSVStory]:
+    def read_all_stories(self, file_filter: str | None = None) -> List[CSVStory]:
         """
         Read all CSV files from the stories folder
         
@@ -93,14 +93,17 @@ class CSVStoryReader:
             List of CSVStory objects
         """
         logger.info(f"\n[CSV Story Reader] Scanning folder: {self.stories_folder}")
-        
-        csv_files = list(Path(self.stories_folder).glob("*.csv"))
+
+        csv_files = self._resolve_csv_files(file_filter)
         
         if not csv_files:
             logger.warning(f"No CSV files found in {self.stories_folder}")
             return []
         
-        logger.info(f"Found {len(csv_files)} CSV file(s)")
+        if file_filter:
+            logger.info(f"Filtered to {len(csv_files)} CSV file(s) by: {file_filter}")
+        else:
+            logger.info(f"Found {len(csv_files)} CSV file(s)")
         
         all_stories = []
         
@@ -410,7 +413,7 @@ class CSVStoryReader:
         except Exception as e:
             return False, [f"Error reading file: {str(e)}"]
     
-    def list_csv_files(self) -> List[str]:
+    def list_csv_files(self, file_filter: str | None = None) -> List[str]:
         """
         List all CSV files in the stories folder
         
@@ -418,8 +421,39 @@ class CSVStoryReader:
             List of CSV filenames
         """
         try:
-            csv_files = [f.name for f in Path(self.stories_folder).glob("*.csv")]
+            csv_files = [f.name for f in self._resolve_csv_files(file_filter)]
             return sorted(csv_files)
         except Exception as e:
             logger.error(f"Error listing CSV files: {str(e)}")
             return []
+
+    def _resolve_csv_files(self, file_filter: str | None) -> List[Path]:
+        """
+        Resolve CSV files based on an optional filter.
+        The filter can be a full filename (with or without .csv) or a substring.
+        """
+        all_files = list(Path(self.stories_folder).glob("*.csv"))
+        if not file_filter:
+            return sorted(all_files)
+
+        name = str(file_filter).strip()
+        if not name:
+            return sorted(all_files)
+
+        name_lower = name.lower()
+        exact_matches = [
+            f for f in all_files
+            if f.name.lower() == name_lower
+            or f.stem.lower() == name_lower
+            or f.name.lower() == f"{name_lower}.csv"
+        ]
+        if exact_matches:
+            return sorted(exact_matches)
+
+        partial_matches = [
+            f for f in all_files
+            if name_lower in f.name.lower() or name_lower in f.stem.lower()
+        ]
+        if not partial_matches:
+            logger.warning(f"No CSV files matched filter: {name}")
+        return sorted(partial_matches)

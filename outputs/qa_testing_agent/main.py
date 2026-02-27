@@ -5,6 +5,7 @@ Supports both Azure DevOps stories and manual Excel test cases
 import logging
 import sys
 import os
+import re
 from datetime import datetime
 from typing import Optional
 
@@ -47,7 +48,14 @@ class QATestingPipeline:
         self.report_generator = HTMLReportGenerator(settings.REPORT_OUTPUT_FOLDER)
         self.excel_writer = ExcelWriter(settings.TEST_INPUT_FOLDER)
     
-    def run_from_csv_stories(self, stories_folder: str = "./stories") -> str:
+    def run_from_csv_stories(
+        self,
+        stories_folder: str = "./stories",
+        suite_id: Optional[str] = None,
+        auto_approve: bool = False,
+        external_approval_waiter=None,
+        csv_filename: Optional[str] = None,
+    ) -> str:
         """Run pipeline with test cases generated from CSV stories"""
         if not CSV_STORIES_AVAILABLE:
             logger.error("CSV story reader not available")
@@ -65,11 +73,11 @@ class QATestingPipeline:
         reader = CSVStoryReader(stories_folder)
         
         # List available CSV files
-        csv_files = reader.list_csv_files()
+        csv_files = reader.list_csv_files(csv_filename)
         if csv_files:
             logger.info(f"Found CSV files: {', '.join(csv_files)}")
         
-        stories = reader.read_all_stories()
+        stories = reader.read_all_stories(file_filter=csv_filename)
         if not stories:
             logger.error(f"No stories found in {stories_folder}")
             logger.info(f"Place CSV files in: {os.path.abspath(stories_folder)}")
@@ -90,16 +98,25 @@ class QATestingPipeline:
         
         # Phase 4: Save to Excel
         logger.info("\n[Phase 4] Saving test cases to Excel...")
-        excel_path = self.excel_writer.write_test_cases(
-            test_cases, "devops_tests.xlsx"
-        )
+        excel_filename = "devops_tests.xlsx"
+        if csv_filename:
+            safe = re.sub(r'[^a-zA-Z0-9_\\-]', '_', str(csv_filename))
+            safe = safe.replace(".csv", "").strip("_")
+            if safe:
+                excel_filename = f"devops_tests_{safe}.xlsx"
+        excel_path = self.excel_writer.write_test_cases(test_cases, excel_filename)
         
         # Phase 5: MANUAL APPROVAL (NEW)
         logger.info("\n[Phase 5] Manual test case approval workflow...")
-        from utils.approval_workflow import ApprovalWorkflow, ApprovalDecisionHandler
+        from utils.approval_workflow import ApprovalWorkflow
         
         workflow = ApprovalWorkflow(excel_path)
-        approved, decision = workflow.start_approval_workflow(test_cases, len(stories))
+        approved, decision = workflow.start_approval_workflow(
+            test_cases,
+            len(stories),
+            auto_approve=auto_approve,
+            external_waiter=external_approval_waiter,
+        )
         
         if not approved:
             logger.info(f"\nWorkflow paused for: {decision}")
@@ -118,6 +135,24 @@ class QATestingPipeline:
                 logger.info("Run the system again when ready.")
             
             return ""
+
+        # Merge approved test cases into regression suite (optional)
+        merge_allowed = True
+        if isinstance(decision, str) and "MERGE=0" in decision.upper():
+            merge_allowed = False
+
+        if merge_allowed:
+            try:
+                regression_path = os.path.join(settings.TEST_INPUT_FOLDER, "devops_tests.xlsx")
+                if os.path.exists(regression_path):
+                    self.excel_writer.append_test_cases(regression_path, test_cases)
+                else:
+                    self.excel_writer.write_test_cases(test_cases, "devops_tests.xlsx")
+                logger.info("Merged approved test cases into regression suite: devops_tests.xlsx")
+            except Exception as e:
+                logger.error(f"Failed to merge into regression suite: {str(e)}")
+        else:
+            logger.info("Merge into regression suite skipped by reviewer choice")
         
         # Phase 6+: Continue with normal pipeline (test cases approved)
         logger.info("\n[Phase 6] Running analysis and design pipeline...")
@@ -145,7 +180,7 @@ class QATestingPipeline:
             execution_results = self.executor.execute_batch(approved_tests)
         
         logger.info("\n[Phase 8] Generating final report...")
-        suite_id = "devops_suite_latest"
+        suite_id = suite_id or "devops_suite_latest"
         report_path = self.report_generator.generate_report(
             test_results, execution_results, suite_id
         )
@@ -155,7 +190,7 @@ class QATestingPipeline:
         
         return report_path
     
-    def run_from_excel(self) -> str:
+    def run_from_excel(self, suite_id: Optional[str] = None, excel_filename: Optional[str] = None) -> str:
         """Run pipeline with test cases from Excel files"""
         logger.info("="*70)
         logger.info("QA TESTING AGENT - EXCEL INPUT")
@@ -165,7 +200,7 @@ class QATestingPipeline:
         pipeline_start = datetime.now()
         
         logger.info("\n[Phase 1] Parsing test cases from Excel...")
-        test_cases = self.parser.parse_folder()
+        test_cases = self.parser.parse_folder(excel_filename)
         
         if not test_cases:
             logger.error("No test cases found!")
@@ -192,7 +227,7 @@ class QATestingPipeline:
             execution_results = self.executor.execute_batch(approved_tests)
         
         logger.info("\n[Phase 4] Generating report...")
-        suite_id = "qa_suite_latest"
+        suite_id = suite_id or "qa_suite_latest"
         report_path = self.report_generator.generate_report(
             test_results, execution_results, suite_id
         )

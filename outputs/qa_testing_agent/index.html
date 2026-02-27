@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>QA Testing Agent — Mission Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── Reset & Root ─────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --void:#04070C;
+  --panel:#080D15;
+  --panel2:#0C1220;
+  --panel3:#111926;
+  --border:#1A2A3A;
+  --border2:#223040;
+  --cyan:#00E5FF;
+  --cyan2:#00B8D4;
+  --cyan-dim:rgba(0,229,255,.12);
+  --amber:#FFB300;
+  --amber-dim:rgba(255,179,0,.1);
+  --green:#00E676;
+  --green-dim:rgba(0,230,118,.1);
+  --red:#FF4444;
+  --red-dim:rgba(255,68,68,.1);
+  --muted:#3A5068;
+  --text:#B8D4E8;
+  --text2:#6A8FA8;
+  --white:#E8F4FF;
+  --font-head:'Rajdhani',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+
+html,body{height:100%;overflow:hidden;background:var(--void)}
+body{font-family:var(--font-mono);color:var(--text);display:flex;flex-direction:column}
+
+/* ── Scanline texture ─────────────────────────────────────────────────────── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);
+  pointer-events:none;z-index:9999
+}
+
+/* ── Top bar ──────────────────────────────────────────────────────────────── */
+.topbar{
+  display:flex;align-items:center;gap:0;
+  background:var(--panel);border-bottom:1px solid var(--border);
+  height:52px;flex-shrink:0;position:relative;overflow:hidden
+}
+.topbar::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent)
+}
+.topbar-brand{
+  padding:0 24px;display:flex;align-items:center;gap:12px;
+  border-right:1px solid var(--border);height:100%
+}
+.topbar-logo{
+  width:28px;height:28px;position:relative
+}
+.topbar-logo svg{width:28px;height:28px}
+.brand-text{font-family:var(--font-head);font-size:17px;font-weight:700;letter-spacing:2px;color:var(--white)}
+.brand-text span{color:var(--cyan)}
+.topbar-segments{display:flex;gap:0;flex:1;height:100%}
+.seg{
+  display:flex;align-items:center;gap:8px;padding:0 20px;
+  border-right:1px solid var(--border);font-size:11px;color:var(--text2);
+  letter-spacing:.8px
+}
+.seg-label{text-transform:uppercase}
+.seg-val{color:var(--cyan);font-weight:500}
+.seg-val.amber{color:var(--amber)}
+.seg-val.green{color:var(--green)}
+.seg-val.red{color:var(--red)}
+.topbar-status{
+  margin-left:auto;padding:0 20px;display:flex;align-items:center;gap:8px;
+  font-size:11px;letter-spacing:.8px
+}
+.pulse-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green);
+  animation:pulse 2s ease-in-out infinite
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.pulse-dot.idle{background:var(--muted);box-shadow:none;animation:none}
+.pulse-dot.running{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+.pulse-dot.error{background:var(--red);box-shadow:0 0 6px var(--red)}
+
+/* ── Main layout ──────────────────────────────────────────────────────────── */
+.workspace{display:flex;flex:1;overflow:hidden}
+
+/* ── Left sidebar — pipeline stages ───────────────────────────────────────── */
+.sidebar{
+  width:260px;flex-shrink:0;background:var(--panel);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;
+  overflow:hidden
+}
+.sidebar-header{
+  padding:16px 18px;border-bottom:1px solid var(--border);
+  font-size:10px;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase
+}
+.pipeline-stages{flex:1;overflow-y:auto;padding:12px 0}
+.stage{
+  position:relative;padding:12px 18px 12px 44px;cursor:default;
+  transition:background .2s
+}
+.stage::before{
+  content:'';position:absolute;left:26px;top:0;bottom:0;width:1px;
+  background:var(--border)
+}
+.stage:last-child::before{display:none}
+.stage-dot{
+  position:absolute;left:20px;top:50%;transform:translateY(-50%);
+  width:13px;height:13px;border-radius:50%;border:2px solid var(--muted);
+  background:var(--panel);transition:all .3s;z-index:1
+}
+.stage.active .stage-dot{border-color:var(--cyan);background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.stage.done .stage-dot{border-color:var(--green);background:var(--green);box-shadow:0 0 8px var(--green)}
+.stage.error .stage-dot{border-color:var(--red);background:var(--red)}
+.stage.running .stage-dot{border-color:var(--amber);background:var(--amber);box-shadow:0 0 10px var(--amber);animation:pulse 1.2s infinite}
+.stage-name{font-size:12px;font-weight:500;color:var(--text2);transition:color .3s;letter-spacing:.3px}
+.stage.active .stage-name,.stage.running .stage-name{color:var(--white)}
+.stage.done .stage-name{color:var(--green)}
+.stage.error .stage-name{color:var(--red)}
+.stage-sub{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.3px}
+.stage.active .stage-sub{color:var(--cyan)}
+.stage.running .stage-sub{color:var(--amber)}
+.stage.done .stage-sub{color:var(--text2)}
+.stage-badge{
+  display:inline-block;margin-top:4px;padding:1px 7px;border-radius:3px;
+  font-size:9px;letter-spacing:.8px;text-transform:uppercase;font-weight:700
+}
+.badge-done{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,230,118,.3)}
+.badge-running{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,179,0,.3)}
+.badge-pending{background:rgba(58,80,104,.2);color:var(--muted);border:1px solid var(--border)}
+.badge-error{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,68,68,.3)}
+
+/* ── Token usage panel (bottom of sidebar) ────────────────────────────────── */
+.token-panel{
+  border-top:1px solid var(--border);padding:14px 18px;
+  background:var(--panel2)
+}
+.token-panel-head{
+  font-size:10px;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;
+  margin-bottom:12px;display:flex;align-items:center;justify-content:space-between
+}
+.token-panel-head span{color:var(--cyan);font-size:11px}
+.token-agent{margin-bottom:10px}
+.token-agent-name{font-size:10px;color:var(--text2);margin-bottom:4px;display:flex;justify-content:space-between}
+.token-agent-name em{color:var(--white);font-style:normal;font-weight:700}
+.token-bar-wrap{background:var(--border);border-radius:2px;height:3px;overflow:hidden}
+.token-bar{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1);width:0%}
+.tb-req{background:var(--cyan)}
+.tb-des{background:var(--amber)}
+.tb-rev{background:var(--green)}
+.tb-exc{background:#B388FF}
+.token-totals{
+  margin-top:12px;padding-top:10px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;font-size:10px;color:var(--text2)
+}
+.token-totals strong{color:var(--white);font-weight:700}
+
+/* ── Main content area ────────────────────────────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* content panels (only .active shown) */
+.content-panels{flex:1;overflow:hidden;position:relative}
+.panel{
+  position:absolute;inset:0;padding:32px 40px;overflow-y:auto;
+  opacity:0;pointer-events:none;transform:translateY(8px);
+  transition:opacity .3s,transform .3s
+}
+.panel.active{opacity:1;pointer-events:all;transform:none}
+
+/* ── Menu panel ───────────────────────────────────────────────────────────── */
+.menu-hero{
+  max-width:680px;margin:0 auto;padding-top:20px
+}
+.menu-eyebrow{
+  font-size:11px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;
+  margin-bottom:14px;display:flex;align-items:center;gap:10px
+}
+.menu-eyebrow::after{content:'';flex:1;height:1px;background:var(--border)}
+.menu-title{
+  font-family:var(--font-head);font-size:42px;font-weight:700;
+  letter-spacing:-0.5px;color:var(--white);line-height:1.1;margin-bottom:8px
+}
+.menu-title span{color:var(--cyan)}
+.menu-subtitle{font-size:13px;color:var(--text2);margin-bottom:40px;line-height:1.8}
+
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:32px}
+.menu-btn{
+  position:relative;background:var(--panel2);border:1px solid var(--border);
+  border-radius:8px;padding:22px 24px;cursor:pointer;text-align:left;
+  transition:all .2s;overflow:hidden;
+}
+.menu-btn::before{
+  content:'';position:absolute;inset:0;background:var(--cyan-dim);
+  opacity:0;transition:opacity .2s
+}
+.menu-btn:hover{border-color:var(--cyan2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,229,255,.08)}
+.menu-btn:hover::before{opacity:1}
+.menu-btn:active{transform:translateY(0)}
+.menu-btn-num{
+  font-size:11px;color:var(--cyan);font-weight:700;letter-spacing:1.5px;
+  margin-bottom:10px;display:block
+}
+.menu-btn-label{
+  font-family:var(--font-head);font-size:18px;font-weight:700;
+  color:var(--white);margin-bottom:6px;letter-spacing:.3px
+}
+.menu-btn-desc{font-size:11px;color:var(--text2);line-height:1.6}
+.menu-btn .btn-arrow{
+  position:absolute;right:18px;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:18px;transition:all .2s
+}
+.menu-btn:hover .btn-arrow{color:var(--cyan);right:14px}
+
+.menu-btn.secondary{border-color:var(--border)}
+.menu-btn.secondary .menu-btn-num{color:var(--amber)}
+.menu-btn.secondary:hover{border-color:var(--amber);box-shadow:0 8px 32px rgba(255,179,0,.06)}
+.menu-btn.secondary::before{background:var(--amber-dim)}
+
+.menu-divider{
+  display:flex;align-items:center;gap:12px;
+  font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;
+  margin-bottom:14px
+}
+.menu-divider::before,.menu-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── Config panel ─────────────────────────────────────────────────────────── */
+.config-wrap{max-width:560px;margin:0 auto;padding-top:12px}
+.breadcrumb{
+  display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);
+  margin-bottom:28px
+}
+.breadcrumb a{color:var(--cyan);text-decoration:none;cursor:pointer}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb-sep{color:var(--muted)}
+.config-title{font-family:var(--font-head);font-size:28px;font-weight:700;color:var(--white);margin-bottom:6px}
+.config-sub{font-size:12px;color:var(--text2);margin-bottom:28px;line-height:1.7}
+
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:11px;color:var(--text2);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
+.form-input{
+  width:100%;background:var(--panel2);border:1px solid var(--border);
+  border-radius:6px;padding:11px 14px;font-family:var(--font-mono);font-size:13px;
+  color:var(--white);outline:none;transition:border-color .2s
+}
+.form-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,.08)}
+.form-input::placeholder{color:var(--muted)}
+
+.upload-zone{
+  border:1px dashed var(--border);border-radius:6px;padding:28px;
+  text-align:center;cursor:pointer;transition:all .2s;background:var(--panel2)
+}
+.upload-zone:hover{border-color:var(--cyan);background:var(--cyan-dim)}
+.upload-icon{font-size:28px;margin-bottom:8px;opacity:.6}
+.upload-text{font-size:12px;color:var(--text2);line-height:1.7}
+.upload-text strong{color:var(--white);display:block;margin-bottom:2px}
+
+.run-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:14px 24px;margin-top:8px;
+  background:linear-gradient(135deg,var(--cyan2),var(--cyan));
+  border:none;border-radius:6px;cursor:pointer;
+  font-family:var(--font-head);font-size:16px;font-weight:700;
+  letter-spacing:1px;color:var(--void);
+  transition:all .2s;position:relative;overflow:hidden
+}
+.run-btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.1);opacity:0;transition:opacity .2s}
+.run-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,229,255,.3)}
+.run-btn:hover::after{opacity:1}
+.run-btn:active{transform:none}
+
+/* ── Pipeline run panel ───────────────────────────────────────────────────── */
+.pipeline-split{display:flex;gap:20px;height:100%}
+.pipeline-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px}
+.pipeline-log{width:320px;flex-shrink:0;display:flex;flex-direction:column}
+
+.phase-card{
+  background:var(--panel2);border:1px solid var(--border);border-radius:8px;
+  padding:18px 20px;transition:border-color .3s
+}
+.phase-card.running{border-color:var(--amber);box-shadow:0 0 20px rgba(255,179,0,.06)}
+.phase-card.done{border-color:rgba(0,230,118,.25)}
+.phase-card.pending{opacity:.5}
+
+.phase-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.phase-icon{
+  width:32px;height:32px;border-radius:6px;display:flex;align-items:center;
+  justify-content:center;font-size:14px;background:var(--panel3);
+  border:1px solid var(--border);flex-shrink:0
+}
+.phase-card.running .phase-icon{background:rgba(255,179,0,.1);border-color:rgba(255,179,0,.3)}
+.phase-card.done .phase-icon{background:rgba(0,230,118,.1);border-color:rgba(0,230,118,.3)}
+.phase-title{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--white);flex:1}
+.phase-status{font-size:10px;padding:2px 8px;border-radius:3px;letter-spacing:.8px;font-weight:700}
+.ps-pending{background:rgba(58,80,104,.3);color:var(--muted)}
+.ps-running{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,179,0,.3)}
+.ps-done{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,230,118,.3)}
+.ps-error{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,68,68,.3)}
+
+.phase-progress{
+  height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:10px
+}
+.phase-progress-bar{
+  height:100%;background:var(--amber);border-radius:2px;
+  transition:width .5s cubic-bezier(.4,0,.2,1);width:0%
+}
+.phase-card.done .phase-progress-bar{background:var(--green);width:100%}
+
+.phase-agents{display:flex;gap:8px;flex-wrap:wrap}
+.agent-chip{
+  display:flex;align-items:center;gap:6px;padding:5px 10px;
+  border-radius:4px;font-size:11px;border:1px solid var(--border);
+  background:var(--panel3);transition:all .2s
+}
+.agent-chip.active{border-color:var(--cyan);background:var(--cyan-dim);color:var(--cyan)}
+.agent-chip.done{border-color:rgba(0,230,118,.3);background:var(--green-dim);color:var(--green)}
+.agent-chip.retrying{border-color:rgba(255,179,0,.3);background:var(--amber-dim);color:var(--amber)}
+.agent-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+.test-progress{margin-top:10px}
+.test-progress-info{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:5px}
+.test-progress-bar-wrap{background:var(--border);border-radius:2px;height:4px;overflow:hidden}
+.test-progress-bar{height:100%;background:var(--cyan);border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1);width:0%}
+
+.exec-stats{display:flex;gap:16px;margin-top:8px}
+.exec-stat{font-size:12px;color:var(--text2)}
+.exec-stat strong{font-weight:700}
+.exec-stat .passed{color:var(--green)}
+.exec-stat .failed{color:var(--red)}
+
+/* ── Log panel ────────────────────────────────────────────────────────────── */
+.log-head{
+  padding:10px 14px;background:var(--panel);border:1px solid var(--border);
+  border-bottom:none;border-radius:8px 8px 0 0;
+  font-size:10px;letter-spacing:1.2px;color:var(--text2);text-transform:uppercase;
+  display:flex;align-items:center;justify-content:space-between
+}
+.log-scroll{
+  flex:1;overflow-y:auto;background:var(--panel2);border:1px solid var(--border);
+  border-top:none;border-radius:0 0 8px 8px;padding:12px;
+  font-size:11px;line-height:1.8;min-height:0
+}
+.log-entry{display:flex;gap:8px;margin-bottom:4px}
+.log-ts{color:var(--muted);flex-shrink:0;white-space:nowrap}
+.log-tag{flex-shrink:0;padding:0 5px;border-radius:2px;font-size:10px;font-weight:700;line-height:1.6}
+.lt-info{background:rgba(88,166,255,.15);color:#58A6FF}
+.lt-agent{background:var(--cyan-dim);color:var(--cyan)}
+.lt-warn{background:var(--amber-dim);color:var(--amber)}
+.lt-ok{background:var(--green-dim);color:var(--green)}
+.lt-err{background:var(--red-dim);color:var(--red)}
+.lt-phase{background:rgba(140,100,255,.15);color:#AB82FF}
+.log-msg{color:var(--text)}
+
+/* ── Report panel ─────────────────────────────────────────────────────────── */
+.report-wrap{max-width:100%}
+.report-hero{
+  background:var(--panel2);border:1px solid rgba(0,230,118,.3);
+  border-radius:10px;padding:28px 32px;margin-bottom:24px;
+  display:flex;align-items:center;gap:24px;
+  box-shadow:0 0 40px rgba(0,230,118,.05)
+}
+.report-icon{font-size:48px;line-height:1}
+.report-hero-text h2{font-family:var(--font-head);font-size:26px;font-weight:700;color:var(--white);margin-bottom:4px}
+.report-hero-text p{font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.7}
+.report-open-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 20px;background:var(--green);border:none;border-radius:6px;
+  font-family:var(--font-head);font-size:14px;font-weight:700;
+  color:var(--void);cursor:pointer;text-decoration:none;letter-spacing:.5px;
+  transition:all .2s
+}
+.report-open-btn:hover{box-shadow:0 4px 16px rgba(0,230,118,.4);transform:translateY(-1px)}
+
+.report-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.rs-card{
+  background:var(--panel2);border:1px solid var(--border);border-radius:8px;
+  padding:16px 18px;position:relative;overflow:hidden
+}
+.rs-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--card-color,var(--cyan))}
+.rs-card-val{font-family:var(--font-head);font-size:32px;font-weight:700;color:var(--card-color,var(--white));line-height:1;margin-bottom:4px}
+.rs-card-lbl{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px}
+
+.report-iframe-wrap{
+  background:var(--panel2);border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;height:480px;position:relative
+}
+.report-iframe-wrap iframe{width:100%;height:100%;border:none}
+.report-iframe-label{
+  position:absolute;top:0;left:0;right:0;height:36px;background:var(--panel);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;
+  padding:0 14px;gap:10px;z-index:10
+}
+.iframe-dots{display:flex;gap:5px}
+.iframe-dots span{width:10px;height:10px;border-radius:50%}
+.iframe-dots span:nth-child(1){background:#FF5F57}
+.iframe-dots span:nth-child(2){background:#FEBC2E}
+.iframe-dots span:nth-child(3){background:#28C840}
+.iframe-url{font-size:11px;color:var(--text2);flex:1;text-align:center}
+.report-iframe-wrap iframe{margin-top:36px;height:calc(100% - 36px)}
+
+/* ── Run again / restart ─────────────────────────────────────────────────────*/
+.restart-bar{
+  display:flex;align-items:center;gap:12px;margin-top:20px;
+  padding:14px 18px;background:var(--panel2);border:1px solid var(--border);border-radius:8px
+}
+.restart-bar p{flex:1;font-size:12px;color:var(--text2)}
+.ghost-btn{
+  padding:8px 18px;background:transparent;border:1px solid var(--border);
+  border-radius:6px;color:var(--text2);font-family:var(--font-mono);font-size:12px;
+  cursor:pointer;transition:all .2s
+}
+.ghost-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* ── Approval panel ───────────────────────────────────────────────────────── */
+.approval-box{
+  background:var(--panel2);border:1px solid rgba(255,179,0,.4);border-radius:8px;
+  padding:24px 28px;max-width:560px;margin:0 auto;
+  box-shadow:0 0 40px rgba(255,179,0,.06)
+}
+.approval-box h3{font-family:var(--font-head);font-size:20px;font-weight:700;color:var(--white);margin-bottom:8px}
+.approval-box p{font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:20px}
+.approval-file{
+  background:var(--panel3);border:1px solid var(--border);border-radius:6px;
+  padding:10px 14px;font-size:12px;color:var(--cyan);font-family:var(--font-mono);
+  margin-bottom:20px;display:flex;align-items:center;gap:8px
+}
+.approval-actions{display:flex;gap:10px}
+.appr-btn{
+  flex:1;padding:11px 16px;border-radius:6px;border:none;
+  font-family:var(--font-head);font-size:14px;font-weight:700;
+  letter-spacing:.5px;cursor:pointer;transition:all .2s
+}
+.appr-ok{background:var(--green);color:var(--void)}
+.appr-ok:hover{box-shadow:0 4px 16px rgba(0,230,118,.4)}
+.appr-review{background:transparent;border:1px solid var(--amber)!important;border:none;color:var(--amber)}
+.appr-review:hover{background:var(--amber-dim)}
+
+/* ── Scrollbars ─────────────────────────────────────────────────────────────*/
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+
+/* ── Grid bg for main content ───────────────────────────────────────────────*/
+.panel{
+  background-image:
+    linear-gradient(rgba(0,229,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,.018) 1px,transparent 1px);
+  background-size:48px 48px
+}
+
+/* ── Bottom token bar ────────────────────────────────────────────────────────*/
+.token-bar-footer{
+  border-top:1px solid var(--border);background:var(--panel);
+  height:36px;display:flex;align-items:center;gap:0;flex-shrink:0;padding:0 20px;
+  font-size:10px;letter-spacing:.8px;color:var(--text2)
+}
+.tbf-seg{display:flex;align-items:center;gap:8px;padding:0 16px;border-right:1px solid var(--border)}
+.tbf-seg:first-child{padding-left:0}
+.tbf-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tbf-val{color:var(--white);font-weight:700}
+
+/* ── Animations ─────────────────────────────────────────────────────────────*/
+@keyframes slideIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.log-entry{animation:slideIn .2s ease-out}
+@keyframes shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
+.shimmer{animation:shimmer 1.5s ease-in-out infinite}
+</style>
+</head>
+<body>
+
+<!-- ── Top bar ──────────────────────────────────────────────────────────────── -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <svg viewBox="0 0 28 28" fill="none">
+      <rect x="1" y="1" width="26" height="26" rx="5" stroke="#00E5FF" stroke-width="1.5"/>
+      <path d="M7 14 L12 9 L17 14 L22 9" stroke="#00E5FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M7 19 L12 14 L17 19 L22 14" stroke="#00E5FF" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".4"/>
+    </svg>
+    <div>
+      <div class="brand-text">QA<span>.</span>AGENT</div>
+    </div>
+  </div>
+  <div class="topbar-segments">
+    <div class="seg"><span class="seg-label">Mode</span><span class="seg-val" id="topMode">—</span></div>
+    <div class="seg"><span class="seg-label">Phase</span><span class="seg-val amber" id="topPhase">IDLE</span></div>
+    <div class="seg"><span class="seg-label">Tests</span><span class="seg-val" id="topTests">0 / 0</span></div>
+    <div class="seg"><span class="seg-label">Pass Rate</span><span class="seg-val green" id="topPassRate">—</span></div>
+    <div class="seg"><span class="seg-label">Duration</span><span class="seg-val" id="topDuration">00:00</span></div>
+  </div>
+  <div class="topbar-status">
+    <div class="pulse-dot idle" id="statusDot"></div>
+    <span id="statusLabel">STANDBY</span>
+  </div>
+</div>
+
+<!-- ── Workspace ────────────────────────────────────────────────────────────── -->
+<div class="workspace">
+
+  <!-- Left sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">Pipeline Stages</div>
+    <div class="pipeline-stages" id="stageList">
+      <div class="stage" id="stage-input">
+        <div class="stage-dot"></div>
+        <div class="stage-name">Input Selection</div>
+        <div class="stage-sub">Choose data source</div>
+      </div>
+      <div class="stage" id="stage-config">
+        <div class="stage-dot"></div>
+        <div class="stage-name">Configuration</div>
+        <div class="stage-sub">Set parameters</div>
+      </div>
+      <div class="stage" id="stage-parse">
+        <div class="stage-dot"></div>
+        <div class="stage-name">Parse &amp; Load</div>
+        <div class="stage-sub">Read source data</div>
+      </div>
+      <div class="stage" id="stage-generate">
+        <div class="stage-dot"></div>
+        <div class="stage-name">Test Generation</div>
+        <div class="stage-sub">CSV → Excel test cases</div>
+      </div>
+      <div class="stage" id="stage-approval">
+        <div class="stage-dot"></div>
+        <div class="stage-name">Manual Approval</div>
+        <div class="stage-sub">Review &amp; approve</div>
+      </div>
+      <div class="stage" id="stage-pipeline">
+        <div class="stage-dot"></div>
+        <div class="stage-name">Agent Pipeline</div>
+        <div class="stage-sub">Requirements → Design → Review</div>
+      </div>
+      <div class="stage" id="stage-exec">
+        <div class="stage-dot"></div>
+        <div class="stage-name">Test Execution</div>
+        <div class="stage-sub">Playwright runner</div>
+      </div>
+      <div class="stage" id="stage-report">
+        <div class="stage-dot"></div>
+        <div class="stage-name">Report</div>
+        <div class="stage-sub">HTML report generated</div>
+      </div>
+    </div>
+
+    <!-- Token usage -->
+    <div class="token-panel">
+      <div class="token-panel-head">Token Usage <span id="totalTokens">0</span></div>
+      <div class="token-agent">
+        <div class="token-agent-name"><span>Requirements Agent</span><em id="tok-req">0</em></div>
+        <div class="token-bar-wrap"><div class="token-bar tb-req" id="bar-req"></div></div>
+      </div>
+      <div class="token-agent">
+        <div class="token-agent-name"><span>Designer Agent</span><em id="tok-des">0</em></div>
+        <div class="token-bar-wrap"><div class="token-bar tb-des" id="bar-des"></div></div>
+      </div>
+      <div class="token-agent">
+        <div class="token-agent-name"><span>Reviewer Agent</span><em id="tok-rev">0</em></div>
+        <div class="token-bar-wrap"><div class="token-bar tb-rev" id="bar-rev"></div></div>
+      </div>
+      <div class="token-agent">
+        <div class="token-agent-name"><span>Executor</span><em id="tok-exc">0</em></div>
+        <div class="token-bar-wrap"><div class="token-bar tb-exc" id="bar-exc"></div></div>
+      </div>
+      <div class="token-totals">
+        <span>Input: <strong id="tokIn">0</strong></span>
+        <span>Output: <strong id="tokOut">0</strong></span>
+        <span>Cost: <strong id="tokCost">$0.000</strong></span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main">
+    <div class="content-panels">
+
+      <!-- ── PANEL: Menu ──────────────────────────────────────────────────── -->
+      <div class="panel active" id="panel-menu">
+        <div class="menu-hero">
+          <div class="menu-eyebrow">Autonomous QA System v3.0</div>
+          <div class="menu-title">Mission<br/><span>Control</span></div>
+          <div class="menu-subtitle">
+            Multi-agent pipeline: Requirements Analysis → Test Design → Code Review → Playwright Execution → Report.<br/>
+            Select your input source to begin the automated testing workflow.
+          </div>
+
+          <div style="font-size:10px;letter-spacing:1.2px;color:var(--text2);text-transform:uppercase;margin-bottom:14px">
+            Primary workflows
+          </div>
+          <div class="menu-grid">
+            <button class="menu-btn" onclick="selectMode('csv')">
+              <span class="menu-btn-num">01 — PRIMARY</span>
+              <div class="menu-btn-label">CSV Stories</div>
+              <div class="menu-btn-desc">Import user stories from Jira, Azure DevOps, or any CSV export. Auto-generates test cases.</div>
+              <span class="btn-arrow">›</span>
+            </button>
+            <button class="menu-btn" onclick="selectMode('excel')">
+              <span class="menu-btn-num">02 — STANDARD</span>
+              <div class="menu-btn-label">Excel Files</div>
+              <div class="menu-btn-desc">Load manually written test cases from Excel. Runs full agent pipeline immediately.</div>
+              <span class="btn-arrow">›</span>
+            </button>
+          </div>
+
+          <div class="menu-divider">Utilities</div>
+          <div class="menu-grid">
+            <button class="menu-btn secondary" onclick="selectMode('sample-csv')">
+              <span class="menu-btn-num" style="color:var(--amber)">03 — UTILITY</span>
+              <div class="menu-btn-label">Create Sample CSV</div>
+              <div class="menu-btn-desc">Generate a sample CSV file with example user stories as a starting template.</div>
+              <span class="btn-arrow" style="color:var(--amber)">›</span>
+            </button>
+            <button class="menu-btn secondary" onclick="selectMode('excel-template')">
+              <span class="menu-btn-num" style="color:var(--amber)">04 — UTILITY</span>
+              <div class="menu-btn-label">Excel Template</div>
+              <div class="menu-btn-desc">Download a pre-formatted Excel template with correct columns for test cases.</div>
+              <span class="btn-arrow" style="color:var(--amber)">›</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANEL: CSV Config ────────────────────────────────────────────── -->
+      <div class="panel" id="panel-csv-config">
+        <div class="config-wrap">
+          <div class="breadcrumb">
+            <a onclick="goMenu()">Menu</a>
+            <span class="breadcrumb-sep">›</span>
+            <span>CSV Stories</span>
+          </div>
+          <div class="config-title">CSV Stories</div>
+          <div class="config-sub">
+            Point the agent to a folder containing CSV files exported from Jira, Azure DevOps, Linear, or any project management tool.<br/>
+            The agent will parse user stories and auto-generate structured test cases.
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stories Folder Path</label>
+            <input class="form-input" id="csvFolder" value="./stories" placeholder="./stories"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">CSV File Name (Optional)</label>
+            <input class="form-input" id="csvFileName" value="" placeholder="e.g., 407 or 407.csv"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Suite Identifier</label>
+            <input class="form-input" id="csvSuiteId" value="devops_suite_latest" placeholder="devops_suite_latest"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Expected CSV Structure</label>
+            <div style="background:var(--panel3);border:1px solid var(--border);border-radius:6px;padding:12px 14px;font-size:11px;color:var(--text2);line-height:2">
+              <span style="color:var(--cyan)">story_id</span>, 
+              <span style="color:var(--amber)">story_title</span>, 
+              <span style="color:var(--green)">description</span>, 
+              <span style="color:#AB82FF">acceptance_criteria</span>, 
+              priority, status, ...
+            </div>
+          </div>
+          <button class="run-btn" onclick="runPipeline('csv')">
+            <span>⚡</span> Launch CSV Pipeline
+          </button>
+        </div>
+      </div>
+
+      <!-- ── PANEL: Excel Config ──────────────────────────────────────────── -->
+      <div class="panel" id="panel-excel-config">
+        <div class="config-wrap">
+          <div class="breadcrumb">
+            <a onclick="goMenu()">Menu</a>
+            <span class="breadcrumb-sep">›</span>
+            <span>Excel Files</span>
+          </div>
+          <div class="config-title">Excel Test Cases</div>
+          <div class="config-sub">
+            Load manually written test cases from an Excel workbook. The pipeline will run Requirements Analysis → Test Design → Reviewer → Playwright Execution automatically.
+          </div>
+          <div class="form-group">
+            <label class="form-label">Test Input Folder</label>
+            <input class="form-input" id="excelFolder" value="./test_inputs" placeholder="./test_inputs"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Test Suite (Excel File)</label>
+            <div style="display:flex;gap:8px">
+              <select class="form-input" id="excelSuiteFile" style="flex:1">
+                <option value="">Loading suites…</option>
+              </select>
+              <button class="ghost-btn" type="button" onclick="loadSuites()">Refresh</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Suite Identifier</label>
+            <input class="form-input" id="excelSuiteId" value="qa_suite_latest" placeholder="qa_suite_latest"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Upload Excel File (optional override)</label>
+            <div class="upload-zone" onclick="document.getElementById('excelFileInput').click()">
+              <div class="upload-icon">📊</div>
+              <div class="upload-text">
+                <strong>Click to select file</strong>
+                Accepts .xlsx — test_scenario, test_case, steps columns required
+              </div>
+              <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFileSelect(this)"/>
+            </div>
+          </div>
+          <button class="run-btn" onclick="runPipeline('excel')">
+            <span>⚡</span> Launch Excel Pipeline
+          </button>
+        </div>
+      </div>
+
+      <!-- ── PANEL: Running ───────────────────────────────────────────────── -->
+      <div class="panel" id="panel-running">
+        <div class="pipeline-split" style="height:calc(100vh - 52px - 36px - 64px)">
+          <div class="pipeline-main">
+
+            <!-- Phase: Parse -->
+            <div class="phase-card pending" id="pc-parse">
+              <div class="phase-head">
+                <div class="phase-icon" id="pi-parse">📂</div>
+                <div class="phase-title" id="pt-parse">Phase 1 — Parse &amp; Load</div>
+                <span class="phase-status ps-pending" id="ps-parse">PENDING</span>
+              </div>
+              <div class="phase-progress"><div class="phase-progress-bar" id="pb-parse"></div></div>
+              <div style="font-size:11px;color:var(--text2)" id="parse-detail">Waiting to start…</div>
+            </div>
+
+            <!-- Phase: Generate (CSV only) -->
+            <div class="phase-card pending" id="pc-generate" style="display:none">
+              <div class="phase-head">
+                <div class="phase-icon" id="pi-generate">🤖</div>
+                <div class="phase-title">Phase 2 — Test Case Generation</div>
+                <span class="phase-status ps-pending" id="ps-generate">PENDING</span>
+              </div>
+              <div class="phase-progress"><div class="phase-progress-bar" id="pb-generate"></div></div>
+              <div style="font-size:11px;color:var(--text2)" id="generate-detail">Waiting…</div>
+            </div>
+
+            <!-- Phase: Approval (CSV only) -->
+            <div class="phase-card pending" id="pc-approval" style="display:none">
+              <div class="phase-head">
+                <div class="phase-icon">✋</div>
+                <div class="phase-title">Phase 3 — Manual Approval</div>
+                <span class="phase-status ps-pending" id="ps-approval">PENDING</span>
+              </div>
+              <div class="phase-progress"><div class="phase-progress-bar" id="pb-approval"></div></div>
+              <div id="approval-actions" style="display:none;margin-top:8px">
+                <div class="approval-box">
+                  <h3>⚠ Awaiting Approval</h3>
+                  <p>The agent has generated test cases and saved them to Excel. Please review the file before execution continues.</p>
+                  <div class="approval-file">
+                    <div style="margin-bottom:6px">📄 Available test suites:</div>
+                    <div id="approvalSuiteList" style="display:flex;flex-direction:column;gap:6px"></div>
+                  </div>
+                  <div style="margin-top:10px;font-size:11px;color:var(--text2);display:flex;align-items:center;gap:8px">
+                    <input type="checkbox" id="mergeRegression" checked/>
+                    <label for="mergeRegression">Merge approved suite into regression suite (devops_tests.xlsx)</label>
+                  </div>
+                  <div class="approval-actions">
+                    <button class="appr-btn appr-ok" onclick="approveTests()">✓ Approve &amp; Continue</button>
+                    <button class="appr-btn appr-review" onclick="requestRevision()">⟳ Request Revisions</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Phase: Agent pipeline -->
+            <div class="phase-card pending" id="pc-pipeline">
+              <div class="phase-head">
+                <div class="phase-icon" id="pi-pipeline">🧠</div>
+                <div class="phase-title">Agent Pipeline</div>
+                <span class="phase-status ps-pending" id="ps-pipeline">PENDING</span>
+              </div>
+              <div class="phase-progress"><div class="phase-progress-bar" id="pb-pipeline"></div></div>
+              <div class="phase-agents" id="agent-chips">
+                <div class="agent-chip" id="chip-req"><span class="agent-dot"></span> Requirements Agent</div>
+                <div class="agent-chip" id="chip-des"><span class="agent-dot"></span> Designer Agent</div>
+                <div class="agent-chip" id="chip-rev"><span class="agent-dot"></span> Reviewer Agent</div>
+              </div>
+              <div class="test-progress" id="test-progress-wrap">
+                <div class="test-progress-info">
+                  <span id="tp-label">Initialising…</span>
+                  <span id="tp-count">0 / 0</span>
+                </div>
+                <div class="test-progress-bar-wrap"><div class="test-progress-bar" id="tp-bar"></div></div>
+              </div>
+            </div>
+
+            <!-- Phase: Execution -->
+            <div class="phase-card pending" id="pc-exec">
+              <div class="phase-head">
+                <div class="phase-icon" id="pi-exec">🎭</div>
+                <div class="phase-title">Playwright Execution</div>
+                <span class="phase-status ps-pending" id="ps-exec">PENDING</span>
+              </div>
+              <div class="phase-progress"><div class="phase-progress-bar" id="pb-exec"></div></div>
+              <div class="exec-stats">
+                <div class="exec-stat">Running: <strong id="exc-run">0</strong></div>
+                <div class="exec-stat">Passed: <strong class="passed" id="exc-pass">0</strong></div>
+                <div class="exec-stat">Failed: <strong class="failed" id="exc-fail">0</strong></div>
+              </div>
+            </div>
+
+            <!-- Phase: Report -->
+            <div class="phase-card pending" id="pc-report">
+              <div class="phase-head">
+                <div class="phase-icon" id="pi-report">📋</div>
+                <div class="phase-title">Report Generation</div>
+                <span class="phase-status ps-pending" id="ps-report">PENDING</span>
+              </div>
+              <div class="phase-progress"><div class="phase-progress-bar" id="pb-report"></div></div>
+              <div style="font-size:11px;color:var(--text2)" id="report-detail">Waiting…</div>
+            </div>
+
+          </div>
+
+          <!-- Log panel -->
+          <div class="pipeline-log">
+            <div class="log-head">
+              <span>Agent Log</span>
+              <span id="log-count" style="color:var(--cyan)">0 entries</span>
+            </div>
+            <div class="log-scroll" id="logScroll"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANEL: Report ────────────────────────────────────────────────── -->
+      <div class="panel" id="panel-report">
+        <div class="report-wrap">
+          <div class="report-hero">
+            <div class="report-icon">🎯</div>
+            <div class="report-hero-text">
+              <h2>Pipeline Complete</h2>
+              <p>All agents finished. HTML report generated and saved.<br/>Click below to open the full interactive report in a new tab.</p>
+              <a href="./reports/qa_suite_latest_report.html" target="_blank" class="report-open-btn" id="reportLink">
+                Open Report ↗
+              </a>
+            </div>
+          </div>
+
+          <div class="report-summary-grid">
+            <div class="rs-card" style="--card-color:var(--white)">
+              <div class="rs-card-val" id="rs-total">18</div>
+              <div class="rs-card-lbl">Total Tests</div>
+            </div>
+            <div class="rs-card" style="--card-color:var(--green)">
+              <div class="rs-card-val" id="rs-passed">11</div>
+              <div class="rs-card-lbl">Passed</div>
+            </div>
+            <div class="rs-card" style="--card-color:var(--red)">
+              <div class="rs-card-val" id="rs-failed">7</div>
+              <div class="rs-card-lbl">Failed</div>
+            </div>
+            <div class="rs-card" style="--card-color:var(--cyan)">
+              <div class="rs-card-val" id="rs-rate">61.1%</div>
+              <div class="rs-card-lbl">Pass Rate</div>
+            </div>
+          </div>
+
+          <!-- Embedded report iframe -->
+          <div class="report-iframe-wrap">
+            <div class="report-iframe-label">
+              <div class="iframe-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="iframe-url" id="iframeUrl">qa_suite_latest_report.html</div>
+            </div>
+            <iframe id="reportFrame" src="about:blank" title="QA Report"></iframe>
+          </div>
+
+          <div class="restart-bar">
+            <p>Pipeline finished. Run again with a different configuration or data source.</p>
+            <button class="ghost-btn" onclick="goMenu()">← Back to Menu</button>
+            <button class="ghost-btn" onclick="location.reload()">⟳ Full Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANEL: Utility output ────────────────────────────────────────── -->
+      <div class="panel" id="panel-utility">
+        <div class="config-wrap">
+          <div class="breadcrumb">
+            <a onclick="goMenu()">Menu</a>
+            <span class="breadcrumb-sep">›</span>
+            <span id="util-breadcrumb">Utility</span>
+          </div>
+          <div class="config-title" id="util-title">Processing…</div>
+          <div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:20px 24px;margin-top:20px">
+            <div style="font-size:11px;color:var(--text2);margin-bottom:14px;letter-spacing:.8px;text-transform:uppercase">Output</div>
+            <div id="util-output" style="font-size:12px;line-height:2;color:var(--text)"></div>
+          </div>
+          <button class="ghost-btn" style="margin-top:16px;width:100%;padding:11px" onclick="goMenu()">← Back to Menu</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom token footer bar -->
+    <div class="token-bar-footer">
+      <div class="tbf-seg"><div class="tbf-dot" style="background:var(--cyan)"></div><span>Requirements:</span>&nbsp;<span class="tbf-val" id="ftok-req">0</span></div>
+      <div class="tbf-seg"><div class="tbf-dot" style="background:var(--amber)"></div><span>Designer:</span>&nbsp;<span class="tbf-val" id="ftok-des">0</span></div>
+      <div class="tbf-seg"><div class="tbf-dot" style="background:var(--green)"></div><span>Reviewer:</span>&nbsp;<span class="tbf-val" id="ftok-rev">0</span></div>
+      <div class="tbf-seg"><div class="tbf-dot" style="background:#B388FF"></div><span>Executor:</span>&nbsp;<span class="tbf-val" id="ftok-exc">0</span></div>
+      <div class="tbf-seg" style="border:none"><span>Total Tokens:</span>&nbsp;<span class="tbf-val" id="ftok-total">0</span>&nbsp;&nbsp;<span>Est. Cost:</span>&nbsp;<span class="tbf-val" style="color:var(--amber)" id="ftok-cost">$0.000</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   State
+═══════════════════════════════════════════════════════════════════════════ */
+let currentMode = null;
+let pipelineRunning = false;
+let startTime = null;
+let timerInterval = null;
+let logCount = 0;
+let currentSuiteId = null;
+const PHASES = ['parse','generate','approval','pipeline','exec','report'];
+const phaseState = {};
+
+const tokens = {req: 0, des: 0, rev: 0, exc: 0};
+let logOffset = 0;
+let logCarry = '';
+let logsTimer = null;
+let statusTimer = null;
+let lastError = null;
+let lastResults = {passed: 0, failed: 0, total: 0};
+const MAX_LOG_ENTRIES = 500;
+const MAX_TOKENS = {req: 48000, des: 62000, rev: 35000, exc: 12000};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Panel navigation
+═══════════════════════════════════════════════════════════════════════════ */
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+function goMenu() {
+  if (pipelineRunning) return;
+  showPanel('menu');
+  setStage('input', 'active');
+  setStatus('idle', 'STANDBY');
+  updateTop('—', 'IDLE', '0 / 0', '—');
+}
+
+function handleFileSelect(input) {
+  if (input.files[0]) {
+    const zone = input.closest('.upload-zone');
+    zone.querySelector('.upload-text').innerHTML =
+      `<strong>${input.files[0].name}</strong>Ready to process`;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Mode selection
+═══════════════════════════════════════════════════════════════════════════ */
+function selectMode(mode) {
+  currentMode = mode;
+  setStage('input', 'done');
+
+  if (mode === 'csv') {
+    setStage('config', 'active');
+    showPanel('csv-config');
+  } else if (mode === 'excel') {
+    setStage('config', 'active');
+    showPanel('excel-config');
+    loadSuites();
+  } else if (mode === 'sample-csv') {
+    showUtility('Create Sample CSV', 'Generating sample CSV with example user stories…', [
+      '✓ Created: <span style="color:var(--cyan)">./stories/sample_stories.csv</span>',
+      '✓ 5 example user stories added',
+      '✓ Columns: story_id, story_title, description, acceptance_criteria, priority, status',
+      '',
+      '<span style="color:var(--text2)">Place your own CSV files in the ./stories folder and run CSV Stories.</span>'
+    ]);
+  } else if (mode === 'excel-template') {
+    showUtility('Excel Template', 'Generating formatted Excel template…', [
+      '✓ Created: <span style="color:var(--cyan)">./test_input/test_case_template.xlsx</span>',
+      '✓ Columns: Test Scenario, Test Case, Test Data, Step No., Step Description,',
+      '&nbsp;&nbsp;&nbsp;Expected Results, Actual Results, Test Status, Defects, Remarks',
+      '',
+      '<span style="color:var(--text2)">Fill in your test cases and run Excel Files pipeline.</span>'
+    ]);
+  }
+}
+
+function showUtility(title, breadcrumb, lines) {
+  document.getElementById('util-title').textContent = title;
+  document.getElementById('util-breadcrumb').textContent = breadcrumb;
+  const out = document.getElementById('util-output');
+  out.innerHTML = '';
+  let i = 0;
+  function next() {
+    if (i >= lines.length) return;
+    const div = document.createElement('div');
+    div.innerHTML = lines[i++];
+    div.style.opacity = '0';
+    div.style.transform = 'translateX(-6px)';
+    out.appendChild(div);
+    requestAnimationFrame(() => {
+      div.style.transition = 'all .3s ease-out';
+      div.style.opacity = '1';
+      div.style.transform = 'none';
+    });
+    setTimeout(next, 180);
+  }
+  showPanel('utility');
+  setTimeout(next, 400);
+}
+
+async function loadSuites() {
+  const select = document.getElementById('excelSuiteFile');
+  if (!select) return;
+  try {
+    const resp = await fetch('/api/suites');
+    if (!resp.ok) throw new Error('Failed to load suites');
+    const data = await resp.json();
+    const files = data.files || [];
+    select.innerHTML = '';
+    if (!files.length) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'No suites found';
+      select.appendChild(opt);
+      return;
+    }
+    files.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f;
+      select.appendChild(opt);
+    });
+    if (!select.value && files.includes('devops_tests.xlsx')) {
+      select.value = 'devops_tests.xlsx';
+    }
+  } catch (e) {
+    select.innerHTML = '';
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = 'Failed to load suites';
+    select.appendChild(opt);
+  }
+}
+
+function renderApprovalSuites(suites) {
+  const list = document.getElementById('approvalSuiteList');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!suites || !suites.length) {
+    const empty = document.createElement('div');
+    empty.style.color = 'var(--text2)';
+    empty.style.fontSize = '11px';
+    empty.textContent = 'No suites available.';
+    list.appendChild(empty);
+    return;
+  }
+  suites.forEach(item => {
+    const name = typeof item === 'string' ? item : item.name;
+    const mtime = typeof item === 'object' ? item.mtime : null;
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '8px';
+    const file = document.createElement('span');
+    file.textContent = name || 'Unknown suite';
+    file.style.color = 'var(--cyan)';
+    file.style.fontSize = '12px';
+    const stamp = document.createElement('span');
+    stamp.style.color = 'var(--text2)';
+    stamp.style.fontSize = '10px';
+    stamp.textContent = mtime ? formatTimestamp(mtime) : '';
+    const btn = document.createElement('button');
+    btn.className = 'ghost-btn';
+    btn.type = 'button';
+    btn.textContent = 'Open';
+    btn.onclick = () => openSuite(name);
+    row.appendChild(file);
+    if (stamp.textContent) row.appendChild(stamp);
+    row.appendChild(btn);
+    list.appendChild(row);
+  });
+}
+
+function formatTimestamp(epochSeconds) {
+  try {
+    const d = new Date(epochSeconds * 1000);
+    return d.toLocaleString();
+  } catch (_) {
+    return '';
+  }
+}
+
+async function openSuite(name) {
+  try {
+    const resp = await fetch(`/api/open_suite?filename=${encodeURIComponent(name)}`, {method: 'POST'});
+    if (!resp.ok) throw new Error('Failed to open');
+    addLog('ok', 'APPROVAL', `Opened suite: ${name}`);
+  } catch (e) {
+    addLog('err', 'APPROVAL', `Failed to open suite: ${name}`);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Pipeline launcher
+═══════════════════════════════════════════════════════════════════════════ */
+async function runPipeline(mode) {
+  if (pipelineRunning) return;
+  const isCSV = mode === 'csv';
+  pipelineRunning = true;
+  currentMode = mode;
+  resetRunUI(isCSV);
+
+  showPanel('running');
+  setStatus('running', 'RUNNING');
+  startTimer();
+  updateTop(isCSV ? 'CSV Stories' : 'Excel Files', 'STARTING', '0 / 0', '—');
+
+  try {
+    const body = isCSV
+      ? {
+          mode: 'csv',
+          stories_folder: document.getElementById('csvFolder')?.value || './stories',
+          suite_id: document.getElementById('csvSuiteId')?.value || 'devops_suite_latest',
+          auto_approve: false,
+          csv_filename: document.getElementById('csvFileName')?.value || ''
+        }
+      : {
+          mode: 'excel',
+          suite_id: document.getElementById('excelSuiteId')?.value || 'qa_suite_latest',
+          excel_filename: document.getElementById('excelSuiteFile')?.value || ''
+        };
+    currentSuiteId = body.suite_id;
+    const resp = await fetch('/api/run', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.detail || resp.statusText || 'Failed to start');
+    }
+    addLog('ok', 'SYSTEM', 'Backend pipeline started');
+    startPolling();
+  } catch (e) {
+    addLog('err', 'SYSTEM', `Failed to start pipeline: ${e.message}`);
+    setStatus('error', 'ERROR');
+    stopTimer();
+    pipelineRunning = false;
+  }
+}
+
+function resetRunUI(isCSV) {
+  setStage('config', 'done');
+  setStage('parse', 'active');
+  setStage('generate', '');
+  setStage('approval', '');
+  setStage('pipeline', '');
+  setStage('exec', '');
+  setStage('report', '');
+
+  Object.keys(tokens).forEach(k => tokens[k] = 0);
+  updateTokenUI();
+
+  document.getElementById('logScroll').innerHTML = '';
+  logCount = 0;
+
+  document.getElementById('pc-generate').style.display = isCSV ? '' : 'none';
+  document.getElementById('pc-approval').style.display = isCSV ? '' : 'none';
+  document.getElementById('approval-actions').style.display = 'none';
+  const list = document.getElementById('approvalSuiteList');
+  if (list) list.innerHTML = '';
+  const mergeBox = document.getElementById('mergeRegression');
+  if (mergeBox) mergeBox.checked = true;
+
+  PHASES.forEach(p => {
+    setPhase(p, 'pending', 'NEXT');
+    setProgress(p, 0);
+  });
+
+  PHASES.forEach(p => { phaseState[p] = 'pending'; });
+
+  lastResults = {passed: 0, failed: 0, total: 0};
+  lastError = null;
+}
+
+function startPolling() {
+  stopPolling();
+  logOffset = 0;
+  logCarry = '';
+  fetchStatus();
+  fetchLogs();
+  logsTimer = setInterval(fetchLogs, 1000);
+  statusTimer = setInterval(fetchStatus, 1500);
+}
+
+function stopPolling() {
+  if (logsTimer) clearInterval(logsTimer);
+  if (statusTimer) clearInterval(statusTimer);
+  logsTimer = null;
+  statusTimer = null;
+}
+
+async function fetchStatus() {
+  try {
+    const resp = await fetch('/api/status');
+    if (!resp.ok) return;
+    const st = await resp.json();
+
+    if (st.running && logOffset === 0 && logCount === 0 && typeof st.log_start_offset === 'number') {
+      logOffset = st.log_start_offset;
+    }
+
+    if (st.waiting_for_approval) {
+      setOnlyRunning('approval');
+      document.getElementById('approval-actions').style.display = 'block';
+      if (st.approval_suites) {
+        renderApprovalSuites(st.approval_suites);
+      }
+    }
+
+    if (st.running) {
+      setStatus('running', 'RUNNING');
+    } else if (pipelineRunning) {
+      pipelineRunning = false;
+      setStatus('idle', st.last_error ? 'ERROR' : 'COMPLETE');
+      stopTimer();
+      stopPolling();
+
+      if (st.last_error) {
+        if (st.last_error.includes('Approval not granted')) {
+          setPhase('approval', 'error', 'STOPPED');
+          setStage('approval', 'error');
+          ['pipeline','exec','report'].forEach(p => {
+            if (phaseState[p] !== 'done') {
+              setPhase(p, 'pending', 'PENDING');
+              setStage(p, '');
+            }
+          });
+        }
+      } else {
+        setStage('parse', 'done');
+        setStage('generate', 'done');
+        setStage('approval', 'done');
+        setStage('pipeline', 'done');
+        setStage('exec', 'done');
+        setStage('report', 'done');
+        setPhase('parse', 'done', 'DONE');
+        setPhase('generate', 'done', 'DONE');
+        setPhase('approval', 'done', 'DONE');
+        setPhase('pipeline', 'done', 'DONE');
+        setPhase('exec', 'done', 'DONE');
+        setPhase('report', 'done', 'DONE');
+      }
+
+      if (st.last_error && st.last_error !== lastError) {
+        lastError = st.last_error;
+        addLog('err', 'SYSTEM', st.last_error);
+      }
+
+      if (!st.last_error) {
+        const total = lastResults.total || (lastResults.passed + lastResults.failed);
+        showReportPanel(
+          currentSuiteId || 'qa_suite_latest',
+          total || 0,
+          lastResults.passed || 0,
+          lastResults.failed || 0,
+          st.report_url || null
+        );
+      }
+    }
+  } catch (_) {
+    // ignore transient errors
+  }
+}
+
+async function fetchLogs() {
+  try {
+    const resp = await fetch(`/api/logs?offset=${logOffset}`);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    if (typeof data.offset === 'number') logOffset = data.offset;
+    if (data.chunk) appendLogChunk(data.chunk);
+  } catch (_) {
+    // ignore transient errors
+  }
+}
+
+function appendLogChunk(chunk) {
+  const combined = logCarry + chunk;
+  const lines = combined.split(/\r?\n/);
+  logCarry = lines.pop() || '';
+  const entries = [];
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    const entry = parseLogLine(trimmed);
+    if (entry) entries.push(entry);
+    updateFromLogLine(trimmed);
+  });
+  addLogEntries(entries);
+}
+
+function parseLogLine(line) {
+  const m = line.match(/^\d{4}-\d{2}-\d{2} [\d:,]+ - ([^-]+) - (\w+) - (.*)$/);
+  if (m) {
+    const rawTag = m[1].trim();
+    const level = m[2].toUpperCase();
+    let msg = m[3].trim();
+    const type = level === 'ERROR' ? 'err' : level === 'WARNING' ? 'warn' : 'info';
+    const formatted = formatLogEntry(rawTag, msg);
+    if (!formatted) return null;
+    return {type, tag: formatted.tag, msg: formatted.msg};
+  }
+  return {type: 'info', tag: 'LOG', msg: line};
+}
+
+function formatLogEntry(rawTag, msg) {
+  const tag = rawTag.toLowerCase();
+  if (/^=+$/.test(msg.replace(/\s+/g, ''))) return null;
+
+  let displayTag = rawTag.toUpperCase();
+  let displayMsg = msg;
+
+  if (tag.includes('orchestrator')) {
+    displayTag = 'PIPELINE';
+    displayMsg = displayMsg
+      .replace('Processing:', 'Test case:')
+      .replace('Phase 1:', 'Phase 1:')
+      .replace('Phase 2:', 'Phase 2:')
+      .replace('Phase 3:', 'Phase 3:')
+      .replace('Phase 4:', 'Phase 4:')
+      .replace('APPROVED - Test case approved for execution', 'Approved for execution')
+      .replace('REJECTED - Test case rejected', 'Rejected test case')
+      .replace('Attempt', 'Attempt');
+  } else if (tag.startsWith('agents.')) {
+    displayTag = 'AGENT';
+    displayMsg = displayMsg.replace('Requirements analysis completed for', 'Requirements completed for');
+  } else if (tag.startsWith('executors.')) {
+    displayTag = 'EXECUTOR';
+    displayMsg = displayMsg.replace('Executing:', 'Executing test:');
+  } else if (tag.includes('csv_story_reader')) {
+    displayTag = 'CSV';
+    displayMsg = displayMsg
+      .replace('[CSV Story Reader]', 'CSV')
+      .replace('Scanning folder:', 'Scanning folder:')
+      .replace('Reading:', 'Reading file:')
+      .replace('Processed', 'Processed')
+      .replace('Total stories loaded', 'Total stories loaded');
+  } else if (tag.includes('test_case_generator_agent')) {
+    displayTag = 'GENERATOR';
+  } else if (tag.includes('approval_workflow')) {
+    displayTag = 'APPROVAL';
+  } else if (tag === 'main') {
+    displayTag = 'PIPELINE';
+    displayMsg = displayMsg
+      .replace('[Phase 1] Reading stories from CSV files...', 'Phase 1: Reading stories from CSV')
+      .replace('[Phase 3] Generating test cases from stories...', 'Phase 2: Generating test cases')
+      .replace('[Phase 4] Saving test cases to Excel...', 'Phase 3: Writing test cases to Excel')
+      .replace('[Phase 5] Manual test case approval workflow...', 'Phase 4: Awaiting approval')
+      .replace('[Phase 6] Running analysis and design pipeline...', 'Phase 5: Agent pipeline')
+      .replace('[Phase 7] Executing approved tests...', 'Phase 6: Executing tests')
+      .replace('[Phase 8] Generating final report...', 'Phase 7: Generating report');
+  }
+
+  displayMsg = displayMsg
+    .replace('Reading stories from CSV files', 'Reading stories from CSV')
+    .replace('Generating test cases from stories', 'Generating test cases from stories')
+    .replace('Saving test cases to Excel', 'Writing generated test cases to Excel')
+    .replace('Manual test case approval workflow', 'Approval required: review generated Excel')
+    .replace('Workflow paused for: MANUAL_REVIEW_REQUESTED', 'Approval required: pipeline paused')
+    .replace('Revisions requested.', 'Revisions requested — pipeline will stop');
+
+  if (displayMsg.startsWith('>> PASSED')) displayMsg = 'Result: PASSED' + displayMsg.slice(8);
+  if (displayMsg.startsWith('>> FAILED')) displayMsg = 'Result: FAILED' + displayMsg.slice(8);
+
+  return {tag: displayTag, msg: displayMsg};
+}
+
+function updateFromLogLine(line) {
+  const modeLabel = currentMode === 'csv' ? 'CSV Stories' : 'Excel Files';
+  if (line.includes('Parsing test cases')) {
+    setOnlyRunning('parse');
+    updateTop(modeLabel, 'PARSING', '0 / 0', '—');
+  }
+  if (line.includes('Parsed ') && line.includes('test cases')) {
+    const m = line.match(/Parsed (\d+) test cases/);
+    if (m) {
+      lastResults.total = parseInt(m[1], 10);
+      updateTop(modeLabel, 'PARSING', `0 / ${lastResults.total}`, '—');
+      setPhase('parse', 'done', 'DONE');
+      setStage('parse', 'done');
+    }
+  }
+  if (line.includes('Reading stories from CSV')) {
+    setOnlyRunning('parse');
+    updateTop(modeLabel, 'PARSING', '0 / 0', '—');
+  }
+  if (line.includes('Loaded ') && line.includes('user stories')) {
+    setPhase('parse', 'done', 'DONE');
+    setStage('parse', 'done');
+  }
+  if (line.includes('Generating test cases from stories')) {
+    setOnlyRunning('generate');
+    updateTop(modeLabel, 'GENERATING', '0 / 0', '—');
+  }
+  if (line.includes('Generated ') && line.includes('test cases')) {
+    const m = line.match(/Generated (\d+) test cases/);
+    if (m) {
+      lastResults.total = parseInt(m[1], 10);
+      updateTop(modeLabel, 'GENERATING', `0 / ${lastResults.total}`, '—');
+    }
+  }
+  if (line.includes('Saving test cases to Excel')) {
+    setPhase('generate', 'done', 'DONE');
+    setStage('generate', 'done');
+  }
+  if (line.includes('Manual test case approval workflow')) {
+    setOnlyRunning('approval');
+  }
+  if (line.includes('Auto-approval enabled') || line.includes('Test cases APPROVED')) {
+    document.getElementById('approval-actions').style.display = 'none';
+    setPhase('approval', 'done', 'DONE');
+    setStage('approval', 'done');
+  }
+  if (line.includes('Running multi-agent pipeline')) {
+    setOnlyRunning('pipeline');
+    updateTop(modeLabel, 'AGENT PIPELINE', `0 / ${lastResults.total || 0}`, '—');
+  }
+  if (line.includes('Executing approved tests')) {
+    setOnlyRunning('exec');
+    setPhase('pipeline', 'done', 'DONE');
+    setStage('pipeline', 'done');
+    updateTop(modeLabel, 'EXECUTING', `0 / ${lastResults.total || 0}`, '—');
+  }
+  if (line.includes('Generating report')) {
+    setOnlyRunning('report');
+  }
+  if (line.includes('Execution complete:')) {
+    const m = line.match(/Execution complete:\s*(\d+)\/(\d+)\s*passed/);
+    if (m) {
+      lastResults.passed = parseInt(m[1], 10);
+      lastResults.total = parseInt(m[2], 10);
+      lastResults.failed = lastResults.total - lastResults.passed;
+      updateTop(
+        modeLabel,
+        'EXECUTING',
+        `${lastResults.total} / ${lastResults.total}`,
+        ((lastResults.passed / Math.max(lastResults.total, 1)) * 100).toFixed(1) + '%'
+      );
+    }
+  }
+  if (line.includes('Results: Passed:')) {
+    const m = line.match(/Results:\s*Passed:\s*(\d+),\s*Failed:\s*(\d+)/);
+    if (m) {
+      lastResults.passed = parseInt(m[1], 10);
+      lastResults.failed = parseInt(m[2], 10);
+      lastResults.total = lastResults.passed + lastResults.failed;
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Excel pipeline simulation
+═══════════════════════════════════════════════════════════════════════════ */
+function runExcelPipeline(suiteId) {
+  const totalTests = 18;
+  let pChain = Promise.resolve();
+
+  pChain = pChain.then(() => {
+    setStage('parse', 'running');
+    setPhase('parse', 'running', 'RUNNING');
+    setProgress('parse', 0);
+    addLog('info', 'SYSTEM', `Starting Excel pipeline — suite: ${suiteId}`);
+    addLog('phase', 'PHASE 1', 'Parsing test cases from Excel files…');
+    return delay(600);
+  }).then(() => {
+    setProgress('parse', 40);
+    addLog('agent', 'PARSER', 'Opening workbook: devops_tests.xlsx');
+    return delay(500);
+  }).then(() => {
+    setProgress('parse', 80);
+    addLog('agent', 'PARSER', `Found ${totalTests} test cases across 2 story groups`);
+    document.getElementById('parse-detail').innerHTML =
+      `<span style="color:var(--green)">✓</span> ${totalTests} test cases loaded from devops_tests.xlsx`;
+    return delay(400);
+  }).then(() => {
+    setProgress('parse', 100);
+    setPhase('parse', 'done', 'DONE');
+    setStage('parse', 'done');
+    return delay(300);
+  });
+
+  pChain = pChain.then(() => {
+    setStage('pipeline', 'running');
+    return runAgentPipeline(totalTests, false);
+  });
+
+  pChain = pChain.then(({passed, failed}) => {
+    return runExecution(totalTests, passed, failed);
+  });
+
+  pChain = pChain.then(({passed, failed}) => {
+    return runReportGen(suiteId, totalTests, passed, failed);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CSV pipeline simulation
+═══════════════════════════════════════════════════════════════════════════ */
+function runCSVPipeline(suiteId) {
+  const storyCount = 8;
+  const totalTests = 18;
+
+  let pChain = Promise.resolve();
+
+  // Phase 1: Parse CSV
+  pChain = pChain.then(() => {
+    setStage('parse', 'running');
+    setPhase('parse', 'running', 'RUNNING');
+    addLog('info', 'SYSTEM', `Starting CSV pipeline — suite: ${suiteId}`);
+    addLog('phase', 'PHASE 1', 'Reading stories from CSV files…');
+    return animateProgress('pb-parse', 0, 100, 1200);
+  }).then(() => {
+    addLog('agent', 'CSV-READER', `Found 3 CSV files in ./stories`);
+    addLog('ok', 'CSV-READER', `Loaded ${storyCount} user stories`);
+    document.getElementById('parse-detail').textContent =
+      `${storyCount} stories loaded from ./stories/*.csv`;
+    setPhase('parse', 'done', 'DONE');
+    setStage('parse', 'done');
+    return delay(300);
+  });
+
+  // Phase 2: Generate test cases
+  pChain = pChain.then(() => {
+    setStage('generate', 'running');
+    setPhase('generate', 'running', 'RUNNING');
+    addLog('phase', 'PHASE 2', `Generating test cases from ${storyCount} stories…`);
+    addLog('agent', 'TC-GEN', 'Analysing story patterns and acceptance criteria');
+    return delay(800);
+  }).then(() => {
+    addLog('agent', 'TC-GEN', 'Generating HAPPY_PATH scenarios…');
+    document.getElementById('pb-generate').style.width = '35%';
+    return delay(900);
+  }).then(() => {
+    addLog('agent', 'TC-GEN', 'Generating EDGE_CASE, ERROR_FAILURE scenarios…');
+    document.getElementById('pb-generate').style.width = '70%';
+    return delay(700);
+  }).then(() => {
+    addLog('ok', 'TC-GEN', `Generated ${totalTests} test cases → saved to devops_tests.xlsx`);
+    document.getElementById('generate-detail').textContent =
+      `${totalTests} test cases written to devops_tests.xlsx`;
+    document.getElementById('pb-generate').style.width = '100%';
+    addToken('des', 4200);
+    setPhase('generate', 'done', 'DONE');
+    setStage('generate', 'done');
+    return delay(300);
+  });
+
+  // Phase 3: Approval
+  pChain = pChain.then(() => {
+    setStage('approval', 'running');
+    setPhase('approval', 'running', 'RUNNING');
+    addLog('warn', 'APPROVAL', 'Pausing pipeline — awaiting manual test case approval');
+    document.getElementById('ps-approval').className = 'phase-status ps-running';
+    document.getElementById('pb-approval').style.width = '50%';
+    document.getElementById('approvalFilePath').textContent = './test_input/devops_tests.xlsx';
+    document.getElementById('approval-actions').style.display = 'block';
+    return new Promise(resolve => {
+      window._approvalResolve = resolve;
+    });
+  });
+
+  // Phase 4+: after approval
+  pChain = pChain.then(() => {
+    setStage('pipeline', 'running');
+    return runAgentPipeline(totalTests, true);
+  });
+
+  pChain = pChain.then(({passed, failed}) => {
+    return runExecution(totalTests, passed, failed);
+  });
+
+  pChain = pChain.then(({passed, failed}) => {
+    return runReportGen(suiteId, totalTests, passed, failed);
+  });
+}
+
+async function approveTests() {
+  if (currentMode === 'csv' && pipelineRunning) {
+    try {
+      const mergeBox = document.getElementById('mergeRegression');
+      const mergeFlag = mergeBox ? !!mergeBox.checked : true;
+      await fetch('/api/approval', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({decision: 'approve', merge_to_regression: mergeFlag})
+      });
+      document.getElementById('approval-actions').style.display = 'none';
+      document.getElementById('pb-approval').style.width = '100%';
+      setPhase('approval', 'done', 'DONE');
+      setStage('approval', 'done');
+      addLog('ok', 'APPROVAL', 'Tests approved — continuing pipeline execution');
+      return;
+    } catch (e) {
+      addLog('err', 'APPROVAL', `Failed to approve: ${e.message || e}`);
+      return;
+    }
+  }
+
+  // Simulation fallback
+  document.getElementById('approval-actions').style.display = 'none';
+  document.getElementById('pb-approval').style.width = '100%';
+  setPhase('approval', 'done', 'DONE');
+  setStage('approval', 'done');
+  addLog('ok', 'APPROVAL', 'Tests approved — continuing pipeline execution');
+  if (window._approvalResolve) window._approvalResolve();
+}
+
+async function requestRevision() {
+  if (currentMode === 'csv' && pipelineRunning) {
+    try {
+      await fetch('/api/approval', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({decision: 'revisions'})
+      });
+      document.getElementById('approval-actions').style.display = 'none';
+      addLog('warn', 'APPROVAL', 'Revisions requested — pipeline will stop.');
+      return;
+    } catch (e) {
+      addLog('err', 'APPROVAL', `Failed to request revisions: ${e.message || e}`);
+      return;
+    }
+  }
+
+  // Simulation fallback
+  addLog('warn', 'APPROVAL', 'Revisions requested — pipeline paused. Edit Excel file and re-approve.');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Agent pipeline (runs per test)
+═══════════════════════════════════════════════════════════════════════════ */
+function runAgentPipeline(totalTests, isCSV) {
+  setPhase('pipeline', 'running', 'RUNNING');
+  setStage('pipeline', 'running');
+  addLog('phase', 'AGENT PIPELINE', `Processing ${totalTests} test cases through multi-agent system`);
+  updateTop(currentMode === 'csv' ? 'CSV Stories' : 'Excel Files', 'AGENT PIPELINE', `0 / ${totalTests}`, '—');
+
+  let passed = 0, failed = 0;
+  const testNames = [
+    'auto_populate_tags_after_results_load',
+    'select_multiple_tags_after_auto_population',
+    'drill_down_using_newly_surfaced_tags',
+    'ensure_selected_tags_remain_after_reload',
+    'display_all_tags_associated_with_results',
+    'verify_visual_consistency_of_newly_added_tags',
+    'deselect_a_tag_and_verify_results',
+    'handle_network_error_during_tag_population',
+    'full_filter_reload_on_or_operator',
+    'multiple_filters_with_or_operator',
+    'existing_filters_remain_after_reload',
+    'smooth_reload_without_flicker',
+    'reload_with_no_additional_filters',
+    'handle_reload_failure_gracefully',
+    'reload_with_large_data_set',
+    'deselect_or_operator',
+    'reset_filters_after_or_selection',
+    'filters_update_based_on_context'
+  ];
+
+  let chain = Promise.resolve();
+
+  testNames.forEach((name, i) => {
+    chain = chain.then(() => {
+      document.getElementById('tp-label').textContent = name;
+      document.getElementById('tp-count').textContent = `${i} / ${totalTests}`;
+      document.getElementById('tp-bar').style.width = `${(i / totalTests) * 100}%`;
+      updateTop(currentMode === 'csv' ? 'CSV Stories' : 'Excel Files', 'AGENT PIPELINE', `${i} / ${totalTests}`, '—');
+
+      // Cycle through agents
+      setChip('req', 'active'); setChip('des', ''); setChip('rev', '');
+      addLog('agent', 'REQ-AGENT', `Analysing: ${name}`);
+      addToken('req', Math.floor(800 + Math.random() * 600));
+      return delay(220);
+    }).then(() => {
+      setChip('req', 'done'); setChip('des', 'active'); setChip('rev', '');
+      addLog('agent', 'DESIGNER', `Generating Playwright code for: ${name}`);
+      addToken('des', Math.floor(1400 + Math.random() * 900));
+      return delay(300);
+    }).then(() => {
+      setChip('req', 'done'); setChip('des', 'done'); setChip('rev', 'active');
+
+      // Occasional retry
+      const willRetry = [3,4,5,8,10,15,16].includes(i) && Math.random() > 0.4;
+      if (willRetry) {
+        setChip('rev', 'retrying');
+        addLog('warn', 'REVIEWER', `DATA_ISSUE detected in ${name} — retrying (attempt 2)`);
+        addToken('rev', Math.floor(500 + Math.random() * 400));
+        return delay(280).then(() => {
+          addToken('rev', Math.floor(500 + Math.random() * 400));
+          addLog('ok', 'REVIEWER', `Approved on retry: ${name}`);
+          setChip('rev', 'done');
+          setProgress('pipeline', ((i + 1) / totalTests) * 100);
+        });
+      }
+
+      addToken('rev', Math.floor(500 + Math.random() * 400));
+      addLog('ok', 'REVIEWER', `Approved: ${name}`);
+      setChip('rev', 'done');
+      setProgress('pipeline', ((i + 1) / totalTests) * 100);
+      return delay(180);
+    });
+  });
+
+  chain = chain.then(() => {
+    document.getElementById('tp-count').textContent = `${totalTests} / ${totalTests}`;
+    document.getElementById('tp-bar').style.width = '100%';
+    document.getElementById('tp-label').textContent = 'All test cases processed';
+    setPhase('pipeline', 'done', 'DONE');
+    setStage('pipeline', 'done');
+    addLog('ok', 'PIPELINE', `All ${totalTests} test cases approved and ready for execution`);
+    return delay(400);
+  });
+
+  return chain.then(() => ({passed, failed}));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Test execution simulation
+═══════════════════════════════════════════════════════════════════════════ */
+function runExecution(totalTests, _, __) {
+  setStage('exec', 'running');
+  setPhase('exec', 'running', 'RUNNING');
+  addLog('phase', 'PHASE EXE', 'Launching Playwright test runner…');
+  updateTop(currentMode === 'csv' ? 'CSV Stories' : 'Excel Files', 'EXECUTING', `0 / ${totalTests}`, '—');
+
+  // Realistic pass/fail pattern from actual run
+  const outcomes = [1,1,1,0,0,0,1,1,0,1,0,1,1,1,1,0,0,1];
+  let passed = 0, failed = 0;
+  let chain = Promise.resolve();
+
+  outcomes.forEach((ok, i) => {
+    chain = chain.then(() => {
+      document.getElementById('exc-run').textContent = i + 1;
+      const pct = ((i + 1) / totalTests) * 100;
+      setProgress('exec', pct);
+      addToken('exc', Math.floor(200 + Math.random() * 180));
+
+      if (ok) {
+        passed++;
+        addLog('ok', 'PLAYWRIGHT', `PASSED: test_${(i+1).toString().padStart(2,'0')} (${(7 + Math.random() * 6).toFixed(2)}s)`);
+      } else {
+        failed++;
+        const errs = [
+          "AssertionError: 'Vehicles' tag should be visible after reload.",
+          "AssertionError: Expected tags not fully visible.",
+          "NameError: name 'vehicles_tag_style' is not defined",
+          "AssertionError: Filter panel did not reload after OR selection",
+          "AssertionError: Tags before reload differ from after.",
+          "AssertionError: OR operator should be deselected and not visible",
+          "AttributeError: 'NoneType' object has no attribute 'click'"
+        ];
+        addLog('err', 'PLAYWRIGHT', `FAILED: test_${(i+1).toString().padStart(2,'0')} — ${errs[failed-1] || 'AssertionError'}`);
+      }
+      document.getElementById('exc-pass').textContent = passed;
+      document.getElementById('exc-fail').textContent = failed;
+      const rate = ((passed / (i+1)) * 100).toFixed(1);
+      updateTop(currentMode === 'csv' ? 'CSV Stories' : 'Excel Files', 'EXECUTING', `${i+1} / ${totalTests}`, `${rate}%`);
+      return delay(160);
+    });
+  });
+
+  return chain.then(() => {
+    setPhase('exec', 'done', 'DONE');
+    setStage('exec', 'done');
+    const rate = ((passed / totalTests) * 100).toFixed(1);
+    addLog('ok', 'EXECUTOR', `Execution complete: ${passed} passed / ${failed} failed (${rate}% pass rate)`);
+    updateTop(currentMode === 'csv' ? 'CSV Stories' : 'Excel Files', 'REPORTING', `${totalTests} / ${totalTests}`, `${rate}%`);
+    return delay(300).then(() => ({passed, failed}));
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Report generation
+═══════════════════════════════════════════════════════════════════════════ */
+function runReportGen(suiteId, totalTests, passed, failed) {
+  setStage('report', 'running');
+  setPhase('report', 'running', 'RUNNING');
+  addLog('phase', 'PHASE RPT', 'Generating HTML report…');
+  return animateProgress('pb-report', 0, 100, 900).then(() => {
+    const rate = ((passed / totalTests) * 100).toFixed(1);
+    document.getElementById('report-detail').innerHTML =
+      `<span style="color:var(--green)">✓</span> Report saved: ${suiteId}_report.html`;
+    addLog('ok', 'REPORTER', `HTML report generated: ${suiteId}_report.html`);
+    addLog('info', 'SYSTEM', '════════ PIPELINE COMPLETE ════════');
+    setPhase('report', 'done', 'DONE');
+    setStage('report', 'done');
+    setStatus('idle', 'COMPLETE');
+    stopTimer();
+    pipelineRunning = false;
+
+    // Show report panel
+    return delay(800).then(() => {
+      showReportPanel(suiteId, totalTests, passed, failed);
+    });
+  });
+}
+
+function showReportPanel(suiteId, total, passed, failed, reportUrl) {
+  const safeTotal = Math.max(total || 0, 1);
+  const rate = ((passed / safeTotal) * 100).toFixed(1);
+  document.getElementById('rs-total').textContent = total;
+  document.getElementById('rs-passed').textContent = passed;
+  document.getElementById('rs-failed').textContent = failed;
+  document.getElementById('rs-rate').textContent = rate + '%';
+
+  const reportFile = suiteId + '_report.html';
+  const url = reportUrl || ('./reports/' + reportFile);
+  document.getElementById('reportLink').href = url;
+  document.getElementById('iframeUrl').textContent = url;
+  document.getElementById('reportFrame').src = url;
+
+  showPanel('report');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Stage / phase helpers
+═══════════════════════════════════════════════════════════════════════════ */
+const STAGE_MAP = {
+  input:'stage-input', config:'stage-config', parse:'stage-parse',
+  generate:'stage-generate', approval:'stage-approval',
+  pipeline:'stage-pipeline', exec:'stage-exec', report:'stage-report'
+};
+
+function setStage(name, state) {
+  const el = document.getElementById(STAGE_MAP[name]);
+  if (!el) return;
+  el.className = 'stage ' + (state || '');
+  // Update badge
+  let badge = el.querySelector('.stage-badge');
+  if (!badge) { badge = document.createElement('div'); badge.className = 'stage-badge'; el.appendChild(badge); }
+  const cls = {active:'badge-pending',running:'badge-running',done:'badge-done',error:'badge-error'};
+  badge.className = 'stage-badge ' + (cls[state] || 'badge-pending');
+  badge.textContent = state ? state.toUpperCase() : 'WAITING';
+}
+
+function setPhase(name, state, label) {
+  const card = document.getElementById('pc-' + name);
+  const statusEl = document.getElementById('ps-' + name);
+  if (!card || !statusEl) return;
+  card.className = 'phase-card ' + (state || 'pending');
+  statusEl.className = 'phase-status ps-' + (state || 'pending');
+  statusEl.textContent = label || state.toUpperCase();
+  phaseState[name] = state || 'pending';
+}
+
+function setProgress(phase, pct) {
+  const el = document.getElementById('pb-' + phase);
+  if (el) el.style.width = pct + '%';
+}
+
+function setOnlyRunning(phaseName) {
+  const idx = PHASES.indexOf(phaseName);
+  PHASES.forEach((p, i) => {
+    if (p === phaseName) {
+      setPhase(p, 'running', 'RUNNING');
+      setStage(p, 'running');
+      return;
+    }
+    if (phaseState[p] === 'done' || phaseState[p] === 'error') {
+      return;
+    }
+    if (i > idx) {
+      setPhase(p, 'pending', 'NEXT');
+      setStage(p, '');
+    } else {
+      setPhase(p, 'pending', 'PENDING');
+      setStage(p, '');
+    }
+  });
+}
+
+function animateProgress(id, from, to, duration) {
+  return new Promise(resolve => {
+    const el = document.getElementById(id);
+    if (!el) { resolve(); return; }
+    const start = performance.now();
+    function step(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+      el.style.width = (from + (to - from) * ease) + '%';
+      if (t < 1) requestAnimationFrame(step);
+      else resolve();
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+function setChip(name, state) {
+  const el = document.getElementById('chip-' + name);
+  if (!el) return;
+  el.className = 'agent-chip' + (state ? ' ' + state : '');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Log
+═══════════════════════════════════════════════════════════════════════════ */
+function addLog(type, tag, msg) {
+  addLogEntries([{type, tag, msg}]);
+}
+
+function addLogEntries(entries) {
+  if (!entries || !entries.length) return;
+  const scroll = document.getElementById('logScroll');
+  const frag = document.createDocumentFragment();
+  const tagClasses = {info:'lt-info',agent:'lt-agent',warn:'lt-warn',ok:'lt-ok',err:'lt-err',phase:'lt-phase'};
+  const now = new Date();
+  const ts = now.toTimeString().slice(0,8);
+
+  entries.forEach(e => {
+    logCount++;
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML =
+      `<span class="log-ts">${ts}</span>` +
+      `<span class="log-tag ${tagClasses[e.type]||'lt-info'}">${e.tag}</span>` +
+      `<span class="log-msg">${e.msg}</span>`;
+    frag.appendChild(entry);
+  });
+
+  scroll.appendChild(frag);
+  while (scroll.children.length > MAX_LOG_ENTRIES) {
+    scroll.removeChild(scroll.firstChild);
+  }
+  const countText = logCount > MAX_LOG_ENTRIES
+    ? `${logCount} entries (showing last ${MAX_LOG_ENTRIES})`
+    : `${logCount} entries`;
+  document.getElementById('log-count').textContent = countText;
+  scroll.scrollTop = scroll.scrollHeight;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Token accounting
+═══════════════════════════════════════════════════════════════════════════ */
+function addToken(agent, amount) {
+  tokens[agent] = (tokens[agent] || 0) + amount;
+  updateTokenUI();
+}
+
+function updateTokenUI() {
+  const total = Object.values(tokens).reduce((a, b) => a + b, 0);
+  const maxTok = Math.max(total, 1);
+  const cost = (total / 1000) * 0.003;
+
+  ['req','des','rev','exc'].forEach(k => {
+    const pct = Math.min((tokens[k] / MAX_TOKENS[k]) * 100, 100);
+    document.getElementById('tok-' + k).textContent = tokens[k].toLocaleString();
+    document.getElementById('bar-' + k).style.width = pct + '%';
+    document.getElementById('ftok-' + k).textContent = tokens[k].toLocaleString();
+  });
+
+  document.getElementById('totalTokens').textContent = total.toLocaleString();
+  document.getElementById('ftok-total').textContent = total.toLocaleString();
+  document.getElementById('tokIn').textContent = Math.floor(total * 0.6).toLocaleString();
+  document.getElementById('tokOut').textContent = Math.floor(total * 0.4).toLocaleString();
+  const costStr = '$' + cost.toFixed(3);
+  document.getElementById('tokCost').textContent = costStr;
+  document.getElementById('ftok-cost').textContent = costStr;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Top bar / status helpers
+═══════════════════════════════════════════════════════════════════════════ */
+function setStatus(state, label) {
+  const dot = document.getElementById('statusDot');
+  const lbl = document.getElementById('statusLabel');
+  dot.className = 'pulse-dot ' + state;
+  lbl.textContent = label;
+}
+
+function updateTop(mode, phase, tests, rate) {
+  document.getElementById('topMode').textContent = mode;
+  const phaseEl = document.getElementById('topPhase');
+  phaseEl.textContent = phase;
+  phaseEl.className = 'seg-val' + (phase === 'COMPLETE' ? ' green' : phase === 'EXECUTING' ? ' amber' : '');
+  document.getElementById('topTests').textContent = tests;
+  const rateEl = document.getElementById('topPassRate');
+  rateEl.textContent = rate;
+  if (rate !== '—') {
+    const r = parseFloat(rate);
+    rateEl.className = 'seg-val ' + (r >= 70 ? 'green' : r >= 50 ? 'amber' : 'red');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Timer
+═══════════════════════════════════════════════════════════════════════════ */
+function startTimer() {
+  startTime = Date.now();
+  timerInterval = setInterval(() => {
+    const s = Math.floor((Date.now() - startTime) / 1000);
+    const mm = String(Math.floor(s / 60)).padStart(2,'0');
+    const ss = String(s % 60).padStart(2,'0');
+    document.getElementById('topDuration').textContent = mm + ':' + ss;
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Utilities
+═══════════════════════════════════════════════════════════════════════════ */
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/* ── Init ── */
+setStage('input', 'active');
+setStatus('idle', 'STANDBY');
+</script>
+</body>
+</html>

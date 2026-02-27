@@ -1,0 +1,244 @@
+{
+  "timestamp": "2026-02-27T13:20:06.166243",
+  "stories_processed": 3,
+  "total_test_cases": 26,
+  "total_scenarios": 26,
+  "total_steps": 52,
+  "scenarios": {
+    "HAPPY_PATH - Category/Field Name filter visibility": {
+      "test_cases": [
+        {
+          "name": "filter_visibility_after_search",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "MULTI_COMBINATION - Select multiple metadata fields": {
+      "test_cases": [
+        {
+          "name": "select_multiple_metadata_fields",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Filter by metadata field after keyword search": {
+      "test_cases": [
+        {
+          "name": "refine_search_with_field_filter",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Saved search retains field selections": {
+      "test_cases": [
+        {
+          "name": "saved_search_retains_field_selections",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "UI_UX_CONSISTENCY - Filter block styling": {
+      "test_cases": [
+        {
+          "name": "filter_block_styling_consistency",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REMOVAL_DESELECTION - Deselect a metadata field": {
+      "test_cases": [
+        {
+          "name": "deselect_metadata_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "CLEAR_RESET_ALL - Clear search functionality": {
+      "test_cases": [
+        {
+          "name": "clear_search_functionality",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No assets match selected field": {
+      "test_cases": [
+        {
+          "name": "no_assets_match_selected_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - Display count of assets per field": {
+      "test_cases": [
+        {
+          "name": "display_count_of_assets_per_field",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "LIFECYCLE_TRANSITION - Field selection updates results": {
+      "test_cases": [
+        {
+          "name": "field_selection_updates_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "HAPPY_PATH - Auto-populate additional tags after results load": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_after_results_load",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Select multiple tags for filtering": {
+      "test_cases": [
+        {
+          "name": "select_multiple_tags_for_filtering",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Drill down using newly surfaced tags": {
+      "test_cases": [
+        {
+          "name": "drill_down_with_newly_surfaced_tags",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "STATE_PERSISTENCE - User-selected tags remain highlighted": {
+      "test_cases": [
+        {
+          "name": "user_selected_tags_remain_highlighted",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - Display all tags associated with returned results": {
+      "test_cases": [
+        {
+          "name": "display_all_tags_associated_with_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Consistent styling of newly added tags": {
+      "test_cases": [
+        {
+          "name": "consistent_styling_of_newly_added_tags",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No additional tags to display": {
+      "test_cases": [
+        {
+          "name": "no_additional_tags_to_display",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ERROR_FAILURE - Handle network errors gracefully": {
+      "test_cases": [
+        {
+          "name": "handle_network_errors_gracefully",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "HAPPY_PATH - Reload on OR Operator Selection": {
+      "test_cases": [
+        {
+          "name": "reload_on_or_operator_selection",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "MULTI_COMBINATION - Multiple Filters with OR Operator": {
+      "test_cases": [
+        {
+          "name": "multiple_filters_with_or_operator",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Filters Persist After Reload": {
+      "test_cases": [
+        {
+          "name": "filters_persist_after_reload",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Smooth Reload Experience": {
+      "test_cases": [
+        {
+          "name": "smooth_reload_experience",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "LIFECYCLE_TRANSITION - Filter Results Update Automatically": {
+      "test_cases": [
+        {
+          "name": "filter_results_update_automatically",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ERROR_FAILURE - Handle Reload Failures Gracefully": {
+      "test_cases": [
+        {
+          "name": "handle_reload_failures_gracefully",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No Filters Applied": {
+      "test_cases": [
+        {
+          "name": "no_filters_applied",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - Relevant Filter Options Post-Reload": {
+      "test_cases": [
+        {
+          "name": "relevant_filter_options_post_reload",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx"
+}
