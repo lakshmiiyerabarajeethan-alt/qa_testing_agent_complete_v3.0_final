@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-03-02T13:00:30.154578",
+  "stories_processed": 1,
+  "total_test_cases": 10,
+  "total_scenarios": 10,
+  "total_steps": 19,
+  "scenarios": {
+    "HAPPY_PATH - Filter Visibility after Search": {
+      "test_cases": [
+        {
+          "name": "category_filter_visible_after_search",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "MULTI_COMBINATION - Select Multiple Metadata Fields": {
+      "test_cases": [
+        {
+          "name": "select_multiple_metadata_fields",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Drill Down with Field Selection": {
+      "test_cases": [
+        {
+          "name": "drill_down_with_field_selection",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Save and Restore Search": {
+      "test_cases": [
+        {
+          "name": "save_and_restore_search_with_filters",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "UI_UX_CONSISTENCY - Visual Consistency of Filter Block": {
+      "test_cases": [
+        {
+          "name": "visual_consistency_of_filter_block",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REMOVAL_DESELECTION - Remove Selected Filter": {
+      "test_cases": [
+        {
+          "name": "remove_selected_filter_chip",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "CLEAR_RESET_ALL - Clear All Filters": {
+      "test_cases": [
+        {
+          "name": "clear_all_filters",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No Results for Selected Field": {
+      "test_cases": [
+        {
+          "name": "no_results_for_selected_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - Display Count of Assets per Field": {
+      "test_cases": [
+        {
+          "name": "display_count_of_assets_per_field",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "LIFECYCLE_TRANSITION - Dynamic Update on Field Selection": {
+      "test_cases": [
+        {
+          "name": "dynamic_update_on_field_selection",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests_407.xlsx"
+}

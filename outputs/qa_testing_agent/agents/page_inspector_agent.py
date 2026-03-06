@@ -80,8 +80,13 @@ class SmartPageInspectorV2:
                 context.set_default_timeout(settings.ELEMENT_TIMEOUT_MS)
                 page = context.new_page()
                 
-                # Create smart selector discovery
-                discovery = SmartSelectorDiscovery(page)
+                # Create smart selector discovery (prefer selector_map)
+                folder = getattr(settings, "UI_SNAPSHOT_FOLDER", "./ui_snapshot")
+                map_file = getattr(settings, "SELECTOR_MAP_FILE", "selector_map.json")
+                rec_file = getattr(settings, "RECORDED_FLOW_FILE", "recorded_flow.py")
+                ensure_selector_map(folder, map_file, rec_file)
+                selector_map = load_selector_map(folder, map_file) or {}
+                discovery = SmartSelectorDiscovery(page, selector_map=selector_map)
                 
                 # Step 1: Login
                 logger.info("Step 1: Logging in...")

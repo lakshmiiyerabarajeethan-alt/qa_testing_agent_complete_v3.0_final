@@ -1,0 +1,265 @@
+{
+  "timestamp": "2026-03-02T10:39:10.928532",
+  "stories_processed": 3,
+  "total_test_cases": 28,
+  "total_scenarios": 28,
+  "total_steps": 47,
+  "scenarios": {
+    "HAPPY_PATH - Category/Field Name filter visibility": {
+      "test_cases": [
+        {
+          "name": "category_field_filter_visible_after_search",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "MULTI_COMBINATION - Select multiple metadata fields": {
+      "test_cases": [
+        {
+          "name": "select_multiple_metadata_fields",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Drill down using multiple filters": {
+      "test_cases": [
+        {
+          "name": "refine_search_with_multiple_filters",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "STATE_PERSISTENCE - Saved search restores filters": {
+      "test_cases": [
+        {
+          "name": "saved_search_restores_filters",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "UI_UX_CONSISTENCY - Filter block visual consistency": {
+      "test_cases": [
+        {
+          "name": "filter_block_visual_consistency",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REMOVAL_DESELECTION - Deselect a metadata field": {
+      "test_cases": [
+        {
+          "name": "deselect_metadata_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "CLEAR_RESET_ALL - Clear all filters and search": {
+      "test_cases": [
+        {
+          "name": "clear_all_filters_and_search",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No assets match the filter": {
+      "test_cases": [
+        {
+          "name": "no_assets_match_filter",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ERROR_FAILURE - Handle network error gracefully": {
+      "test_cases": [
+        {
+          "name": "handle_network_error_gracefully",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "HAPPY_PATH - Auto-populate additional tags after results load": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_after_results_load",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Select multiple tags for filtering": {
+      "test_cases": [
+        {
+          "name": "select_multiple_tags_for_filtering",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Further refine results using additional tags": {
+      "test_cases": [
+        {
+          "name": "refine_results_using_additional_tags",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "STATE_PERSISTENCE - Ensure selected tags remain highlighted": {
+      "test_cases": [
+        {
+          "name": "selected_tags_remain_highlighted",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - Display all tags associated with returned results": {
+      "test_cases": [
+        {
+          "name": "display_all_associated_tags",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Consistent styling of newly added tags": {
+      "test_cases": [
+        {
+          "name": "consistent_styling_of_new_tags",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No additional tags available": {
+      "test_cases": [
+        {
+          "name": "no_additional_tags_available",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ASYNC_TIMING - Loader states and UI update": {
+      "test_cases": [
+        {
+          "name": "loader_states_and_ui_update",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "REMOVAL_DESELECTION - Deselect a tag and observe changes": {
+      "test_cases": [
+        {
+          "name": "deselect_tag_and_observe_changes",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "HAPPY_PATH - Full Filter Reload on OR Operator Selection": {
+      "test_cases": [
+        {
+          "name": "full_filter_reload_on_or_operator",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Updated Filter Options After Reload": {
+      "test_cases": [
+        {
+          "name": "updated_filter_options_after_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "STATE_PERSISTENCE - No Loss of Existing Filters": {
+      "test_cases": [
+        {
+          "name": "no_loss_of_existing_filters_after_reload",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Smooth Reload Experience": {
+      "test_cases": [
+        {
+          "name": "smooth_reload_experience_no_flicker",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Automatic Results Update": {
+      "test_cases": [
+        {
+          "name": "automatic_results_update_after_filter",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ERROR_FAILURE - Error Handling on Reload Failure": {
+      "test_cases": [
+        {
+          "name": "error_handling_on_reload_failure",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BOUNDARY_EMPTY - Single Filter Application": {
+      "test_cases": [
+        {
+          "name": "single_filter_application_with_or_operator",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REGRESSION - Unrelated Features Functionality": {
+      "test_cases": [
+        {
+          "name": "unrelated_features_still_function",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REMOVAL_DESELECTION - Undo OR Operator Selection": {
+      "test_cases": [
+        {
+          "name": "undo_or_operator_selection",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "PERFORMANCE_SCALE - Large Data Set Handling": {
+      "test_cases": [
+        {
+          "name": "large_data_set_filter_reload_performance",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests.xlsx",
+  "approval_decision": "REVISIONS_REQUESTED",
+  "revision_request": "Revisions requested via API",
+  "decision_timestamp": "2026-03-02T10:40:13.721994"
+}

@@ -646,6 +646,7 @@ body::before{
           <div class="form-group">
             <label class="form-label">CSV File Name (Optional)</label>
             <input class="form-input" id="csvFileName" value="" placeholder="e.g., 407 or 407.csv"/>
+            <div class="form-help">If left blank, the Suite Identifier will be used as the CSV filename (unless it is the default).</div>
           </div>
           <div class="form-group">
             <label class="form-label">Suite Identifier</label>
@@ -758,11 +759,36 @@ body::before{
                   </div>
                   <div style="margin-top:10px;font-size:11px;color:var(--text2);display:flex;align-items:center;gap:8px">
                     <input type="checkbox" id="mergeRegression" checked/>
-                    <label for="mergeRegression">Merge approved suite into regression suite (devops_tests.xlsx)</label>
+                    <label for="mergeRegression">Merge approved suite into regression suite (devops_tests_regression_suite.xlsx)</label>
                   </div>
                   <div class="approval-actions">
                     <button class="appr-btn appr-ok" onclick="approveTests()">✓ Approve &amp; Continue</button>
                     <button class="appr-btn appr-review" onclick="requestRevision()">⟳ Request Revisions</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Phase: Execution Selection (CSV only) -->
+            <div class="phase-card pending" id="pc-exec-select" style="display:none">
+              <div class="phase-head">
+                <div class="phase-icon">✅</div>
+                <div class="phase-title">Phase 4 — Select Suite to Execute</div>
+                <span class="phase-status ps-pending" id="ps-exec-select">PENDING</span>
+              </div>
+              <div class="phase-progress"><div class="phase-progress-bar" id="pb-exec-select"></div></div>
+              <div id="exec-select-actions" style="display:none;margin-top:8px">
+                <div class="approval-box">
+                  <h3>Choose Test Suite</h3>
+                  <p>Select which test suite to execute.</p>
+                  <div class="approval-file">
+                    <div style="margin-bottom:6px">📄 Available suites:</div>
+                    <div id="execSuiteList" style="display:flex;flex-direction:column;gap:6px"></div>
+                  </div>
+                  <div class="form-group" style="margin-top:12px">
+                    <label class="form-label">Precondition Steps (Optional)</label>
+                    <textarea class="form-input" id="execPreconditions" rows="3" placeholder="One step per line&#10;Example:&#10;Click Filters&#10;Click Tags"></textarea>
+                    <div class="form-help">These steps will be applied to all stories in the selected suite.</div>
                   </div>
                 </div>
               </div>
@@ -921,7 +947,7 @@ let startTime = null;
 let timerInterval = null;
 let logCount = 0;
 let currentSuiteId = null;
-const PHASES = ['parse','generate','approval','pipeline','exec','report'];
+const PHASES = ['parse','generate','approval','exec-select','pipeline','exec','report'];
 const phaseState = {};
 
 const tokens = {req: 0, des: 0, rev: 0, exc: 0};
@@ -1037,8 +1063,8 @@ async function loadSuites() {
       opt.textContent = f;
       select.appendChild(opt);
     });
-    if (!select.value && files.includes('devops_tests.xlsx')) {
-      select.value = 'devops_tests.xlsx';
+    if (!select.value && files.includes('devops_tests_regression_suite.xlsx')) {
+      select.value = 'devops_tests_regression_suite.xlsx';
     }
   } catch (e) {
     select.innerHTML = '';
@@ -1088,6 +1114,62 @@ function renderApprovalSuites(suites) {
   });
 }
 
+function renderExecutionSuites(suites) {
+  const list = document.getElementById('execSuiteList');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!suites || !suites.length) {
+    const empty = document.createElement('div');
+    empty.style.color = 'var(--text2)';
+    empty.style.fontSize = '11px';
+    empty.textContent = 'No suites available.';
+    list.appendChild(empty);
+    return;
+  }
+  suites.forEach(name => {
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '8px';
+    const file = document.createElement('span');
+    file.textContent = name;
+    file.style.color = 'var(--cyan)';
+    file.style.fontSize = '12px';
+    const btn = document.createElement('button');
+    btn.className = 'ghost-btn';
+    btn.type = 'button';
+    btn.textContent = 'Run';
+    btn.onclick = () => runSelectedSuite(name);
+    row.appendChild(file);
+    row.appendChild(btn);
+    list.appendChild(row);
+  });
+}
+
+async function runSelectedSuite(name) {
+  try {
+    const preconditions = document.getElementById('execPreconditions')?.value || '';
+    const resp = await fetch('/api/run_excel_suite', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        filename: name,
+        suite_id: currentSuiteId || 'qa_suite_latest',
+        preconditions
+      })
+    });
+    if (!resp.ok) throw new Error('Failed to start execution');
+    document.getElementById('exec-select-actions').style.display = 'none';
+    setPhase('exec-select', 'done', 'DONE');
+    setStage('exec-select', 'done');
+    setOnlyRunning('pipeline');
+    startPolling();
+    addLog('ok', 'EXEC', `Starting execution for suite: ${name}`);
+  } catch (e) {
+    addLog('err', 'EXEC', `Failed to start execution: ${name}`);
+  }
+}
+
 function formatTimestamp(epochSeconds) {
   try {
     const d = new Date(epochSeconds * 1000);
@@ -1123,13 +1205,17 @@ async function runPipeline(mode) {
   updateTop(isCSV ? 'CSV Stories' : 'Excel Files', 'STARTING', '0 / 0', '—');
 
   try {
+    const csvFolder = document.getElementById('csvFolder')?.value || './stories';
+    const csvSuiteId = document.getElementById('csvSuiteId')?.value || 'devops_suite_latest';
+    const csvFileNameInput = document.getElementById('csvFileName')?.value || '';
+    const csvFileName = csvFileNameInput || (csvSuiteId && csvSuiteId !== 'devops_suite_latest' ? csvSuiteId : '');
     const body = isCSV
       ? {
           mode: 'csv',
-          stories_folder: document.getElementById('csvFolder')?.value || './stories',
-          suite_id: document.getElementById('csvSuiteId')?.value || 'devops_suite_latest',
+          stories_folder: csvFolder,
+          suite_id: csvSuiteId,
           auto_approve: false,
-          csv_filename: document.getElementById('csvFileName')?.value || ''
+          csv_filename: csvFileName
         }
       : {
           mode: 'excel',
@@ -1161,6 +1247,7 @@ function resetRunUI(isCSV) {
   setStage('parse', 'active');
   setStage('generate', '');
   setStage('approval', '');
+  setStage('exec-select', '');
   setStage('pipeline', '');
   setStage('exec', '');
   setStage('report', '');
@@ -1173,11 +1260,17 @@ function resetRunUI(isCSV) {
 
   document.getElementById('pc-generate').style.display = isCSV ? '' : 'none';
   document.getElementById('pc-approval').style.display = isCSV ? '' : 'none';
+  document.getElementById('pc-exec-select').style.display = isCSV ? '' : 'none';
   document.getElementById('approval-actions').style.display = 'none';
+  document.getElementById('exec-select-actions').style.display = 'none';
   const list = document.getElementById('approvalSuiteList');
   if (list) list.innerHTML = '';
   const mergeBox = document.getElementById('mergeRegression');
   if (mergeBox) mergeBox.checked = true;
+  const execList = document.getElementById('execSuiteList');
+  if (execList) execList.innerHTML = '';
+  const execPre = document.getElementById('execPreconditions');
+  if (execPre) execPre.value = '';
 
   PHASES.forEach(p => {
     setPhase(p, 'pending', 'NEXT');
@@ -1192,7 +1285,7 @@ function resetRunUI(isCSV) {
 
 function startPolling() {
   stopPolling();
-  logOffset = 0;
+  logOffset = -1;
   logCarry = '';
   fetchStatus();
   fetchLogs();
@@ -1213,7 +1306,7 @@ async function fetchStatus() {
     if (!resp.ok) return;
     const st = await resp.json();
 
-    if (st.running && logOffset === 0 && logCount === 0 && typeof st.log_start_offset === 'number') {
+    if (st.running && logOffset < 0 && typeof st.log_start_offset === 'number') {
       logOffset = st.log_start_offset;
     }
 
@@ -1224,10 +1317,20 @@ async function fetchStatus() {
         renderApprovalSuites(st.approval_suites);
       }
     }
+    if (st.ready_for_execution) {
+      setOnlyRunning('exec-select');
+      document.getElementById('exec-select-actions').style.display = 'block';
+      if (st.execution_suites) {
+        renderExecutionSuites(st.execution_suites);
+      }
+      setStatus('running', 'AWAITING SUITE');
+    }
+
+    const awaitingExecSelection = !!st.ready_for_execution;
 
     if (st.running) {
       setStatus('running', 'RUNNING');
-    } else if (pipelineRunning) {
+    } else if (pipelineRunning && !awaitingExecSelection) {
       pipelineRunning = false;
       setStatus('idle', st.last_error ? 'ERROR' : 'COMPLETE');
       stopTimer();
@@ -1248,12 +1351,14 @@ async function fetchStatus() {
         setStage('parse', 'done');
         setStage('generate', 'done');
         setStage('approval', 'done');
+        setStage('exec-select', 'done');
         setStage('pipeline', 'done');
         setStage('exec', 'done');
         setStage('report', 'done');
         setPhase('parse', 'done', 'DONE');
         setPhase('generate', 'done', 'DONE');
         setPhase('approval', 'done', 'DONE');
+        setPhase('exec-select', 'done', 'DONE');
         setPhase('pipeline', 'done', 'DONE');
         setPhase('exec', 'done', 'DONE');
         setPhase('report', 'done', 'DONE');
@@ -1281,6 +1386,7 @@ async function fetchStatus() {
 }
 
 async function fetchLogs() {
+  if (logOffset < 0) return;
   try {
     const resp = await fetch(`/api/logs?offset=${logOffset}`);
     if (!resp.ok) return;
@@ -1836,11 +1942,13 @@ function showReportPanel(suiteId, total, passed, failed, reportUrl) {
 const STAGE_MAP = {
   input:'stage-input', config:'stage-config', parse:'stage-parse',
   generate:'stage-generate', approval:'stage-approval',
-  pipeline:'stage-pipeline', exec:'stage-exec', report:'stage-report'
+  'exec-select':'stage-exec', pipeline:'stage-pipeline',
+  exec:'stage-exec', report:'stage-report'
 };
 
 function setStage(name, state) {
-  const el = document.getElementById(STAGE_MAP[name]);
+  const mapName = name === 'exec-select' ? 'exec-select' : name;
+  const el = document.getElementById(STAGE_MAP[mapName]);
   if (!el) return;
   el.className = 'stage ' + (state || '');
   // Update badge
@@ -1852,8 +1960,9 @@ function setStage(name, state) {
 }
 
 function setPhase(name, state, label) {
-  const card = document.getElementById('pc-' + name);
-  const statusEl = document.getElementById('ps-' + name);
+  const id = name === 'exec-select' ? 'exec-select' : name;
+  const card = document.getElementById('pc-' + id);
+  const statusEl = document.getElementById('ps-' + id);
   if (!card || !statusEl) return;
   card.className = 'phase-card ' + (state || 'pending');
   statusEl.className = 'phase-status ps-' + (state || 'pending');
@@ -1862,7 +1971,8 @@ function setPhase(name, state, label) {
 }
 
 function setProgress(phase, pct) {
-  const el = document.getElementById('pb-' + phase);
+  const id = phase === 'exec-select' ? 'exec-select' : phase;
+  const el = document.getElementById('pb-' + id);
   if (el) el.style.width = pct + '%';
 }
 

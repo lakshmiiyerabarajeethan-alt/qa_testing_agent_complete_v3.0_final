@@ -100,8 +100,8 @@ class QATestingPipeline:
         logger.info("\n[Phase 4] Saving test cases to Excel...")
         excel_filename = "devops_tests.xlsx"
         if csv_filename:
-            safe = re.sub(r'[^a-zA-Z0-9_\\-]', '_', str(csv_filename))
-            safe = safe.replace(".csv", "").strip("_")
+            base = os.path.splitext(os.path.basename(str(csv_filename)))[0]
+            safe = re.sub(r'[^a-zA-Z0-9_\\-]', '_', base).strip("_")
             if safe:
                 excel_filename = f"devops_tests_{safe}.xlsx"
         excel_path = self.excel_writer.write_test_cases(test_cases, excel_filename)
@@ -136,6 +136,12 @@ class QATestingPipeline:
             
             return ""
 
+        # If external approval flow is used, stop here and let the caller decide
+        # which suite to execute.
+        if external_approval_waiter is not None:
+            logger.info("Approval completed — execution will be started by UI selection")
+            return ""
+
         # Merge approved test cases into regression suite (optional)
         merge_allowed = True
         if isinstance(decision, str) and "MERGE=0" in decision.upper():
@@ -143,12 +149,20 @@ class QATestingPipeline:
 
         if merge_allowed:
             try:
-                regression_path = os.path.join(settings.TEST_INPUT_FOLDER, "devops_tests.xlsx")
+                regression_path = os.path.join(
+                    settings.TEST_INPUT_FOLDER,
+                    "devops_tests_regression_suite.xlsx",
+                )
                 if os.path.exists(regression_path):
                     self.excel_writer.append_test_cases(regression_path, test_cases)
                 else:
-                    self.excel_writer.write_test_cases(test_cases, "devops_tests.xlsx")
-                logger.info("Merged approved test cases into regression suite: devops_tests.xlsx")
+                    self.excel_writer.write_test_cases(
+                        test_cases,
+                        "devops_tests_regression_suite.xlsx",
+                    )
+                logger.info(
+                    "Merged approved test cases into regression suite: devops_tests_regression_suite.xlsx"
+                )
             except Exception as e:
                 logger.error(f"Failed to merge into regression suite: {str(e)}")
         else:

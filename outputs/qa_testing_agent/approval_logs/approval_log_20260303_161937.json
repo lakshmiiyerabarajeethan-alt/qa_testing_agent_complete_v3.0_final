@@ -1,0 +1,172 @@
+{
+  "timestamp": "2026-03-03T16:19:37.488279",
+  "stories_processed": 2,
+  "total_test_cases": 18,
+  "total_scenarios": 18,
+  "total_steps": 34,
+  "scenarios": {
+    "HAPPY_PATH - Auto-populate additional tags after results load": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_after_results_load",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Select multiple tags for filtering": {
+      "test_cases": [
+        {
+          "name": "select_multiple_tags_for_filtering",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Drill down using newly surfaced tags": {
+      "test_cases": [
+        {
+          "name": "drill_down_using_newly_surfaced_tags",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - User selections persist after refresh": {
+      "test_cases": [
+        {
+          "name": "user_selections_persist_after_refresh",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - Display all tags associated with results": {
+      "test_cases": [
+        {
+          "name": "display_all_tags_associated_with_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Consistent styling of newly added tags": {
+      "test_cases": [
+        {
+          "name": "consistent_styling_of_newly_added_tags",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "REMOVAL_DESELECTION - Deselect a tag to broaden results": {
+      "test_cases": [
+        {
+          "name": "deselect_a_tag_to_broaden_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "CLEAR_RESET_ALL - Reset filters to baseline": {
+      "test_cases": [
+        {
+          "name": "reset_filters_to_baseline",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ASYNC_TIMING - Loader state and UI update": {
+      "test_cases": [
+        {
+          "name": "loader_state_and_ui_update",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ERROR_FAILURE - Handle network error gracefully": {
+      "test_cases": [
+        {
+          "name": "handle_network_error_gracefully",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "HAPPY_PATH - Full filter reload on OR operator selection": {
+      "test_cases": [
+        {
+          "name": "full_filter_reload_on_or_operator_selection",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Apply multiple filters with OR operator": {
+      "test_cases": [
+        {
+          "name": "apply_multiple_filters_with_or_operator",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Preserve existing filters after reload": {
+      "test_cases": [
+        {
+          "name": "preserve_existing_filters_after_reload",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Smooth reload experience": {
+      "test_cases": [
+        {
+          "name": "smooth_reload_experience",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "LIFECYCLE_TRANSITION - Updated filter options after reload": {
+      "test_cases": [
+        {
+          "name": "updated_filter_options_after_reload",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ASYNC_TIMING - Automatic update of filter results": {
+      "test_cases": [
+        {
+          "name": "automatic_update_of_filter_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ERROR_FAILURE - Handle filter reload failure": {
+      "test_cases": [
+        {
+          "name": "handle_filter_reload_failure",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - Apply OR operator with no initial filters": {
+      "test_cases": [
+        {
+          "name": "apply_or_operator_with_no_initial_filters",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests_mirrix_Team_-_Phase_7_Stories__2.xlsx"
+}

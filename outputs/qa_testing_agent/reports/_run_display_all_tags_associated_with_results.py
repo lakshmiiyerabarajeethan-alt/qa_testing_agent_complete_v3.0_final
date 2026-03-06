@@ -326,11 +326,11 @@ def _precondition(page):
     panel, expand the Tags section) so the test starts from the right place.
     Generated from settings.STORY_PRECONDITIONS_JSON — change in .env, no code edits.
     """
-    # Click Filters
+    # Click on Filter
     page.locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first.click()
     page.wait_for_load_state("networkidle")
-    # Click Tags
-    page.locator("a").filter(has_text="Tags").first.click()
+    # Expand Tag
+    _app_open_tags_section(page)
     page.wait_for_load_state("networkidle")
 
 
@@ -340,16 +340,16 @@ def test_display_all_tags_associated_with_results(page):
         _login(page)
         _precondition(page)
 
-        # Step 1: User selects the "Vehicles" tag in the filter panel.
+        # Step 1: Select Tag "Vehicles" in the filter panel.
         _app_click_tag(page, "Vehicles")
 
         # Step 2: Wait for the results to finish loading.
         page.wait_for_load_state("networkidle")
 
-        # Verify that all tags associated with the returned assets are displayed in the filter panel.
+        # Verify that all tags associated with the displayed assets are shown in the filter panel.
         visible_tags = _app_get_visible_tags(page)
-        assert "Vehicles" in visible_tags, "Expected 'Vehicles' tag to be visible"
-        assert len(visible_tags) > 0, "Expected at least one tag to be visible"
+        assert "Vehicles" in visible_tags, "Expected 'Vehicles' tag to be visible in the filter panel."
+        assert len(visible_tags) > 0, "Expected at least one tag to be visible in the filter panel."
 
     except Exception:
         page.screenshot(path="failure_test_display_all_tags_associated_with_results.png")
@@ -374,7 +374,7 @@ if __name__ == "__main__":
             try:
                 test_display_all_tags_associated_with_results(page)
             except Exception:
-                _take_screenshot(r"C:/Users/laksh/qa_testing_agent_complete_v3.0_final/outputs/qa_testing_agent/reports/screenshots/display_all_tags_associated_with_results_20260227_112210.png")
+                _take_screenshot(r"C:/Users/laksh/qa_testing_agent_complete_v3.0_final/outputs/qa_testing_agent/reports/screenshots/display_all_tags_associated_with_results_20260303_162939.png")
                 raise
             finally:
                 try: _ctx.close()

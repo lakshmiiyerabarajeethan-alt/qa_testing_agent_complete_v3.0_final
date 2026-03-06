@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-03-02T13:27:15.936301",
+  "stories_processed": 1,
+  "total_test_cases": 9,
+  "total_scenarios": 9,
+  "total_steps": 16,
+  "scenarios": {
+    "HAPPY_PATH - Category/Field Name filter visibility": {
+      "test_cases": [
+        {
+          "name": "category_field_name_filter_visible_after_search",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Filter block styling": {
+      "test_cases": [
+        {
+          "name": "category_field_name_filter_styling_matches_advanced_filters",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "MULTI_COMBINATION - Selecting multiple fields": {
+      "test_cases": [
+        {
+          "name": "select_multiple_metadata_fields",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "REMOVAL_DESELECTION - Removing a selected field": {
+      "test_cases": [
+        {
+          "name": "remove_selected_metadata_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Saving and restoring searches": {
+      "test_cases": [
+        {
+          "name": "save_and_restore_search_with_field_filters",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "CLEAR_RESET_ALL - Clearing search and filters": {
+      "test_cases": [
+        {
+          "name": "clear_search_and_filters",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No results for a field": {
+      "test_cases": [
+        {
+          "name": "no_results_for_selected_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "PERFORMANCE_SCALE - Large dataset filtering": {
+      "test_cases": [
+        {
+          "name": "filter_large_dataset_with_multiple_fields",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ERROR_FAILURE - Handling API failures": {
+      "test_cases": [
+        {
+          "name": "handle_api_failure_during_filter_application",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests_407.xlsx"
+}

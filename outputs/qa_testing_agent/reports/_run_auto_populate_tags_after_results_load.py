@@ -329,7 +329,7 @@ def _precondition(page):
     # Click Filters
     page.locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first.click()
     page.wait_for_load_state("networkidle")
-    # Click Tags
+    # Expand Tags
     page.locator("a").filter(has_text="Tags").first.click()
     page.wait_for_load_state("networkidle")
 
@@ -340,16 +340,16 @@ def test_auto_populate_tags_after_results_load(page):
         _login(page)
         _precondition(page)
 
-        # Step 1: User selects Tag "Vehicles" in the filter panel.
+        # Step 1: User selects 'Vehicles' tag in the filter panel.
         _app_click_tag(page, "Vehicles")
 
         # Step 2: Wait for the results to finish loading.
         page.wait_for_load_state("networkidle")
 
-        # Verify that additional tags associated with the returned assets appear in the filter panel.
+        # Verify that additional tags associated with the displayed assets appear in the filter panel.
         visible_tags = _app_get_visible_tags(page)
-        assert "Vehicles" in visible_tags, "Expected 'Vehicles' tag to be visible."
-        assert len(visible_tags) > 1, "Expected additional tags to be populated after results load."
+        assert "Vehicles" in visible_tags, "Expected 'Vehicles' tag to be visible"
+        assert len(visible_tags) > 1, "Expected additional tags to be populated"
 
     except Exception:
         page.screenshot(path="failure_test_auto_populate_tags_after_results_load.png")
@@ -374,7 +374,7 @@ if __name__ == "__main__":
             try:
                 test_auto_populate_tags_after_results_load(page)
             except Exception:
-                _take_screenshot(r"C:/Users/laksh/qa_testing_agent_complete_v3.0_final/outputs/qa_testing_agent/reports/screenshots/auto_populate_tags_after_results_load_20260227_112131.png")
+                _take_screenshot(r"C:/Users/laksh/qa_testing_agent_complete_v3.0_final/outputs/qa_testing_agent/reports/screenshots/auto_populate_tags_after_results_load_20260305_135834.png")
                 raise
             finally:
                 try: _ctx.close()

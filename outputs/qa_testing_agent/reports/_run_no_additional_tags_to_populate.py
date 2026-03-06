@@ -329,7 +329,7 @@ def _precondition(page):
     # Click Filters
     page.locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first.click()
     page.wait_for_load_state("networkidle")
-    # Click Tags
+    # Expand Tags
     page.locator("a").filter(has_text="Tags").first.click()
     page.wait_for_load_state("networkidle")
 
@@ -363,7 +363,7 @@ if __name__ == "__main__":
             try:
                 test_no_additional_tags_to_populate(page)
             except Exception:
-                _take_screenshot(r"C:/Users/laksh/qa_testing_agent_complete_v3.0_final/outputs/qa_testing_agent/reports/screenshots/no_additional_tags_to_populate_20260227_125222.png")
+                _take_screenshot(r"C:/Users/laksh/qa_testing_agent_complete_v3.0_final/outputs/qa_testing_agent/reports/screenshots/no_additional_tags_to_populate_20260305_135909.png")
                 raise
             finally:
                 try: _ctx.close()

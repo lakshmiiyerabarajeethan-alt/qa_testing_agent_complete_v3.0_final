@@ -326,11 +326,11 @@ def _precondition(page):
     panel, expand the Tags section) so the test starts from the right place.
     Generated from settings.STORY_PRECONDITIONS_JSON — change in .env, no code edits.
     """
-    # Click Filters
+    # Click on Filter
     page.locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first.click()
     page.wait_for_load_state("networkidle")
-    # Click Tags
-    page.locator("a").filter(has_text="Tags").first.click()
+    # Expand Tag
+    _app_open_tags_section(page)
     page.wait_for_load_state("networkidle")
 
 
@@ -340,32 +340,22 @@ def test_drill_down_using_newly_surfaced_tags(page):
         _login(page)
         _precondition(page)
 
-        # Step 1: User selects Tag A in the filter panel.
+        # Step 1: Select Tag "Vehicles" in the filter panel.
         _app_click_tag(page, "Vehicles")
         page.wait_for_load_state("networkidle")
 
-        # Verify assets with Tag A are displayed
+        # Verify assets with Tag "Vehicles" are displayed.
         initial_count = _app_get_result_count(page)
-        assert initial_count > 0, "No assets displayed for Tag A"
+        assert initial_count > 0, "No assets displayed for the selected tag 'Vehicles'."
 
-        # Step 2: Wait for the results to finish loading.
-        page.wait_for_load_state("networkidle")
-
-        # Step 3: User selects Tag B from the additional tags.
+        # Step 2: After results load, select a newly surfaced tag "Flower".
         _app_click_tag(page, "Flower")
         page.wait_for_load_state("networkidle")
 
-        # Verify assets with both Tag A and Tag B are displayed
-        count_after_tag_b = _app_get_result_count(page)
-        assert count_after_tag_b > 0, "No assets displayed for Tag A and Tag B"
-
-        # Step 4: User selects another tag (Tag C) from the additional tags.
-        _app_click_tag(page, "toys")
-        page.wait_for_load_state("networkidle")
-
-        # Verify assets with Tag A, Tag B, and Tag C are displayed
-        final_count = _app_get_result_count(page)
-        assert final_count > 0, "No assets displayed for Tag A, Tag B, and Tag C"
+        # Verify assets with both Tag "Vehicles" and "Flower" are displayed.
+        refined_count = _app_get_result_count(page)
+        assert refined_count > 0, "No assets displayed for the combination of tags 'Vehicles' and 'Flower'."
+        assert refined_count <= initial_count, "Refined results should not exceed initial results."
 
     except Exception:
         page.screenshot(path="failure_test_drill_down_using_newly_surfaced_tags.png")
@@ -390,7 +380,7 @@ if __name__ == "__main__":
             try:
                 test_drill_down_using_newly_surfaced_tags(page)
             except Exception:
-                _take_screenshot(r"C:/Users/laksh/qa_testing_agent_complete_v3.0_final/outputs/qa_testing_agent/reports/screenshots/drill_down_using_newly_surfaced_tags_20260227_112149.png")
+                _take_screenshot(r"C:/Users/laksh/qa_testing_agent_complete_v3.0_final/outputs/qa_testing_agent/reports/screenshots/drill_down_using_newly_surfaced_tags_20260303_162901.png")
                 raise
             finally:
                 try: _ctx.close()

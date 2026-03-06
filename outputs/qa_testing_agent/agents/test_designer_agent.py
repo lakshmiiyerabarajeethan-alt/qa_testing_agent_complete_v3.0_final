@@ -412,6 +412,10 @@ class TestDesignerAgent:
             query = search_match.group(1).strip().strip("\"'")
             return f'_app_search(page, "{query}")'
 
+        # Explicit searchbar focus actions (no query provided)
+        if re.search(r"\b(search\s*bar|searchbar|search box|searchbox)\b", step_lower):
+            return '_app_search(page, "")'
+
         # ── Detect OR/AND operator BEFORE any other matching ─────────────────
         # Must happen before nav/fuzzy which could match "Workflows" etc.
         if re.search(r"\bor\b|\bor\s+operator\b", step_lower):

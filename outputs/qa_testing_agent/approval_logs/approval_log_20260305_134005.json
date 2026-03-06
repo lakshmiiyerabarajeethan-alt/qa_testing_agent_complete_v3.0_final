@@ -1,0 +1,154 @@
+{
+  "timestamp": "2026-03-05T13:40:05.841347",
+  "stories_processed": 2,
+  "total_test_cases": 16,
+  "total_scenarios": 16,
+  "total_steps": 35,
+  "scenarios": {
+    "HAPPY_PATH - Auto-populate additional tags after results load": {
+      "test_cases": [
+        {
+          "name": "auto_populate_tags_after_results_load",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MULTI_COMBINATION - Multiple tags appear in filter panel": {
+      "test_cases": [
+        {
+          "name": "multiple_tags_appear_in_filter_panel",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Further filtering using newly surfaced tags": {
+      "test_cases": [
+        {
+          "name": "further_filtering_with_new_tags",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "STATE_PERSISTENCE - User-selected tags remain highlighted": {
+      "test_cases": [
+        {
+          "name": "user_selected_tags_remain_highlighted",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - All tags associated with returned results are displayed": {
+      "test_cases": [
+        {
+          "name": "all_tags_displayed_for_returned_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "UI_UX_CONSISTENCY - Newly added tags maintain visual style": {
+      "test_cases": [
+        {
+          "name": "new_tags_maintain_visual_style",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No additional tags to populate": {
+      "test_cases": [
+        {
+          "name": "no_additional_tags_to_populate",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ASYNC_TIMING - UI updates seamlessly after loader completes": {
+      "test_cases": [
+        {
+          "name": "ui_updates_seamlessly_after_loader",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "HAPPY_PATH - Full Filter Reload on OR Operator Selection": {
+      "test_cases": [
+        {
+          "name": "full_filter_reload_on_or_operator_selection",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "MULTI_COMBINATION - Multiple Filters with OR Operator": {
+      "test_cases": [
+        {
+          "name": "multiple_filters_with_or_operator",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Preserve Existing Filters After Reload": {
+      "test_cases": [
+        {
+          "name": "preserve_existing_filters_after_reload",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "UI_UX_CONSISTENCY - Smooth Reload Experience": {
+      "test_cases": [
+        {
+          "name": "smooth_reload_experience",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ASYNC_TIMING - Automatic Results Update": {
+      "test_cases": [
+        {
+          "name": "automatic_results_update",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "ERROR_FAILURE - Handle Filter Reload Failure": {
+      "test_cases": [
+        {
+          "name": "handle_filter_reload_failure",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - Single Filter with OR Operator": {
+      "test_cases": [
+        {
+          "name": "single_filter_with_or_operator",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MIXED_DATA - Filters with Heterogeneous Data": {
+      "test_cases": [
+        {
+          "name": "filters_with_heterogeneous_data",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests_mirrix_Team_-_Phase_7_Stories__2.xlsx"
+}

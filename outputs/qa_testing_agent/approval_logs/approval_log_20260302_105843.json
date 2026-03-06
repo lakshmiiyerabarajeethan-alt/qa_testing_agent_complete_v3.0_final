@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-03-02T10:58:43.613505",
+  "stories_processed": 1,
+  "total_test_cases": 10,
+  "total_scenarios": 10,
+  "total_steps": 21,
+  "scenarios": {
+    "HAPPY_PATH - Category/Field Name filter visibility": {
+      "test_cases": [
+        {
+          "name": "category_field_filter_visible_after_search",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "MULTI_COMBINATION - Select multiple metadata fields": {
+      "test_cases": [
+        {
+          "name": "select_multiple_metadata_fields",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "SEQUENTIAL_REFINEMENT - Drill down using Category/Field Name filter": {
+      "test_cases": [
+        {
+          "name": "drill_down_with_category_field_filter",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Saved search retains filter selections": {
+      "test_cases": [
+        {
+          "name": "saved_search_retains_category_field_filters",
+          "steps": 4
+        }
+      ],
+      "step_count": 4
+    },
+    "UI_UX_CONSISTENCY - Visual consistency of filter block": {
+      "test_cases": [
+        {
+          "name": "category_field_filter_visual_consistency",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "REMOVAL_DESELECTION - Removing a selected field": {
+      "test_cases": [
+        {
+          "name": "removing_selected_field_updates_results",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "CLEAR_RESET_ALL - Clear search functionality": {
+      "test_cases": [
+        {
+          "name": "clear_search_resets_all_filters",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "BOUNDARY_EMPTY - No results for a selected field": {
+      "test_cases": [
+        {
+          "name": "no_results_for_selected_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "MIXED_DATA - Heterogeneous metadata field counts": {
+      "test_cases": [
+        {
+          "name": "mixed_data_field_counts_display",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "BUSINESS_RULES - AND logic for multiple field selection": {
+      "test_cases": [
+        {
+          "name": "and_logic_multiple_field_selection",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests_407.xlsx"
+}

@@ -17,6 +17,7 @@ import logging
 import re
 from typing import Optional, Dict, List, Tuple
 from playwright.sync_api import Page, Locator, TimeoutError as PlaywrightTimeoutError
+from config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +29,10 @@ class SmartSelectorDiscovery:
     Similar to Playwright Codegen, but automated and integrated into the pipeline.
     """
     
-    def __init__(self, page: Page):
+    def __init__(self, page: Page, selector_map: Optional[Dict] = None):
         self.page = page
         self.timeout = 5000  # 5 seconds for discovery attempts
+        self.selector_map = selector_map if isinstance(selector_map, dict) else {}
     
     def find_and_click(self, description: str) -> Tuple[bool, Optional[str], Optional[str]]:
         """
@@ -43,9 +45,9 @@ class SmartSelectorDiscovery:
             Tuple of (success, selector_used, element_info)
             
         Examples:
-            "Click Filter" → finds button/link/div with text "Filter"
-            "Expand Tags" → finds element with text "Tags"
-            "Type xyz into search" → finds input and types
+            "Click Filter" ??? finds button/link/div with text "Filter"
+            "Expand Tags" ??? finds element with text "Tags"
+            "Type xyz into search" ??? finds input and types
         """
         # Parse the description
         action, target = self._parse_description(description)
@@ -53,8 +55,14 @@ class SmartSelectorDiscovery:
         logger.info(f"Finding element: action='{action}', target='{target}'")
         
         if action == "click":
+            selector, info = self._try_selector_map_action("click", target, description)
+            if selector:
+                return True, selector, info
             return self._find_and_click_element(target)
         elif action == "type":
+            selector, info = self._try_selector_map_action("type", target, description)
+            if selector:
+                return True, selector, info
             return self._find_and_type(target, description)
         elif action == "expand":
             return self._find_and_expand(target)
@@ -149,7 +157,7 @@ class SmartSelectorDiscovery:
                 ).first
                 if locator.is_visible(timeout=self.timeout):
                     locator.click()
-                    logger.info(f"✓ Found via RC-tabs id: {css}")
+                    logger.info(f"??? Found via RC-tabs id: {css}")
                     return css, f"rc-tabs:{target}"
             except Exception:
                 continue
@@ -161,7 +169,7 @@ class SmartSelectorDiscovery:
             ).first
             if locator.is_visible(timeout=self.timeout):
                 locator.click()
-                logger.info(f"✓ Found via role=tab filter: {target}")
+                logger.info(f"??? Found via role=tab filter: {target}")
                 return f"[role='tab']:has-text('{target}')", f"role=tab:{target}"
         except Exception:
             pass
@@ -180,7 +188,7 @@ class SmartSelectorDiscovery:
                 locator = self.page.locator(tag).filter(has_text=pattern).first
                 if locator.is_visible(timeout=self.timeout):
                     locator.click()
-                    logger.info(f"✓ Found via <{tag}> filter: {target}")
+                    logger.info(f"??? Found via <{tag}> filter: {target}")
                     return f"{tag}:has-text('{target}')", f"{tag}:{target}"
             except Exception:
                 continue
@@ -204,7 +212,7 @@ class SmartSelectorDiscovery:
                 if locator.is_visible(timeout=self.timeout):
                     locator.click()
                     selector = f"[data-testid='{pattern}']"
-                    logger.info(f"✓ Found via data-testid: {selector}")
+                    logger.info(f"??? Found via data-testid: {selector}")
                     return selector, f"data-testid={pattern}"
             except:
                 continue
@@ -225,7 +233,7 @@ class SmartSelectorDiscovery:
                 if locator.is_visible(timeout=self.timeout):
                     locator.click()
                     selector = f"#{pattern}"
-                    logger.info(f"✓ Found via ID: {selector}")
+                    logger.info(f"??? Found via ID: {selector}")
                     return selector, f"id={pattern}"
             except:
                 continue
@@ -240,7 +248,7 @@ class SmartSelectorDiscovery:
             if locator.is_visible(timeout=self.timeout):
                 locator.click()
                 selector = f"[aria-label='{target}']"
-                logger.info(f"✓ Found via aria-label: {selector}")
+                logger.info(f"??? Found via aria-label: {selector}")
                 return selector, f"aria-label={target}"
         except:
             pass
@@ -252,7 +260,7 @@ class SmartSelectorDiscovery:
                 locator.click()
                 aria_label = locator.get_attribute("aria-label")
                 selector = f"[aria-label='{aria_label}']"
-                logger.info(f"✓ Found via aria-label (partial): {selector}")
+                logger.info(f"??? Found via aria-label (partial): {selector}")
                 return selector, f"aria-label={aria_label}"
         except:
             pass
@@ -270,7 +278,7 @@ class SmartSelectorDiscovery:
                 if locator.is_visible(timeout=self.timeout):
                     locator.click()
                     selector = f"role={role}, name={target}"
-                    logger.info(f"✓ Found via role+name: {selector}")
+                    logger.info(f"??? Found via role+name: {selector}")
                     return selector, f"role={role}, name={target}"
             except:
                 continue
@@ -282,7 +290,7 @@ class SmartSelectorDiscovery:
                     locator.click()
                     text = locator.inner_text()
                     selector = f"role={role}, name={text}"
-                    logger.info(f"✓ Found via role+name (regex): {selector}")
+                    logger.info(f"??? Found via role+name (regex): {selector}")
                     return selector, f"role={role}, name={text}"
             except:
                 continue
@@ -296,7 +304,7 @@ class SmartSelectorDiscovery:
             if locator.is_visible(timeout=self.timeout):
                 locator.click()
                 selector = f"text={target}"
-                logger.info(f"✓ Found via text (exact): {selector}")
+                logger.info(f"??? Found via text (exact): {selector}")
                 return selector, f"text={target}"
         except:
             pass
@@ -311,7 +319,7 @@ class SmartSelectorDiscovery:
                 locator.click()
                 text = locator.inner_text()
                 selector = f"text={text}"
-                logger.info(f"✓ Found via text (partial): {selector}")
+                logger.info(f"??? Found via text (partial): {selector}")
                 return selector, f"text={text}"
         except:
             pass
@@ -323,6 +331,10 @@ class SmartSelectorDiscovery:
         # Extract what to type
         match = re.search(r"['\"]([^'\"]+)['\"]|type\s+(\w+)", full_description.lower())
         text_to_type = match.group(1) or match.group(2) if match else target
+        if "email" in target and settings.LOGIN_EMAIL:
+            text_to_type = settings.LOGIN_EMAIL
+        if "password" in target and settings.LOGIN_PASSWORD:
+            text_to_type = settings.LOGIN_PASSWORD
         
         # Try finding input by placeholder, label, or role
         strategies = [
@@ -336,12 +348,112 @@ class SmartSelectorDiscovery:
                 locator = strategy()
                 if locator.is_visible(timeout=self.timeout):
                     locator.fill(text_to_type)
-                    logger.info(f"✓ Typed '{text_to_type}' into input")
+                    logger.info(f"??? Typed '{text_to_type}' into input")
                     return True, f"input (filled with {text_to_type})", f"input: {target}"
             except:
                 continue
         
         return False, None, None
+
+    def _try_selector_map_action(
+        self, action: str, target: str, full_description: str
+    ) -> Tuple[Optional[str], Optional[str]]:
+        """Try to resolve the action using selector_map.json first."""
+        if not self.selector_map:
+            return None, None
+
+        actions = self.selector_map.get("actions", []) if isinstance(self.selector_map, dict) else []
+        if not actions:
+            return None, None
+
+        target_lower = (target or "").strip().lower()
+
+        def name_matches(a: Dict) -> bool:
+            name = (a.get("name") or a.get("text") or a.get("filter") or "").strip().lower()
+            if not name or not target_lower:
+                return False
+            return name == target_lower or target_lower in name
+
+        if action == "type":
+            for a in actions:
+                if a.get("action") not in ("fill", "type"):
+                    continue
+                if not name_matches(a):
+                    continue
+                selector, info = self._execute_selector_action(a, action, target, full_description)
+                if selector:
+                    return selector, info
+        else:
+            for a in actions:
+                if a.get("action") != "click":
+                    continue
+                if not name_matches(a):
+                    continue
+                selector, info = self._execute_selector_action(a, action, target, full_description)
+                if selector:
+                    return selector, info
+
+        return None, None
+
+    def _execute_selector_action(
+        self, action: Dict, action_type: str, target: str, full_description: str
+    ) -> Tuple[Optional[str], Optional[str]]:
+        kind = action.get("kind")
+        try:
+            if kind == "role":
+                role = action.get("role")
+                name = action.get("name")
+                locator = self.page.get_by_role(role, name=name, exact=False).first
+                if locator.is_visible(timeout=self.timeout):
+                    if action_type == "type":
+                        text_to_type = target
+                        if "email" in (target or "").lower() and settings.LOGIN_EMAIL:
+                            text_to_type = settings.LOGIN_EMAIL
+                        if "password" in (target or "").lower() and settings.LOGIN_PASSWORD:
+                            text_to_type = settings.LOGIN_PASSWORD
+                        locator.fill(text_to_type)
+                        logger.info(f"??? Found via selector_map role+name (fill): role={role}, name={name}")
+                        return f"role={role}, name={name}", f"selector_map:role={role}, name={name}"
+                    locator.click()
+                    logger.info(f"??? Found via selector_map role+name: role={role}, name={name}")
+                    return f"role={role}, name={name}", f"selector_map:role={role}, name={name}"
+            if kind == "text":
+                text = action.get("name") or action.get("text")
+                locator = self.page.get_by_text(text, exact=False).first
+                if locator.is_visible(timeout=self.timeout):
+                    locator.click()
+                    logger.info(f"??? Found via selector_map text: {text}")
+                    return f"text={text}", f"selector_map:text={text}"
+            if kind == "locator":
+                selector = action.get("selector")
+                locator = self.page.locator(selector).first
+                if locator.is_visible(timeout=self.timeout):
+                    if action_type == "type":
+                        text_to_type = target
+                        if "email" in (target or "").lower() and settings.LOGIN_EMAIL:
+                            text_to_type = settings.LOGIN_EMAIL
+                        if "password" in (target or "").lower() and settings.LOGIN_PASSWORD:
+                            text_to_type = settings.LOGIN_PASSWORD
+                        locator.fill(text_to_type)
+                        logger.info(f"??? Found via selector_map locator (fill): {selector}")
+                        return selector, f"selector_map:locator={selector}"
+                    locator.click()
+                    logger.info(f"??? Found via selector_map locator: {selector}")
+                    return selector, f"selector_map:locator={selector}"
+            if kind == "filter_chain":
+                selector = action.get("selector")
+                filt = action.get("filter") or ""
+                locator = self.page.locator(selector).filter(
+                    has_text=re.compile(re.escape(filt), re.IGNORECASE)
+                ).first
+                if locator.is_visible(timeout=self.timeout):
+                    locator.click()
+                    logger.info(f"??? Found via selector_map filter_chain: {selector} + {filt}")
+                    return f"{selector}:has-text('{filt}')", f"selector_map:filter_chain={filt}"
+        except Exception:
+            return None, None
+
+        return None, None
     
     def _find_and_expand(self, target: str) -> Tuple[bool, Optional[str], Optional[str]]:
         """Find and expand a collapsible section."""
@@ -353,7 +465,7 @@ class SmartSelectorDiscovery:
             locator = self.page.locator(f"[aria-expanded='false']:has-text('{target}')").first
             if locator.is_visible(timeout=self.timeout):
                 locator.click()
-                logger.info(f"✓ Expanded via aria-expanded: {target}")
+                logger.info(f"??? Expanded via aria-expanded: {target}")
                 return True, f"[aria-expanded='false']:has-text('{target}')", f"expanded {target}"
         except:
             pass

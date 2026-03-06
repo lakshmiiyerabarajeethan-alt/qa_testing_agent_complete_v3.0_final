@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-03-02T10:49:47.897506",
+  "stories_processed": 1,
+  "total_test_cases": 10,
+  "total_scenarios": 10,
+  "total_steps": 16,
+  "scenarios": {
+    "HAPPY_PATH - Filter Visibility After Search": {
+      "test_cases": [
+        {
+          "name": "category_filter_visible_after_search",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "UI_UX_CONSISTENCY - Filter Block Styling": {
+      "test_cases": [
+        {
+          "name": "category_filter_styling_matches_advanced_filters",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "MULTI_COMBINATION - Select Multiple Metadata Fields": {
+      "test_cases": [
+        {
+          "name": "select_multiple_metadata_fields",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "REMOVAL_DESELECTION - Deselect Metadata Field": {
+      "test_cases": [
+        {
+          "name": "deselect_metadata_field_updates_results",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "STATE_PERSISTENCE - Save and Restore Search": {
+      "test_cases": [
+        {
+          "name": "save_and_restore_search_with_field_filters",
+          "steps": 3
+        }
+      ],
+      "step_count": 3
+    },
+    "CLEAR_RESET_ALL - Clear Search Functionality": {
+      "test_cases": [
+        {
+          "name": "clear_search_resets_all_filters",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BOUNDARY_EMPTY - No Assets in Selected Field": {
+      "test_cases": [
+        {
+          "name": "no_assets_in_selected_field",
+          "steps": 2
+        }
+      ],
+      "step_count": 2
+    },
+    "BUSINESS_RULES - Asset Count Display": {
+      "test_cases": [
+        {
+          "name": "asset_count_display_for_each_field",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "ASYNC_TIMING - Immediate Results Update": {
+      "test_cases": [
+        {
+          "name": "immediate_results_update_on_field_selection",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    },
+    "LIFECYCLE_TRANSITION - Dynamic Field Availability": {
+      "test_cases": [
+        {
+          "name": "dynamic_field_availability_based_on_search",
+          "steps": 1
+        }
+      ],
+      "step_count": 1
+    }
+  },
+  "excel_path": "./test_inputs\\devops_tests_407.xlsx"
+}

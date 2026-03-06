@@ -329,7 +329,7 @@ def _precondition(page):
     # Click Filters
     page.locator("#rc-tabs-0-tab-filters div").filter(has_text=re.compile(r"^Filters$")).first.click()
     page.wait_for_load_state("networkidle")
-    # Click Tags
+    # Expand Tags
     page.locator("a").filter(has_text="Tags").first.click()
     page.wait_for_load_state("networkidle")
 
@@ -338,8 +338,21 @@ def test_user_selected_tags_remain_highlighted(page):
 
     try:
         _login(page)
+        _precondition(page)
+
+        # Step 1: User selects 'Vehicles' tag in the filter panel.
+        _app_click_tag(page, "Vehicles")
         page.wait_for_load_state("networkidle")
-        assert True, "Fallback test body generated due to invalid LLM output"
+
+        # Assert 'Vehicles' tag is highlighted in the filter panel.
+        expect(_app_is_tag_selected(page, "Vehicles")).to_be_truthy()
+
+        # Step 2: Wait for the results to finish loading.
+        page.wait_for_load_state("networkidle")
+
+        # Assert 'Vehicles' tag remains highlighted after additional tags are populated.
+        expect(_app_is_tag_selected(page, "Vehicles")).to_be_truthy()
+
     except Exception:
         page.screenshot(path="failure_test_user_selected_tags_remain_highlighted.png")
         raise
@@ -363,7 +376,7 @@ if __name__ == "__main__":
             try:
                 test_user_selected_tags_remain_highlighted(page)
             except Exception:
-                _take_screenshot(r"C:/Users/laksh/qa_testing_agent_complete_v3.0_final/outputs/qa_testing_agent/reports/screenshots/user_selected_tags_remain_highlighted_20260227_125215.png")
+                _take_screenshot(r"C:/Users/laksh/qa_testing_agent_complete_v3.0_final/outputs/qa_testing_agent/reports/screenshots/user_selected_tags_remain_highlighted_20260305_135900.png")
                 raise
             finally:
                 try: _ctx.close()
